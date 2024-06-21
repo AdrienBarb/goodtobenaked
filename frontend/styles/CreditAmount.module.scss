@@ -1,0 +1,8 @@
+@import "library.scss";
+
+.creditAmount {
+  font-family: var(--font-karla);
+  color: $custom-black;
+  font-size: 14px;
+  cursor: pointer;
+}

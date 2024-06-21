@@ -1,0 +1,31 @@
+.container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .iconsLeft {
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+  }
+
+  .logo {
+    max-width: 300px;
+    text-align: center;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .lipslogo {
+    max-width: 80px;
+    text-align: center;
+
+    img {
+      width: 100%;
+    }
+  }
+}

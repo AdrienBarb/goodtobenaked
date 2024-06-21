@@ -1,0 +1,62 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Comment fonctionne Goodtobenaked ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Goodtobenaked permet la mise en relation d'acheteurs et de vendeurs. Les vendeurs peuvent créer leur boutique et vendre leurs sous-vêtements sales (culottes sales, chaussettes sales, etc...) ainsi que leurs nudes. Et les acheteurs peuvent acheter les sous-vêtements sales, les nudes et discuter avec les vendeurs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Que puis-je vendre sur Goodtobenaked ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sur Goodtobenaked, vous avez la possibilité de vendre vos sous-vêtements sales tels que des culottes sales ou des chaussettes sales, ainsi que vos nudes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Les vendeurs sont-ils vérifiés ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Afin de garantir l’intégrité des profils des vendeurs, notre équipe vérifie les profils à 100%. Un vendeur ne peut pas vendre de sous-vêtements sales ni de nudes si son profil n’a pas été vérifié."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Je souhaite acheter une culotte sale et/ou un nude,  mon compte est-il anonyme ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "L’anonymat est au centre de notre application. Si vous êtes un acheteur, vous pouvez naviguer sur notre site en toute sérénité."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Je souhaite vendre mes culottes sales et/ou mes nudes, comment dois-je faire ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pour vendre vos culottes sales et/ou vos nudes, vous devez vous inscrire en tant que vendeur, créer votre profil et votre boutique. Toutefois, nos équipes devront vérifier votre identité pour que vous puissiez commencer à vendre vos culotte sales et/ou vos nudes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment la plateforme se rémunère ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nous nous rémunérons en prélevant des frais sur chaque achat réalisé sur la plateforme. Les frais s'élèvent à 15%."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Les paiements sont-ils sécurisés ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui, grace à notre partenaire de paiement, les paiements réalisés sur la plateforme sont 100% sécurisés"
+      }
+    }
+  ]
+}

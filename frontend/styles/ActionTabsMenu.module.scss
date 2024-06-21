@@ -1,0 +1,23 @@
+@import "library";
+
+.container {
+  width: 100%;
+  font-family: var(--font-rubik);
+  display: flex;
+
+  .tab {
+    width: 50%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .selected {
+    border-bottom: 3px solid $primary;
+    color: $primary;
+    font-weight: bold;
+  }
+}

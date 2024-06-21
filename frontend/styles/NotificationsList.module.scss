@@ -1,0 +1,35 @@
+@import "library.scss";
+
+.container {
+  .filtersWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+  }
+
+  .notificationChips {
+    padding: 0.4rem;
+    border: 1px solid $primary;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: var(--font-karla);
+    color: $custom-black;
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  .selected {
+    background-color: $primary;
+    color: white;
+  }
+
+  .list {
+    padding: 0;
+    width: 100%;
+    display: flex;
+    align-self: center;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+}

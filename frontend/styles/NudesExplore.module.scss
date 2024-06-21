@@ -1,0 +1,22 @@
+@import "library.scss";
+
+.container {
+  width: 100%;
+
+  .cardsList {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 1rem;
+
+    @media (max-width: $md) {
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-gap: 1rem;
+    }
+
+    @media (max-width: $sm) {
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 1rem;
+    }
+  }
+}

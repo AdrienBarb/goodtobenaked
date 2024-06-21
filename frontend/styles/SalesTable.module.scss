@@ -1,0 +1,24 @@
+.chip {
+  border-radius: 6px;
+  padding: 0.2rem 0.4rem;
+  width: min-content;
+  font-family: var(--font-karla);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.paid {
+  border: 1px solid #bbe6b3;
+  background-color: #91d685;
+  color: #3c8a2e;
+}
+
+.waiting {
+  border: 1px solid #f5b68e;
+  background-color: #f29d69;
+  color: #bc5210;
+}
+
+.commandButton {
+  cursor: pointer;
+}

@@ -1,0 +1,25 @@
+@import "library.scss";
+
+.container {
+  color: $custom-black;
+  font-family: var(--font-rubik);
+  font-weight: bold;
+  display: block;
+
+  h1 {
+    font-size: 32px;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 20px;
+  }
+
+  h4 {
+    font-size: 16px;
+  }
+}

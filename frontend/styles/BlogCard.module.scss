@@ -1,0 +1,25 @@
+.container {
+  .imageWrapper {
+    aspect-ratio: 4/3;
+
+    .image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 6px;
+    }
+  }
+
+  .titleWrapper {
+    padding: 0.4rem;
+
+    h2 {
+      font-family: var(--font-karla);
+      font-size: 18px;
+      font-weight: 300;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+}

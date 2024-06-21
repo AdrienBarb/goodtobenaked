@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  margin-bottom: 1rem;
+
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    align-items: end;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  .divider {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    height: 1px;
+    display: block;
+  }
+}

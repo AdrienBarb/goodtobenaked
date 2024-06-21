@@ -1,0 +1,87 @@
+@import "library.scss";
+
+.container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .wrapper {
+    background-color: $background;
+    border-radius: 6px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    overflow: scroll;
+
+    @media (max-width: $sm) {
+      border-radius: 0;
+      height: 100vh;
+      height: 100dvh;
+      width: 100%;
+    }
+
+    .buttonWrapper {
+      padding: 1rem;
+    }
+
+    .title {
+      font-family: var(--font-karla);
+      font-size: 26px;
+      font-weight: 200;
+      margin-bottom: 3rem;
+      color: $custom-black;
+    }
+
+    .cardsWrapper {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+
+      @media (max-width: $md) {
+        flex-direction: column;
+      }
+
+      .card {
+        min-width: 200px;
+        max-width: 300px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 2px solid $primary;
+        border-radius: 6px;
+        padding: 1rem;
+        background-color: $primary;
+        color: white;
+
+        &:hover {
+          border: 2px solid black;
+          cursor: pointer;
+        }
+
+        h3 {
+          color: white;
+        }
+
+        .image {
+          width: 100%;
+          position: relative;
+          width: 140px;
+          aspect-ratio: 1;
+        }
+      }
+
+      .selected {
+        border: 2px solid black;
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+@import "library.scss";
+
+.container {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: var(--font-karla);
+  justify-content: space-between;
+  font-weight: 600;
+  padding: 0.6rem;
+  border-radius: 6px;
+  background-color: $background;
+  font-size: 18px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+  font-family: var(--font-karla);
+  font-weight: 400;
+  color: black;
+
+  &:hover {
+    background-color: $light-grey;
+  }
+
+  .leftWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: black;
+  }
+
+  .notificationDot {
+    width: 8px;
+    height: 8px;
+    display: block;
+    border-radius: 50%;
+  }
+}
+
+.isSelected {
+  background-color: $primary-light !important;
+}

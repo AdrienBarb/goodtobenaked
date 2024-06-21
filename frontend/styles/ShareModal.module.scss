@@ -1,0 +1,36 @@
+@import "library.scss";
+
+.container {
+  .shareIconsList {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+
+    .iconContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+
+      .iconsWrapper {
+        background-color: $primary;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+
+      p {
+        font-family: var(--font-karla);
+        font-weight: 200;
+        font-size: 12px;
+        color: $custom-black;
+      }
+    }
+  }
+}

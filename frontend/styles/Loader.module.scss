@@ -1,0 +1,17 @@
+@import "library.scss";
+
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .value {
+    position: absolute;
+    font-family: var(--font-karla);
+    font-weight: 600;
+    font-size: 16px;
+    color: $custom-black;
+  }
+}

@@ -1,0 +1,13 @@
+@import'library.scss';
+
+.container {
+  background-color: $background;
+
+  .wrapper {
+    margin: 0 auto;
+    max-width: $container-width;
+    width: 100%;
+    min-height: 80vh;
+    padding: 6rem 1rem 6rem 1rem;
+  }
+}

@@ -1,0 +1,37 @@
+@import 'library.scss';
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  .vendor {
+    color: $background;
+  }
+
+  .titleWrapper {
+    margin-bottom: 3rem;
+
+    h2,
+    p {
+      text-align: center;
+    }
+  }
+
+  .buttonsWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    margin: 1.2rem 0rem;
+
+    a {
+      color: $primary;
+      font-weight: 200;
+      text-align: center;
+    }
+  }
+}

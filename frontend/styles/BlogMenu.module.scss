@@ -1,0 +1,26 @@
+@import "library.scss";
+
+.container {
+  .linksWrapper {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 3rem;
+
+    @media (max-width: $md) {
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .link {
+      font-family: var(--font-karla);
+      font-weight: 200;
+    }
+
+    .selected {
+      font-weight: 600;
+      color: $primary;
+    }
+  }
+}

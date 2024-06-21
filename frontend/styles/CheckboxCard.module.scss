@@ -1,0 +1,14 @@
+@import "library.scss";
+.container {
+  padding: 0.8rem;
+  border-bottom: 1px solid $light-grey;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .text {
+    font-family: var(--font-karla);
+    font-size: 18px;
+    font-weight: 300;
+  }
+}

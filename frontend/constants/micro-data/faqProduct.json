@@ -1,0 +1,54 @@
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Comment fonctionne la vente de culotte sale sur votre plateforme ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Notre plateforme facilite la mise en relation entre les vendeurs de culottes sales et les acheteurs intéressés. Les vendeurs peuvent créer des annonces détaillées pour leurs produits, et les acheteurs peuvent parcourir, poser des questions et effectuer des achats en toute confidentialité."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment puis-je acheter une culotte sale sur votre site ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Parcourez notre sélection de culottes sales, choisissez celle qui vous attire et suivez les étapes pour effectuer l'achat. Vous pouvez dialoguer directement avec le vendeur pour toute question avant de décider."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quelles garanties de discrétion offre votre plateforme pour l'achat de culotte sale ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "La discrétion est notre priorité. Toutes les transactions sont sécurisées et confidentielles. Les informations personnelles sont traitées avec soin, et les vendeurs et acheteurs interagissent sans révéler leurs identités réelles."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment sont expédiées les culottes sales et comment est assurée leur discrétion ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Les méthodes d'expédition varient selon les vendeurs, mais la discrétion est toujours maintenue. Les colis sont généralement envoyés de manière anonyme, sans aucune indication du contenu à l'extérieur."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment assurez-vous la sécurité des transactions financières pour l'achat de culotte sale ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Les transactions financières sont sécurisées grâce à des méthodes de paiement réputées. Nous ne stockons pas vos informations de paiement et veillons à ce que les transactions soient cryptées."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Pourquoi avez-vous besoin de mon adresse lors du paiement pour une culotte sale ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Lorsque vous entrez votre adresse lors du processus de paiement, elle est utilisée exclusivement pour calculer les frais de port associés à votre achat. Vous pourrez discuter directement avec le vendeur pour organiser une livraison à une adresse différente si vous le souhaitez."
+      }
+    }
+  ]
+}

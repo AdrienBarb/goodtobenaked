@@ -1,0 +1,52 @@
+.container {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+
+  .divider {
+    height: 1px;
+    width: 100%;
+    display: block;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+  }
+
+  .middleText {
+    text-align: center;
+    font-family: Karla;
+
+    .label {
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .sublabel {
+      font-size: 16px;
+      font-weight: 300;
+    }
+  }
+
+  .notice {
+    text-align: center;
+    font-family: Karla;
+    font-size: 14px;
+    margin-top: 2rem;
+  }
+
+  .selectedCardWrapper {
+    position: relative;
+
+    .crossIcon {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+}

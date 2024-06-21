@@ -1,0 +1,34 @@
+@import "library.scss";
+
+.container {
+  font-family: var(--font-karla);
+  color: $custom-black;
+}
+
+.mainMenu {
+  .title {
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    color: $custom-black;
+    font-size: 18px;
+  }
+
+  .subTitle {
+    max-width: 500px;
+    font-size: 12px;
+    font-size: 14px;
+  }
+}
+
+.subMenu {
+  .title {
+    font-weight: 400;
+    margin-bottom: 0.2rem;
+    color: $custom-black;
+  }
+
+  .subTitle {
+    max-width: 500px;
+    font-size: 12px;
+  }
+}

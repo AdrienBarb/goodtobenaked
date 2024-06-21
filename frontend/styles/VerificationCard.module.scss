@@ -1,0 +1,23 @@
+@import "library.scss";
+
+.container {
+  border-radius: 6px;
+  border: 2px solid $primary;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+
+  .label {
+    font-family: var(--font-karla);
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  .subLabel {
+    font-family: var(--font-karla);
+    font-weight: 300;
+    font-size: 14px;
+  }
+}

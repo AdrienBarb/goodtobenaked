@@ -1,0 +1,79 @@
+@import "library.scss";
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  color: $custom-black;
+  gap: 2rem;
+
+  .imageWrapper {
+    width: 200px;
+    aspect-ratio: 1;
+    background-color: #cecaff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: absolute;
+    bottom: -4rem;
+
+    @media (max-width: $md) {
+      bottom: -3rem;
+      width: 150px;
+    }
+  }
+
+  .pseudoWrapper {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    align-items: center;
+  }
+}
+
+.status {
+  font-family: var(--font-karla);
+  margin-top: 1rem;
+  font-size: 14px;
+  font-weight: 300;
+  width: 100%;
+  text-align: center;
+
+  .statusWraper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+
+    .iconWrapper {
+      width: 12px;
+      display: flex;
+      justify-self: center;
+      align-items: center;
+    }
+  }
+}
+
+.imageSection {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  @media (max-width: $md) {
+    height: 275px;
+  }
+}

@@ -1,0 +1,65 @@
+@import "library.scss";
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  color: $custom-black;
+
+  .imageWrapper {
+    margin-bottom: 1rem;
+    aspect-ratio: 4/3;
+
+    .image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 6px;
+    }
+  }
+
+  .header {
+    margin-bottom: 3rem;
+
+    h1,
+    p {
+      font-family: var(--font-karla);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      font-weight: 800;
+    }
+
+    p {
+      opacity: 0.6;
+    }
+  }
+
+  .content {
+    font-family: var(--font-karla);
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 400;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.6rem;
+
+      ul {
+        margin-top: 0.4rem;
+      }
+    }
+  }
+}

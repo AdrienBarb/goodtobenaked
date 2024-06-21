@@ -1,0 +1,42 @@
+@import 'library.scss';
+
+.container {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .title {
+    color: black;
+    text-align: center;
+    max-width: 300px;
+    font-size: 18px;
+    font-weight: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .closeIconWrapper {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    background: $primary;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .backIconWrapper {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    cursor: pointer;
+  }
+}

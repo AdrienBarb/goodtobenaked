@@ -1,0 +1,13 @@
+@import "library.scss";
+
+.container {
+  padding: 2rem 2rem 4rem 2rem;
+  width: 100%;
+  min-height: calc(100vh - 48px);
+  height: auto;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+
+  @media (max-width: $md) {
+    padding: 1rem 1rem 4rem 1rem;
+  }
+}

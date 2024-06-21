@@ -1,0 +1,103 @@
+@import "library.scss";
+.container {
+  border-radius: 4px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  gap: 2rem;
+  color: $custom-black;
+  display: flex;
+  flex-direction: column;
+
+  .multiSelect {
+  }
+
+  .sliderWrapper {
+    padding: 3rem 1rem 0 1rem;
+  }
+
+  .creditHelperText {
+    font-weight: 400;
+    font-size: 0.75rem;
+    line-height: 1.66;
+    letter-spacing: 0.03333em;
+    text-align: left;
+    margin-bottom: 0;
+
+    a {
+      font-weight: 400;
+      font-size: 0.75rem;
+      line-height: 1.66;
+      text-decoration: underline;
+    }
+  }
+
+  .mediaContainer {
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    gap: 1rem;
+
+    .add {
+      background-color: $primary;
+      color: white;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1;
+      width: 90px;
+      font-size: 14px;
+      flex-direction: column;
+      cursor: pointer;
+      height: 90px;
+    }
+
+    .media {
+      aspect-ratio: 1;
+      width: 90px;
+      height: 90px;
+      position: relative;
+      border-radius: 6px;
+
+      img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+
+      .deleteButton {
+        z-index: 2;
+        position: absolute;
+        color: $primary;
+        padding: 0.6rem;
+        top: 0rem;
+        right: 0rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .flexWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-family: var(--font-karla);
+    font-weight: 400;
+  }
+}
+
+.mediaTypeIcon {
+  position: absolute;
+  padding: 0.6rem;
+  bottom: 0rem;
+  left: 0rem;
+}

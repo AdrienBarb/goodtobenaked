@@ -1,0 +1,14 @@
+@import "library.scss";
+
+.container {
+  height: calc(100vh - 48px);
+  padding: 1rem 0.6rem;
+  width: 200px;
+  position: fixed;
+  border-right: 1px solid $light-grey;
+  z-index: 100;
+
+  @media (max-width: $md) {
+    display: none;
+  }
+}

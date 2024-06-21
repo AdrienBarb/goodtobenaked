@@ -1,0 +1,41 @@
+@import "library.scss";
+
+.container {
+  background-color: $background;
+  border: 1px solid $custom-black;
+  color: $custom-black;
+  border-radius: 6px;
+  position: relative;
+
+  .headerWrapper {
+    border-bottom: 1px solid $custom-black;
+    padding: 0 1rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .leftWrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .backIcon {
+        cursor: pointer;
+      }
+    }
+
+    .userInfo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+
+      .pseudo {
+        color: $custom-black;
+        font-size: 18px;
+        font-weight: 300;
+        font-family: var(--font-karla);
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+@import "library.scss";
+
+.container {
+  margin: 48px auto 0 auto;
+  width: 100%;
+  height: calc(100vh - 48px);
+  display: flex;
+  max-width: $xl;
+  position: relative;
+
+  .content {
+    margin-left: 200px;
+    width: 100%;
+
+    @media (max-width: $md) {
+      margin-left: 0px;
+    }
+  }
+}

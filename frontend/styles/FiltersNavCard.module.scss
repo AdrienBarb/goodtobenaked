@@ -1,0 +1,28 @@
+@import "library.scss";
+.container {
+  padding: 0.8rem;
+  border-bottom: 1px solid $light-grey;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:hover {
+    background-color: $thirdary;
+  }
+
+  .text {
+    font-family: var(--font-karla);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  .arrowWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    font-family: var(--font-rubik);
+    font-weight: 100;
+  }
+}

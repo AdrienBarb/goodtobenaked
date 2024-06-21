@@ -1,0 +1,111 @@
+@import "library.scss";
+
+.container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .wrapper {
+    background-color: $background;
+    height: 90vh;
+    max-width: 800px;
+    width: 100%;
+    border-radius: 6px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    @media (max-width: $sm) {
+      border-radius: 0;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    .buttonWrapper {
+      padding: 1rem;
+    }
+
+    .flexWrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      font-family: var(--font-karla);
+      font-weight: 400;
+    }
+
+    .creditHelperText {
+      font-weight: 400;
+      font-size: 0.75rem;
+      line-height: 1.66;
+      letter-spacing: 0.03333em;
+      text-align: left;
+
+      a {
+        font-weight: 400;
+        font-size: 0.75rem;
+        line-height: 1.66;
+        text-decoration: underline;
+      }
+    }
+
+    .content {
+      width: 100%;
+      display: flex;
+      gap: 2rem;
+      height: 100%;
+      overflow-y: scroll;
+      flex-direction: column;
+      padding: 1rem;
+
+      .sliderWrapper {
+        padding: 3rem 1rem 0 1rem;
+      }
+
+      .mediaContainer {
+        border-radius: 6px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        padding: 1rem;
+        width: 100%;
+        overflow-x: scroll;
+        display: flex;
+        gap: 1rem;
+
+        .add {
+          background-color: $primary;
+          color: white;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          aspect-ratio: 1;
+          width: 90px;
+          font-size: 14px;
+          flex-direction: column;
+          cursor: pointer;
+          height: 90px;
+        }
+
+        .media {
+          aspect-ratio: 1;
+          width: 90px;
+          height: 90px;
+          position: relative;
+          border-radius: 6px;
+
+          img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 6px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+@import 'library.scss';
+
+.navigation {
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
+
+  .navigationButton {
+    padding: 1rem;
+    cursor: pointer;
+  }
+}

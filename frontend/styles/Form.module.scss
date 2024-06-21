@@ -1,0 +1,389 @@
+@import "library.scss";
+.container {
+  width: 100%;
+}
+
+.form {
+  gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  z-index: 30;
+}
+
+.emailConfirmationWrapper {
+  font-size: 20px;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 2rem;
+}
+
+.formWrapper {
+  border-radius: 4px;
+  margin: 0 auto;
+  width: 100%;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+}
+
+.richTextWrapper {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+  .richTextLabel {
+    color: rgba(0, 0, 0, 0.6);
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-bottom: 0.6rem;
+  }
+}
+
+.imageFake {
+  height: 400px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eaebea;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.selectWrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  justify-content: space-between;
+
+  @media (max-width: $md) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.picturesContainer {
+  border: 1px dashed rgba(0, 0, 0, 0.2);
+  min-height: 100px;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .picturesWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+}
+
+.productImage {
+  aspect-ratio: 4/5;
+  width: 100%;
+  display: block;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+
+  .removeButton {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $primary;
+    cursor: pointer;
+  }
+}
+
+.addButtonWrapper {
+  width: 100%;
+  aspect-ratio: 4/5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: 1px dashed black;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.imgBackground {
+  background-color: $primary;
+  aspect-ratio: 4/5;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.pictureError {
+  color: red;
+}
+
+.lineFee {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: black;
+
+  .flexWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+  }
+}
+
+.checkboxWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+
+  .text {
+    font-weight: 400;
+    font-size: 16px;
+  }
+
+  .bold {
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
+
+.error {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: #d32f2f;
+  margin-top: 3px;
+}
+
+.imageSection {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 2px solid $primary;
+
+  @media (max-width: $md) {
+    height: 275px;
+  }
+  @media (max-width: $sm) {
+    height: 150px;
+  }
+}
+
+.imageWrapper {
+  width: 160px;
+  aspect-ratio: 1;
+  display: block;
+  background-color: $primary;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  bottom: -60px;
+
+  @media (max-width: $sm) {
+    width: 110px;
+  }
+}
+
+.photoIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  cursor: pointer;
+  border: 1px solid $background;
+}
+
+.profil {
+  right: 10px;
+  bottom: 10px;
+
+  @media (max-width: $sm) {
+    right: 0px;
+    bottom: 0px;
+  }
+}
+
+.banner {
+  right: 10px;
+  top: 10px;
+}
+
+.popover {
+  padding: 0.4rem;
+}
+
+.offer {
+  font-family: var(--font-karla);
+  text-align: center;
+  font-size: 26px;
+  font-weight: 200;
+  margin-bottom: 2rem;
+  color: $custom-black;
+}
+
+.packageSizeWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.6rem;
+  color: $custom-black;
+}
+
+.formSectionTitle {
+  font-family: var(--font-karla);
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 0.6rem;
+  color: $custom-black;
+}
+
+.addressContainer {
+  width: 100%;
+  border: 1px solid $light-grey;
+  border-radius: 6px;
+  padding: 0.4rem;
+  position: relative;
+
+  .address {
+    font-family: var(--font-karla);
+    font-weight: 300;
+  }
+
+  .editIconWrapper {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+  }
+
+  .noAddressWrapper {
+    text-align: center;
+    font-weight: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+  }
+}
+
+.text {
+  color: $custom-black;
+}
+
+.helperText {
+  font-family: var(--font-rubik);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 0.4rem;
+  font-weight: 400;
+}
+
+//Product Form Styles
+
+.productImagesWrapper {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  border: 1px solid $primary;
+  border-radius: 6px;
+  padding: 0.6rem;
+
+  .deleteIconWrapper {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+  }
+}
+
+.imageProductPreviewContainer {
+  width: 100%;
+  max-width: 120px;
+  aspect-ratio: 4/5;
+  display: block;
+  position: relative;
+}
+
+.switchContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0;
+
+  .switchLabelWrapper {
+    max-width: 60%;
+  }
+
+  .switch {
+    display: flex;
+    align-items: center;
+    font-family: var(--font-rubik);
+    font-weight: 400;
+  }
+}
+
+.inputContainer {
+  width: 100%;
+}
+
+.labelWrapper {
+  font-family: var(--font-karla);
+  margin-bottom: 0.6rem;
+
+  .label {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .subLabel {
+    font-weight: 300;
+  }
+}
+
+.selectWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+
+  @media (max-width: $md) {
+    flex-direction: column;
+  }
+}

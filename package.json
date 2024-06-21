@@ -1,0 +1,12 @@
+{
+  "name": "goodtobenaked",
+  "private": true,
+  "scripts": {
+    "dev": "docker-compose up",
+    "build": "docker-compose build",
+    "start": "docker-compose start"
+  },
+  "devDependencies": {
+    "pnpm": "^6.0.0"
+  }
+}

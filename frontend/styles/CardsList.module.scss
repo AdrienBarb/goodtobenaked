@@ -1,0 +1,49 @@
+@import "library.scss";
+
+.container {
+  width: 100%;
+
+  .nudeCardList {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 1rem;
+
+    @media (max-width: $md) {
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 1rem;
+    }
+  }
+}
+
+.feedList {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .cardWithBorder {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
+
+.headersWrapper {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: end;
+}
+
+.userList {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 2rem;
+
+  @media (max-width: $md) {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: $sm) {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,0 +1,14 @@
+@import "library.scss";
+
+.label {
+  font-size: 18px;
+  font-weight: 600;
+  font-family: var(--font-karla);
+  color: $custom-black;
+}
+
+.subLabel {
+  font-weight: 300;
+  font-family: var(--font-karla);
+  color: $custom-black;
+}

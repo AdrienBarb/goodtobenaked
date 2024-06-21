@@ -1,0 +1,79 @@
+@import "library.scss";
+
+.card {
+  aspect-ratio: 1;
+  width: 100%;
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .selecter {
+    z-index: 2;
+    border-radius: 6px;
+    width: 26px;
+    aspect-ratio: 1;
+    background-color: white;
+    border: 1px solid $primary;
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .isSelected {
+    background-color: $primary;
+  }
+
+  .fullScreenButton {
+    z-index: 2;
+    position: absolute;
+    color: $primary;
+    padding: 0.6rem;
+    bottom: 0rem;
+    right: 0rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+
+.deleteButton {
+  z-index: 2;
+  position: absolute;
+  color: $primary;
+  padding: 0.6rem;
+  top: 0rem;
+  right: 0rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  visibility: visible !important;
+}
+
+.mediaTypeIcon {
+  position: absolute;
+  padding: 0.6rem;
+  bottom: 0rem;
+  left: 0rem;
+  z-index: 10;
+}
+
+.loadingCard {
+  background-color: #d9d7f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem;
+  flex-direction: column;
+}

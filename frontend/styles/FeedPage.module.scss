@@ -1,0 +1,12 @@
+@import "library.scss";
+
+.feedContainer {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+
+  @media (max-width: $md) {
+    border-right: inherit;
+    max-width: inherit;
+  }
+}

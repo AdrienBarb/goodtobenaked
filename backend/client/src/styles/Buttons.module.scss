@@ -1,0 +1,43 @@
+@import 'library.scss';
+
+.button {
+  padding: 0.4rem 1rem;
+  border: 1px solid;
+  width: fit-content;
+  text-align: center;
+  font-family: 'Rubik';
+  font-weight: 300;
+  background-color: $background;
+  font-size: 16px;
+  line-height: 1.75;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: center;
+  min-height: 46px;
+  white-space: nowrap;
+  border-radius: 6px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.disabled {
+  &:hover {
+    cursor: inherit;
+  }
+}
+
+.simpleButton {
+  background-color: $primary;
+  border: inherit;
+  padding: 0.6rem 1rem;
+  min-width: 260px;
+  min-height: inherit;
+  font-family: Rubik;
+  color: $custom-black;
+  min-height: 34px;
+  font-size: 20px;
+  font-weight: 600;
+}

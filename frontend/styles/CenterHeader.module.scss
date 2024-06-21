@@ -1,0 +1,12 @@
+@import "library.scss";
+
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}

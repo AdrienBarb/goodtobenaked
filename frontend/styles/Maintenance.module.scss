@@ -1,0 +1,30 @@
+@import "library.scss";
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 600px;
+  padding: 1rem;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.6rem;
+
+  h1,
+  p {
+    font-family: var(--font-karla);
+    color: $custom-black;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+}

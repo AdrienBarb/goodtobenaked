@@ -1,0 +1,30 @@
+@import "library.scss";
+
+.container {
+  border-radius: 6px;
+  position: relative;
+  aspect-ratio: 4/5;
+  width: 100%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.postContainer {
+  padding: 2rem;
+
+  @media (max-width: $md) {
+    padding: 1rem;
+  }
+}
+
+.userDetailsWrapper {
+  margin-bottom: 0.6rem;
+}
+
+.userMenuWrapper {
+  z-index: 10;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.6rem;
+}

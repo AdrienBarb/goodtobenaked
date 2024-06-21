@@ -1,0 +1,25 @@
+@import "library.scss";
+.container {
+  color: $custom-black;
+
+  .valueWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .address {
+    font-family: var(--font-karla);
+    font-weight: 300;
+  }
+
+  .carrierContainer {
+    padding: 1.4rem 1rem 0 1rem;
+  }
+
+  .flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

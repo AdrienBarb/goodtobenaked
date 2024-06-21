@@ -1,0 +1,87 @@
+@import "library.scss";
+
+.button {
+  padding: 0.4rem 1rem;
+  border: 1px solid;
+  width: fit-content;
+  text-align: center;
+  font-family: var(--font-rubik);
+  font-weight: 300;
+  background-color: $background;
+  font-size: 16px;
+  line-height: 1.75;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: center;
+  min-height: 46px;
+  white-space: nowrap;
+  border-radius: 6px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.disabled {
+  &:hover {
+    cursor: inherit;
+  }
+}
+
+.fullButton {
+  background-color: $primary;
+}
+
+.emptyButton {
+  background-color: $background;
+}
+
+.simpleButton {
+  background-color: $primary;
+  border: inherit;
+  padding: 0.2rem 0.6rem;
+  min-height: inherit;
+  color: white;
+  font-weight: 600;
+  min-height: 34px;
+}
+
+.actionButton {
+  text-decoration: underline;
+  font-weight: 600;
+  color: $custom-black;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background-color: inherit;
+  white-space: inherit;
+}
+
+.iconButton {
+  background-color: #cecaff;
+  z-index: 100;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  aspect-ratio: 1;
+
+  .iconWrapper {
+    width: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.classicButton {
+  font-weight: 400;
+  border-color: $custom-black;
+  color: $custom-black;
+  font-family: var(--font-karla);
+}

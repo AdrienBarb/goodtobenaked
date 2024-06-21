@@ -1,0 +1,18 @@
+@import "library.scss";
+
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.text {
+  color: $custom-black;
+  font-size: 14px;
+  font-family: var(--font-karla);
+  max-width: 400px;
+  text-align: center;
+  margin-bottom: 2rem;
+}

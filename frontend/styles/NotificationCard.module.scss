@@ -1,0 +1,29 @@
+@import "library.scss";
+
+.container {
+  width: 100%;
+  padding: 0.8rem 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $primary;
+  color: white;
+  border-radius: 6px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  gap: 2rem;
+
+  .details {
+    font-family: var(--font-karla);
+    font-weight: 300;
+  }
+
+  .time {
+    margin-top: 0.4rem;
+    font-size: 14px;
+    font-weight: 200;
+  }
+
+  a {
+    font-weight: 500;
+  }
+}
