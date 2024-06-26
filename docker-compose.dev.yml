@@ -4,7 +4,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -12,7 +12,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./frontend/.env
+      - ./frontend/.env.development
     environment:
       - NODE_ENV=development
     networks:
@@ -21,14 +21,14 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/app
       - /app/node_modules
     ports:
       - "3001:3001"
     env_file:
-      - ./backend/.env
+      - ./backend/.env.development
     environment:
       - NODE_ENV=development
       - MONGO_URL=${MONGO_URL}
