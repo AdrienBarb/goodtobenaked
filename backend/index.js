@@ -34,7 +34,7 @@ const paymentsRouter = require('./routes/paymentsRouter');
 const { getSnsNotification } = require('./controllers/snsController');
 
 const app = express();
-const apiPort = process.env.PORT || 8000;
+const apiPort = process.env.PORT || 3001;
 
 const httpServer = createServer(app);
 
@@ -96,10 +96,6 @@ app.use((err, req, res, next) => {
   console.log(err);
   res.status(err.statusCode || 500).send(err.message);
 });
-
-//Adding cron jobs
-// scheduledTasks.notifyUsersForUnreadMessages();
-scheduledTasks.notifyReferral();
 
 //Run the server
 if (process.env.NODE_ENV !== 'test') {

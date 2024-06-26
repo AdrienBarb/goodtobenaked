@@ -9,11 +9,13 @@ import { getSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../utils/authOptions";
 
-const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-});
-
 const isServer = typeof window === "undefined";
+
+const axiosInstance = axios.create({
+  baseURL: isServer
+    ? process.env.INTERNAL_API_URL
+    : process.env.NEXT_PUBLIC_API_URL,
+});
 
 axiosInstance.interceptors.response.use(
   (response) => {
@@ -21,6 +23,8 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     const errorStatus = error?.response?.status;
+
+    console.log("fuckingerror ", error);
 
     if (errorStatus === 404) {
       if (isServer) {

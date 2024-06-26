@@ -12,7 +12,8 @@
     "test": "cross-env NODE_ENV=test jest --watch",
     "start": "node index.js",
     "migrate-up": "migrate-mongo up",
-    "migrate-down": "migrate-mongo down"
+    "migrate-down": "migrate-mongo down",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
@@ -73,6 +74,7 @@
     "video-thumbnail-generator": "^1.1.3"
   },
   "devDependencies": {
+    "dotenv": "^10.0.0",
     "@faker-js/faker": "^7.6.0",
     "mongodb-memory-server": "^8.11.5"
   }

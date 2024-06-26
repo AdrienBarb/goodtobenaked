@@ -1,23 +1,39 @@
 version: "3.8"
-services:
-  backend:
-    build: ./backend
-    ports:
-      - "4000:3000"
-    volumes:
-      - ./backend:/app
-    env_file:
-      - ./backend/.env
-    environment:
-      - NODE_ENV=development
 
+services:
   frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     volumes:
       - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
     env_file:
       - ./frontend/.env
     environment:
       - NODE_ENV=development
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=development
+      - MONGO_URL=${MONGO_URL}
+    networks:
+      - app-network
+
+networks:
+  app-network:

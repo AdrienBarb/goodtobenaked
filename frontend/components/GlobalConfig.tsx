@@ -11,6 +11,8 @@ interface Props {
 const GlobalConfig: FC<Props> = ({ children }) => {
   const [shouldAllowAccess, setShouldAllowAccess] = useState(true);
 
+  console.log("Je passe ici");
+
   useEffect(() => {
     const getConfig = async () => {
       try {

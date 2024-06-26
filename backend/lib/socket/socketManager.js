@@ -9,7 +9,7 @@ class SocketManager {
   init(httpServer) {
     this.io = new Server(httpServer, {
       cors: {
-        origin: [process.env.CLIENT_URL],
+        origin: [process.env.CLIENT_URL, process.env.INTERNAL_CLIENT_URL],
       },
     });
     this.configureSocketEvents();

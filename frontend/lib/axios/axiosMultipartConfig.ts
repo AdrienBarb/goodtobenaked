@@ -10,7 +10,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../utils/authOptions";
 
 const axiosInstanceMultipartForm = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.INTERNAL_API_URL,
   headers: {
     "Content-Type": "multipart/form-data",
   },
