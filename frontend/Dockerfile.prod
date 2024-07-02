@@ -1,0 +1,43 @@
+# Utiliser l'image de base node:18-alpine
+FROM node:18-alpine AS base
+
+# Étape 1 : Construire les sources seulement si nécessaire
+FROM base AS builder
+
+WORKDIR /app
+
+# Copier les fichiers package.json et package-lock.json spécifiques au frontend
+COPY package.json package-lock.json ./
+
+# Installer les dépendances
+RUN npm install
+
+# Copier le reste des fichiers du frontend
+COPY . .
+
+# Construire l'application
+RUN npm run build
+
+# Étape 2 : Image de production, copier tous les fichiers et exécuter next
+FROM base AS runner
+
+WORKDIR /app
+
+# Ne pas exécuter la production en tant que root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+USER nextjs
+
+# Copier les fichiers nécessaires depuis le builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Copier le package.json pour exécuter l'application
+COPY --from=builder /app/package.json ./
+
+# Exposer le port sur lequel l'application s'exécute
+EXPOSE 3000
+
+# Commande à exécuter lorsque le conteneur est démarré
+CMD ["node", "server.js"]
