@@ -76,7 +76,7 @@ const AppMenu: FC<Props> = ({ setOpenDrawer }) => {
     toast.success(t("success.logout"));
     signOut({
       redirect: true,
-      callbackUrl: `${process?.env.INTERNAL_API_URL}/`,
+      callbackUrl: `${process?.env?.NEXT_PUBLIC_INTERNAL_API_URL}/`,
     });
   };
 

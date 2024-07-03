@@ -11,14 +11,21 @@ interface Props {
 const GlobalConfig: FC<Props> = ({ children }) => {
   const [shouldAllowAccess, setShouldAllowAccess] = useState(true);
 
-  console.log("Je passe ici");
+  console.log(
+    "NEXT_PUBLIC_INTERNAL_API_URL",
+    process.env.NEXT_PUBLIC_INTERNAL_API_URL
+  );
+  console.log("NEXT_PUBLIC_API_URL", process.env.NEXT_PUBLIC_API_URL);
+  console.log("NEXT_PUBLIC_BASE_URL", process.env.NEXT_PUBLIC_BASE_URL);
+  console.log(
+    "NEXT_PUBLIC_CLOUDFRONT_MEDIA",
+    process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA
+  );
 
   useEffect(() => {
     const getConfig = async () => {
       try {
         const config = await configService.checkIsMaintenance();
-
-        console.log("config ", config);
 
         setShouldAllowAccess(config);
       } catch (error) {

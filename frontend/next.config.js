@@ -9,16 +9,7 @@ if (process.env.NODE_ENV !== "production") {
   dotenv.config();
 } else {
   const secretsPath = "/run/secrets/";
-  const secrets = [
-    "INTERNAL_API_URL",
-    "NEXT_PUBLIC_API_URL",
-    "NEXT_PUBLIC_BASE_URL",
-    "NEXTAUTH_URL",
-    "GOOGLE_PLACE_API_KEY",
-    "ADMIN_PRIVATE_KEY",
-    "NEXTAUTH_SECRET",
-    "NEXT_PUBLIC_CLOUDFRONT_MEDIA",
-  ];
+  const secrets = ["NEXTAUTH_URL", "NEXTAUTH_SECRET"];
 
   secrets.forEach((secret) => {
     try {
@@ -34,18 +25,15 @@ if (process.env.NODE_ENV !== "production") {
 
 const nextConfig = {
   env: {
-    INTERNAL_API_URL: process.env.INTERNAL_API_URL,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXT_PUBLIC_INTERNAL_API_URL: process.env.NEXT_PUBLIC_INTERNAL_API_URL,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    GOOGLE_PLACE_API_KEY: process.env.GOOGLE_PLACE_API_KEY,
-    ADMIN_PRIVATE_KEY: process.env.ADMIN_PRIVATE_KEY,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXT_PUBLIC_CLOUDFRONT_MEDIA: process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA,
   },
   reactStrictMode: false,
   optimizeFonts: false,
-  output: "standalone",
   swcMinify: true,
   crossOrigin: "anonymous",
   async redirects() {

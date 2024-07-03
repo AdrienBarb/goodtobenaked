@@ -13,7 +13,7 @@ const isServer = typeof window === "undefined";
 
 const axiosInstance = axios.create({
   baseURL: isServer
-    ? process.env.INTERNAL_API_URL
+    ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
     : process.env.NEXT_PUBLIC_API_URL,
 });
 

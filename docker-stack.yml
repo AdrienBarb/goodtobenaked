@@ -1,19 +1,55 @@
 version: "3.8"
 
 services:
+  traefik:
+    image: traefik:v2.6
+    command:
+      - "--log.level=DEBUG"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker=true"
+      - "--api=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=adrien-barbier@hotmail.fr"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/acme.json"
+      - "--certificatesresolvers.mytlschallenge.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./acme.json:/acme.json"
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.nastynipples.com`)"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.tls.certresolver=mytlschallenge"
+        - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$q8eZFHjF$$Fvmkk//V6Btlaf2i/ju5n/" # admin/password
+        - "traefik.http.routers.traefik.middlewares=auth"
+        # Redirection HTTP vers HTTPS
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+        - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+        - "traefik.http.routers.http-catchall.entrypoints=web"
+        - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+
   frontend:
     image: adrienbarb/goodtobenaked-frontend:latest
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://api.nastynipples.com
+      - NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001
+      - NEXT_PUBLIC_API_URL=https://api.nastynipples.com/
+      - NEXT_PUBLIC_BASE_URL=https://www.nastynipples.com
+      - NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://duz30n69vbwvd.cloudfront.net/
     secrets:
-      - NEXTAUTH_URL
-      - GOOGLE_PLACE_API_KEY
-      - ADMIN_PRIVATE_KEY
       - NEXTAUTH_SECRET
-      - NEXT_PUBLIC_CLOUDFRONT_MEDIA
-    ports:
-      - "3000:3000"
+      - NEXTAUTH_URL
     networks:
       - app-network
     deploy:
@@ -21,12 +57,17 @@ services:
       placement:
         constraints:
           - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.frontend.rule=Host(`nastynipples.com`)"
+        - "traefik.http.routers.frontend.entrypoints=websecure"
+        - "traefik.http.routers.frontend.tls.certResolver=mytlschallenge"
+        - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
   backend:
     image: adrienbarb/goodtobenaked-backend:latest
     environment:
       - NODE_ENV=production
-      - MONGO_URL=/run/secrets/MONGODB_URI
     secrets:
       - JWT_SECRET
       - MONGODB_URI
@@ -47,8 +88,6 @@ services:
       - AWS_REGION
       - STRIPE_PUBLISHABLE_KEY
       - STRIPE_ENDPOINT_SECRET
-    ports:
-      - "3001:3001"
     networks:
       - app-network
     deploy:
@@ -56,8 +95,18 @@ services:
       placement:
         constraints:
           - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.backend.rule=Host(`api.nastynipples.com`)"
+        - "traefik.http.routers.backend.entrypoints=websecure"
+        - "traefik.http.routers.backend.tls.certResolver=mytlschallenge"
+        - "traefik.http.services.backend.loadbalancer.server.port=3001"
 
 secrets:
+  NEXTAUTH_SECRET:
+    external: true
+  NEXTAUTH_URL:
+    external: true
   JWT_SECRET:
     external: true
   MONGODB_URI:
@@ -95,14 +144,6 @@ secrets:
   STRIPE_PUBLISHABLE_KEY:
     external: true
   STRIPE_ENDPOINT_SECRET:
-    external: true
-  NEXTAUTH_URL:
-    external: true
-  GOOGLE_PLACE_API_KEY:
-    external: true
-  NEXTAUTH_SECRET:
-    external: true
-  NEXT_PUBLIC_CLOUDFRONT_MEDIA:
     external: true
 
 networks:
