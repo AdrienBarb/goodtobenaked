@@ -1,4 +1,5 @@
 const { Server } = require('socket.io');
+const config = require('../../config');
 
 class SocketManager {
   constructor() {
@@ -9,7 +10,7 @@ class SocketManager {
   init(httpServer) {
     this.io = new Server(httpServer, {
       cors: {
-        origin: [process.env.CLIENT_URL, process.env.INTERNAL_CLIENT_URL],
+        origin: [config.clientUrl, config.internalClientUrl],
       },
     });
     this.configureSocketEvents();

@@ -1,53 +1,29 @@
 version: "3.8"
 
 services:
-  traefik:
-    image: traefik:v2.5
-    command:
-      - "--api.insecure=false"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
-      - "--certificatesresolvers.mytlschallenge.acme.email=adrien-barbier@hotmail.fr"
-      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./letsencrypt:/letsencrypt"
-    networks:
-      - app-network
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.role == manager]
-
   frontend:
-    image: your-docker-username/goodtobenaked-frontend:latest
+    image: adrienbarb/goodtobenaked-frontend:latest
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://api.goodtobenaked.com
+      - NEXT_PUBLIC_API_URL=http://api.nastynipples.com
     secrets:
       - NEXTAUTH_URL
       - GOOGLE_PLACE_API_KEY
       - ADMIN_PRIVATE_KEY
       - NEXTAUTH_SECRET
       - NEXT_PUBLIC_CLOUDFRONT_MEDIA
+    ports:
+      - "3000:3000"
     networks:
       - app-network
     deploy:
       replicas: 1
       placement:
-        constraints: [node.role == worker]
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`goodtobenaked.com`)"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+        constraints:
+          - node.role == worker
 
   backend:
-    image: your-docker-username/goodtobenaked-backend:latest
+    image: adrienbarb/goodtobenaked-backend:latest
     environment:
       - NODE_ENV=production
       - MONGO_URL=/run/secrets/MONGODB_URI
@@ -71,16 +47,15 @@ services:
       - AWS_REGION
       - STRIPE_PUBLISHABLE_KEY
       - STRIPE_ENDPOINT_SECRET
+    ports:
+      - "3001:3001"
     networks:
       - app-network
     deploy:
-      replicas: 2
+      replicas: 1
       placement:
-        constraints: [node.role == worker]
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.goodtobenaked.com`)"
-      - "traefik.http.services.backend.loadbalancer.server.port=3001"
+        constraints:
+          - node.role == worker
 
 secrets:
   JWT_SECRET:
@@ -124,8 +99,6 @@ secrets:
   NEXTAUTH_URL:
     external: true
   GOOGLE_PLACE_API_KEY:
-    external: true
-  ADMIN_PRIVATE_KEY:
     external: true
   NEXTAUTH_SECRET:
     external: true

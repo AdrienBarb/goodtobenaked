@@ -6,6 +6,7 @@ const {
   notifyMembersWithUnreadMessages,
   notifyCreatorsWithUnreadMessages,
 } = require('../lib/notification/notifyUsersWithUnreadMessages');
+const config = require('../config');
 
 const notifyVerifiedProfile = () => {
   const notifyVerifiedProfileScheduledJobFunction = cron.schedule(
@@ -16,7 +17,7 @@ const notifyVerifiedProfile = () => {
         isArchived: false,
       });
 
-      const signInLink = `${process.env.CLIENT_URL}/en/login`;
+      const signInLink = `${config.clientUrl}/en/login`;
 
       await Promise.all(
         creators.forEach(async (currentCreator) => {
@@ -71,7 +72,7 @@ const notifyReferral = () => {
         verified: 'verified',
         isArchived: false,
       });
-      const signInLink = `${process.env.CLIENT_URL}/fr/dashboard/account/referral`;
+      const signInLink = `${config.clientUrl}/fr/dashboard/account/referral`;
 
       await Promise.all(
         creators.forEach(async (currentCreator) => {

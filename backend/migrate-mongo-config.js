@@ -1,8 +1,10 @@
+const config = require('./config');
+
 require('dotenv').config();
 
 const config = {
   mongodb: {
-    url: process.env.MONGODB_URI,
+    url: config.mongodbUri,
   },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.

@@ -6,6 +6,7 @@ const CreatorToken = require('../models/creatorTokenModel');
 const emailService = require('../lib/email');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const config = require('../config');
 
 const memberForgot = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
@@ -30,7 +31,7 @@ const memberForgot = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    const link = `${process.env.CLIENT_URL}/members/password-reset/${user.id}/${memberToken.token}`;
+    const link = `${config.clientUrl}/members/password-reset/${user.id}/${memberToken.token}`;
     emailService.sendResetPasswordEmail(user.email, link);
 
     res.status(200).json({
@@ -101,7 +102,7 @@ const creatorForgot = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    const link = `${process.env.CLIENT_URL}/creators/password-reset/${user._id}/${creatorToken.token}`;
+    const link = `${config.clientUrl}/creators/password-reset/${user._id}/${creatorToken.token}`;
     emailService.sendResetPasswordEmail(user.email, link);
 
     res.status(200).json({

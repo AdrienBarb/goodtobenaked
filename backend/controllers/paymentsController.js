@@ -2,7 +2,8 @@ const asyncHandler = require('express-async-handler');
 const memberModel = require('../models/memberModel');
 const creditTransactionModel = require('../models/creditTransactionModel');
 const userModel = require('../models/userModel');
-const stripe = require('stripe')(process.env.STRIPE_API_KEY);
+const config = require('../config');
+const stripe = require('stripe')(config.stripeApiKey);
 
 const createPaymentIntent = asyncHandler(async (req, res, next) => {
   const { price } = req.body;

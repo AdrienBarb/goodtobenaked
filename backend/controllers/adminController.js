@@ -8,6 +8,7 @@ const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const emailService = require('../lib/email');
 const { createCreatorNotionCard } = require('../lib/services/notion');
+const config = require('../config');
 
 // @desc Get all creators
 // @route GET /api/admin/creators
@@ -37,16 +38,16 @@ const getCurrentCreatorIdentityCheck = asyncHandler(async (req, res, next) => {
 
   const s3 = new S3Client({
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      accessKeyId: config.awsAccessKeyId,
+      secretAccessKey: config.awsSecretAccessKey,
     },
-    region: process.env.AWS_REGION,
+    region: config.awsRegion,
   });
 
   let frontIdentityImageUrl = null;
   if (identityVerication?.frontIdentityImageName) {
     const command = new GetObjectCommand({
-      Bucket: process.env.S3_BUCKET_PROCESSED_MEDIA,
+      Bucket: config.s3BucketProcessedMedia,
       Key: identityVerication?.frontIdentityImageName,
     });
     frontIdentityImageUrl = await getSignedUrl(s3, command, {
@@ -106,7 +107,7 @@ const changeVerificationState = asyncHandler(async (req, res, next) => {
       },
     );
 
-    const link = `${process.env.CLIENT_URL}/`;
+    const link = `${config.clientUrl}/`;
 
     emailService.sendCreatorAccountVerificationUpdate(
       creator?.email,

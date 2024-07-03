@@ -25,6 +25,7 @@ const nudeModel = require('../models/nudeModel');
 const conversationModel = require('../models/conversationModel');
 const { getPriceInFiatFromCredits } = require('../lib/utils/price');
 const saleModel = require('../models/saleModel');
+const config = require('../config');
 
 const register = asyncHandler(async (req, res, next) => {
   const { pseudo, email, password, referral } = req.body;
@@ -136,7 +137,7 @@ const resetPasswordRequest = asyncHandler(async (req, res, next) => {
     });
   }
 
-  const link = `${process.env.CLIENT_URL}/${locale}/login/password-reset/${user._id}/${userToken.token}`;
+  const link = `${config.clientUrl}/${locale}/login/password-reset/${user._id}/${userToken.token}`;
   emailService.sendResetPasswordEmail(user.email, link);
 
   res.status(200).json('ok');
@@ -324,10 +325,10 @@ const addProfilPicture = asyncHandler(async (req, res, next) => {
 
   const s3 = new S3Client({
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      accessKeyId: config.awsAccessKeyId,
+      secretAccessKey: config.awsSecretAccessKey,
     },
-    region: process.env.AWS_REGION,
+    region: config.awsRegion,
   });
 
   const image = sharp(profilPicture.buffer);
@@ -341,7 +342,7 @@ const addProfilPicture = asyncHandler(async (req, res, next) => {
   const imageKey = `profile/${user._id}/${imageToken}.jpg`;
 
   const profilPictureCommand = new PutObjectCommand({
-    Bucket: process.env.S3_BUCKET_PROCESSED_MEDIA,
+    Bucket: config.s3BucketProcessedMedia,
     Key: imageKey,
     Body: optimizedBuffer,
     ContentType: 'image/jpeg',
@@ -370,10 +371,10 @@ const addBannerPicture = asyncHandler(async (req, res, next) => {
 
   const s3 = new S3Client({
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      accessKeyId: config.awsAccessKeyId,
+      secretAccessKey: config.awsSecretAccessKey,
     },
-    region: process.env.AWS_REGION,
+    region: config.awsRegion,
   });
 
   const image = sharp(banner.buffer);
@@ -387,7 +388,7 @@ const addBannerPicture = asyncHandler(async (req, res, next) => {
   const bannerKey = `banner/${user._id}/${imageToken}.jpg`;
 
   const profilPictureCommand = new PutObjectCommand({
-    Bucket: process.env.S3_BUCKET_PROCESSED_MEDIA,
+    Bucket: config.s3BucketProcessedMedia,
     Key: bannerKey,
     Body: optimizedBuffer,
     ContentType: 'image/jpeg',
@@ -589,10 +590,10 @@ const identityVerification = asyncHandler(async (req, res, next) => {
   try {
     const s3 = new S3Client({
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: config.awsAccessKeyId,
+        secretAccessKey: config.awsSecretAccessKey,
       },
-      region: process.env.AWS_REGION,
+      region: config.awsRegion,
     });
 
     const frontIdentity = `identity/${user._id.toString()}/frontIdentity`;
@@ -600,19 +601,19 @@ const identityVerification = asyncHandler(async (req, res, next) => {
     const frontAndFaceIdentity = `identity/${user._id.toString()}/frontAndFaceIdentity`;
 
     const frontIdentityCommand = new PutObjectCommand({
-      Bucket: process.env.S3_BUCKET_PROCESSED_MEDIA,
+      Bucket: config.s3BucketProcessedMedia,
       Key: frontIdentity,
       Body: frontIdentity[0].buffer,
       ContentType: frontIdentity[0].mimetype,
     });
     const backIdentityCommand = new PutObjectCommand({
-      Bucket: process.env.S3_BUCKET_PROCESSED_MEDIA,
+      Bucket: config.s3BucketProcessedMedia,
       Key: backIdentity,
       Body: backIdentity[0].buffer,
       ContentType: backIdentity[0].mimetype,
     });
     const frontAndFaceIdentityCommand = new PutObjectCommand({
-      Bucket: process.env.S3_BUCKET_PROCESSED_MEDIA,
+      Bucket: config.s3BucketProcessedMedia,
       Key: frontAndFaceIdentity,
       Body: frontAndFaceIdentity[0].buffer,
       ContentType: frontAndFaceIdentity[0].mimetype,
@@ -902,7 +903,7 @@ const sendTips = asyncHandler(async (req, res, next) => {
 });
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign({ id }, config.jwtSecret, { expiresIn: '30d' });
 };
 
 module.exports = {

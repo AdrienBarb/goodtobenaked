@@ -7,12 +7,10 @@ const path = require('path');
 const { createServer } = require('http');
 const { getStripeUpdates } = require('./controllers/webhooksController');
 const socketManager = require('./lib/socket/socketManager');
+const config = require('./config');
 
 //IMPORT DB
 const { db } = require('./db');
-
-//Import cron
-const scheduledTasks = require('./scheduledTasks');
 
 //other import
 const { notifyErrorSlack } = require('./lib/services/slack');
@@ -81,13 +79,13 @@ app.get('/payment/*', (req, res) => {
 
 app.get('/stripe-key', (req, res) => {
   res.json({
-    stripeKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    stripeKey: config.stripePublishableKey,
   });
 });
 
 app.get('/config', (req, res) => {
   res.json({
-    clientUrl: process.env.CLIENT_URL,
+    clientUrl: config.clientUrl,
   });
 });
 

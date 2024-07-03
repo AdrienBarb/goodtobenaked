@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const Creator = require('../models/creatorModel');
 const Member = require('../models/memberModel');
 const moment = require('moment-timezone');
+const config = require('../config');
 
 const userProtect = asyncHandler(async (req, res, next) => {
   let token;
@@ -14,7 +15,7 @@ const userProtect = asyncHandler(async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, config.jwtSecret);
 
       // Try to find a member with the decoded ID
       let user = await Member.findById(decoded.id).select('-password');

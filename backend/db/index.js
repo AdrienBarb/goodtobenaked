@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const initializeConfigurations = require('../lib/utils/db/initializeConfigurations');
+const config = require('../config');
 
-const connectionUrl = process.env.MONGODB_URI;
+const connectionUrl = config.mongodbUri;
 
 // Connecter à la base de données seulement si l'environnement n'est pas 'test'
 if (process.env.NODE_ENV !== 'test') {

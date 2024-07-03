@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const Creator = require('../models/creatorModel');
 const moment = require('moment-timezone');
+const config = require('../config');
 
 const creatorProtect = asyncHandler(async (req, res, next) => {
   let token;
@@ -13,7 +14,7 @@ const creatorProtect = asyncHandler(async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, config.jwtSecret);
 
       const creator = await Creator.findById(decoded.id).select('-password');
 

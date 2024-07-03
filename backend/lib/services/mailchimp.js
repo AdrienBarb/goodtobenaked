@@ -1,7 +1,8 @@
 const Mailchimp = require('mailchimp-api-v3');
+const config = require('../../config');
 
 // Replace with your API key
-const mailchimp = new Mailchimp(process.env.MAILCHIMP_API_KEY);
+const mailchimp = new Mailchimp(config.mailchimpApiKey);
 
 const subscribeToMailchimp = async (email) => {
   if (process.env.NODE_ENV !== 'production') {

@@ -1,6 +1,8 @@
 const mailgun = require('mailgun-js');
-const DOMAIN = process.env.MAIL_GUN_BASE_URL;
-const API_KEY = process.env.MAIL_GUN_API_KEY;
+const config = require('../../config');
+
+const DOMAIN = config.mailGunBaseUrl;
+const API_KEY = config.mailGunApiKey;
 const FROM = 'Goodtobenaked@goodtobenaked.com';
 
 const mg = mailgun({

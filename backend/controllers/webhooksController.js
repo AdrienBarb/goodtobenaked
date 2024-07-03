@@ -1,7 +1,8 @@
 const expressAsyncHandler = require('express-async-handler');
 const creditTransactionModel = require('../models/creditTransactionModel');
 const memberModel = require('../models/memberModel');
-const stripe = require('stripe')(process.env.STRIPE_API_KEY);
+const config = require('../config');
+const stripe = require('stripe')(config.stripeApiKey);
 const { executeInTransaction } = require('../db');
 const { notifySlack } = require('../lib/services/slack');
 const userModel = require('../models/userModel');
@@ -9,7 +10,7 @@ const userModel = require('../models/userModel');
 const getStripeUpdates = expressAsyncHandler(async (request, response) => {
   let event = request.body;
 
-  const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+  const endpointSecret = config.stripeEndpointSecret;
 
   if (endpointSecret) {
     const signature = request.headers['stripe-signature'];

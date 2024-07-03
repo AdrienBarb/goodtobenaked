@@ -7,6 +7,7 @@ const {
 } = require('@aws-sdk/client-s3');
 const moment = require('moment');
 const invoiceModel = require('../../models/invoiceModel');
+const config = require('../../config');
 
 const generateInvoice = async (user, incomes) => {
   try {
@@ -22,10 +23,10 @@ const generateInvoice = async (user, incomes) => {
 
     const s3 = new S3Client({
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: config.awsAccessKeyId,
+        secretAccessKey: config.awsSecretAccessKey,
       },
-      region: process.env.AWS_REGION,
+      region: config.awsRegion,
     });
 
     const doc = new PDFDocument();
@@ -91,7 +92,7 @@ const generateInvoice = async (user, incomes) => {
     doc.on('end', async () => {
       const pdfData = Buffer.concat(buffers);
       const profilPictureCommand = new PutObjectCommand({
-        Bucket: process.env.S3_BUCKET_PROCESSED_MEDIA,
+        Bucket: config.s3BucketProcessedMedia,
         Key: pdfKey,
         Body: pdfData,
         ContentType: 'application/pdf',

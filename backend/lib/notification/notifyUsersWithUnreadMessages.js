@@ -5,6 +5,7 @@ const {
   getUnreadMessagesOlderThanOneDay,
 } = require('../utils/db/getUnreadMessagesOlderThanOneDay');
 const emailService = require('../../lib/email');
+const config = require('../../config');
 
 const notifyMembersWithUnreadMessages = async () => {
   const members = await Member.find({ isArchived: false });
@@ -14,7 +15,7 @@ const notifyMembersWithUnreadMessages = async () => {
 
     if (unreadMessages.length > 0) {
       if (member?.emailNotification) {
-        const memberConversationsLink = `${process.env.CLIENT_URL}/members/messages`;
+        const memberConversationsLink = `${config.clientUrl}/members/messages`;
         emailService.notifyUserForUnreadMessage(
           member?.email,
           memberConversationsLink,
@@ -37,7 +38,7 @@ const notifyCreatorsWithUnreadMessages = async () => {
 
     if (unreadMessages.length > 0) {
       if (creator?.emailNotification) {
-        const creatorConversationsLink = `${process.env.CLIENT_URL}/creators/messages`;
+        const creatorConversationsLink = `${config.clientUrl}/creators/messages`;
         emailService.notifyUserForUnreadMessage(
           creator?.email,
           creatorConversationsLink,

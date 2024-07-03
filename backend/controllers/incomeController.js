@@ -8,6 +8,7 @@ const { notifySlack } = require('../lib/services/slack');
 const saleModel = require('../models/saleModel');
 const memberModel = require('../models/memberModel');
 const userModel = require('../models/userModel');
+const config = require('../config');
 
 const getBalances = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
@@ -92,14 +93,14 @@ const downloadInvoice = asyncHandler(async (req, res, next) => {
 
     const s3 = new S3Client({
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: config.awsAccessKeyId,
+        secretAccessKey: config.awsSecretAccessKey,
       },
-      region: process.env.AWS_REGION,
+      region: config.awsRegion,
     });
 
     const getObjectParams = {
-      Bucket: process.env.S3_BUCKET_PROCESSED_MEDIA,
+      Bucket: config.s3BucketProcessedMedia,
       Key: invoice?.path,
     };
 

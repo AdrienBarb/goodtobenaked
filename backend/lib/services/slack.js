@@ -1,6 +1,7 @@
 const { WebClient } = require('@slack/web-api');
+const config = require('../../config');
 
-const token = process.env.SLACK_TOKEN;
+const token = config.slackToken;
 const conversationId = 'C05JFTUQ6N7';
 const conversationErrorId = 'C05T3CCQEG6';
 
