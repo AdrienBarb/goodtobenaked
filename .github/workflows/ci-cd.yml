@@ -1,0 +1,56 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SERVER_IP: ${{ secrets.SERVER_IP }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        run: echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+
+      - name: Build and push frontend image
+        run: |
+          docker buildx build --platform linux/amd64 \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend:latest \
+            --build-arg NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001 \
+            --build-arg NEXT_PUBLIC_API_URL=https://api.nastynipples.com/ \
+            --build-arg NEXT_PUBLIC_BASE_URL=https://www.nastynipples.com \
+            --build-arg NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://duz30n69vbwvd.cloudfront.net/ \
+            -f frontend/Dockerfile.prod --push ./frontend
+
+      - name: Build and push backend image
+        run: |
+          docker buildx build --platform linux/amd64 \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-backend:latest \
+            -f backend/Dockerfile.prod --push ./backend
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: root
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend:latest
+            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend:latest
+            docker stack deploy -c /path/to/docker-stack.yml goodtobenaked
