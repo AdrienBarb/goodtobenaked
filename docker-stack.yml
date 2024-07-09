@@ -5,19 +5,19 @@ services:
     image: traefik:v2.6
     command:
       - "--log.level=DEBUG"
+      - "--api.insecure=false"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--providers.docker=true"
-      - "--api=true"
-      - "--certificatesresolvers.mytlschallenge.acme.email=adrien-barbier@hotmail.fr"
-      - "--certificatesresolvers.mytlschallenge.acme.storage=/acme.json"
-      - "--certificatesresolvers.mytlschallenge.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=adrien-barbier@hotmail.fr"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./acme.json:/acme.json"
     networks:
       - app-network
     deploy:
@@ -27,17 +27,20 @@ services:
           - node.role == manager
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.nastynipples.com`)"
-        - "traefik.http.routers.traefik.service=api@internal"
-        - "traefik.http.routers.traefik.entrypoints=websecure"
-        - "traefik.http.routers.traefik.tls.certresolver=mytlschallenge"
-        - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$q8eZFHjF$$Fvmkk//V6Btlaf2i/ju5n/" # admin/password
-        - "traefik.http.routers.traefik.middlewares=auth"
-        # Redirection HTTP vers HTTPS
-        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-        - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+        - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.nastynipples.com`)"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.routers.traefik.middlewares=auth"
+        - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$r/k/4P2u$ymeak2FN1yJW9YQdyLCT21"
+        - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./acme.json:/letsencrypt/acme.json"
 
   frontend:
     image: adrienbarb/goodtobenaked-frontend:latest
@@ -61,8 +64,9 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.frontend.rule=Host(`nastynipples.com`)"
         - "traefik.http.routers.frontend.entrypoints=websecure"
-        - "traefik.http.routers.frontend.tls.certResolver=mytlschallenge"
         - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+        - "traefik.http.routers.frontend.tls=true"
+        - "traefik.http.routers.frontend.tls.certresolver=myresolver"
 
   backend:
     image: adrienbarb/goodtobenaked-backend:latest
@@ -99,8 +103,9 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.backend.rule=Host(`api.nastynipples.com`)"
         - "traefik.http.routers.backend.entrypoints=websecure"
-        - "traefik.http.routers.backend.tls.certResolver=mytlschallenge"
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
+        - "traefik.http.routers.backend.tls=true"
+        - "traefik.http.routers.backend.tls.certresolver=myresolver"
 
 secrets:
   NEXTAUTH_SECRET:
