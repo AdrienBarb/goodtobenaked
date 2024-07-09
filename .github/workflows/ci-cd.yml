@@ -51,6 +51,4 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend:latest
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend:latest
-            docker stack deploy -c /path/to/docker-stack.yml goodtobenaked
+            docker stack deploy -c ./docker-stack.yml goodtobenaked
