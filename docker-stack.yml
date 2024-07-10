@@ -46,10 +46,6 @@ services:
     image: adrienbarb/goodtobenaked-frontend:latest
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001
-      - NEXT_PUBLIC_API_URL=https://api.nastynipples.com/
-      - NEXT_PUBLIC_BASE_URL=https://www.nastynipples.com
-      - NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://duz30n69vbwvd.cloudfront.net/
     secrets:
       - NEXTAUTH_SECRET
       - NEXTAUTH_URL
@@ -106,6 +102,69 @@ services:
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - app-network
+    deploy:
+      mode: global
+    ports:
+      - "8080:8080"
+
+  loki:
+    image: grafana/loki:latest
+    volumes:
+      - loki_data:/loki
+      - ./loki-config.yml:/etc/loki/local-config.yaml
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+    ports:
+      - "3000:3000"
+
+volumes:
+  prometheus_data:
+  loki_data:
+  grafana_data:
 
 secrets:
   NEXTAUTH_SECRET:
