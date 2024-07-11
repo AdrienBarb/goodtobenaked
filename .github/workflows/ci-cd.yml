@@ -44,7 +44,7 @@ jobs:
             echo "ARGS=--build-arg NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001 \
                   --build-arg NEXT_PUBLIC_API_URL=https://api-staging.nastynipples.com/ \
                   --build-arg NEXT_PUBLIC_BASE_URL=https://staging.nastynipples.com \
-                  --build-arg NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://duz30n69vbwvd.cloudfront.net/" >> $GITHUB_ENV
+                  --build-arg NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://d10arthua11ogq.cloudfront.net/" >> $GITHUB_ENV
           fi
 
       - name: Build and push frontend image
