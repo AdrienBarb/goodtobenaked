@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 
 /** @type {import('next').NextConfig} */
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV === "development") {
   dotenv.config();
 } else {
   const secretsPath = "/run/secrets/";
