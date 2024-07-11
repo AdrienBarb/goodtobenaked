@@ -1,0 +1,140 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v2.6
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=false"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.email=adrien-barbier@hotmail.fr"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+        - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+        - "traefik.http.routers.http-catchall.entrypoints=web"
+        - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+        - "traefik.http.routers.traefik.rule=Host(`traefik-staging.nastynipples.com`)"
+        - "traefik.http.routers.traefik.entrypoints=websecure"
+        - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.routers.traefik.middlewares=auth"
+        - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$r/k/4P2u$ymeak2FN1yJW9YQdyLCT21"
+        - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./acme.json:/letsencrypt/acme.json"
+
+  frontend:
+    image: adrienbarb/goodtobenaked-frontend:staging
+    environment:
+      - NODE_ENV=staging
+    secrets:
+      - NEXTAUTH_SECRET
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.frontend.rule=Host(`staging.nastynipples.com`)"
+        - "traefik.http.routers.frontend.entrypoints=websecure"
+        - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+        - "traefik.http.routers.frontend.tls=true"
+        - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+
+  backend:
+    image: adrienbarb/goodtobenaked-backend:staging
+    environment:
+      - NODE_ENV=staging
+    secrets:
+      - JWT_SECRET
+      - MONGODB_URI
+      - INTERNAL_CLIENT_URL
+      - CLIENT_URL
+      - MAIL_GUN_API_KEY
+      - MAIL_GUN_BASE_URL
+      - ADMIN_PRIVATE_KEY
+      - STRIPE_API_KEY
+      - NOTION_API_KEY
+      - CLOUDFRONT_URL
+      - SLACK_TOKEN
+      - MAILCHIMP_API_KEY
+      - S3_BUCKET_MEDIA
+      - S3_BUCKET_PROCESSED_MEDIA
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_REGION
+      - STRIPE_PUBLISHABLE_KEY
+      - STRIPE_ENDPOINT_SECRET
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.backend.rule=Host(`api-staging.nastynipples.com`)"
+        - "traefik.http.routers.backend.entrypoints=websecure"
+        - "traefik.http.services.backend.loadbalancer.server.port=3001"
+        - "traefik.http.routers.backend.tls=true"
+        - "traefik.http.routers.backend.tls.certresolver=myresolver"
+
+secrets:
+  NEXTAUTH_SECRET:
+    external: true
+  JWT_SECRET:
+    external: true
+  MONGODB_URI:
+    external: true
+  INTERNAL_CLIENT_URL:
+    external: true
+  CLIENT_URL:
+    external: true
+  MAIL_GUN_API_KEY:
+    external: true
+  MAIL_GUN_BASE_URL:
+    external: true
+  ADMIN_PRIVATE_KEY:
+    external: true
+  STRIPE_API_KEY:
+    external: true
+  NOTION_API_KEY:
+    external: true
+  CLOUDFRONT_URL:
+    external: true
+  SLACK_TOKEN:
+    external: true
+  MAILCHIMP_API_KEY:
+    external: true
+  S3_BUCKET_MEDIA:
+    external: true
+  S3_BUCKET_PROCESSED_MEDIA:
+    external: true
+  AWS_ACCESS_KEY_ID:
+    external: true
+  AWS_SECRET_ACCESS_KEY:
+    external: true
+  AWS_REGION:
+    external: true
+  STRIPE_PUBLISHABLE_KEY:
+    external: true
+  STRIPE_ENDPOINT_SECRET:
+    external: true
+
+networks:
+  app-network:
+    external: true
