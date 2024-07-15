@@ -2,7 +2,7 @@ const config = require('./config');
 
 require('dotenv').config();
 
-const config = {
+module.exports = {
   mongodb: {
     url: config.mongodbUri,
   },
@@ -23,5 +23,3 @@ const config = {
   // Don't change this, unless you know what you're doing
   moduleSystem: 'commonjs',
 };
-
-module.exports = config;
