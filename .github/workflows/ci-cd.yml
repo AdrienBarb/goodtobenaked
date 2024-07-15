@@ -67,7 +67,7 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker run --rm $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }} npm run migrate
+            docker run --rm ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:${{ env.IMAGE_TAG }} npm run migrate
 
       - name: Deploy to server
         if: github.ref == 'refs/heads/main'
