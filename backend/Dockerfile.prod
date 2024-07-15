@@ -1,23 +1,11 @@
-# Utiliser l'image de base node:18-alpine
-FROM node:18-alpine
-
-# Définir le répertoire de travail pour le backend
-WORKDIR /app
-
-# Copier les fichiers package.json et package-lock.json spécifiques au backend
-COPY package.json package-lock.json ./
-
-# Installer les dépendances du backend
-RUN npm install
-
-# Copier les fichiers du backend
-COPY . .
+# Étape 1 : Construction de l'application React
+FROM node:18-alpine AS build
 
 # Définir le répertoire de travail pour le client React
 WORKDIR /app/client
 
-# Copier les fichiers package.json et package-lock.json spécifiques au client
-COPY client/package.json client/package-lock.json ./
+# Copier les fichiers sources du client
+COPY client/ .
 
 # Installer les dépendances du client
 RUN npm install
@@ -25,11 +13,20 @@ RUN npm install
 # Construire l'application React
 RUN npm run build
 
-# Revenir au répertoire de travail du backend
+# Étape 2 : Construction de l'application backend
+FROM node:18-alpine
+
+# Définir le répertoire de travail pour le backend
 WORKDIR /app
 
-# Copier les fichiers de build de React dans le répertoire approprié pour être servis par Express.js
-RUN cp -r /app/client/build /app/client/build
+# Copier les fichiers sources du backend et le build du client
+COPY . .
+
+# Copier les fichiers de build de React générés lors de la première étape
+COPY --from=build /app/client/build ./client/build
+
+# Installer les dépendances du backend
+RUN npm install
 
 # Exposer le port sur lequel l'application s'exécute
 EXPOSE 3001
