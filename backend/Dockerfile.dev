@@ -32,7 +32,7 @@ RUN npm install && npm cache clean --force
 COPY . .
 
 # Copier les fichiers de build de React générés lors de la première étape
-COPY --from=build /app/client/build ./client/build
+COPY --from=build /app/client/build /app/client/build
 
 # Exposer le port sur lequel l'application s'exécute
 EXPOSE 3001
