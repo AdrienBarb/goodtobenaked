@@ -4,11 +4,14 @@ FROM node:18-alpine AS build
 # Définir le répertoire de travail pour le client React
 WORKDIR /app/client
 
-# Copier les fichiers sources du client
-COPY client/ .
+# Copier les fichiers package.json et package-lock.json spécifiques au client
+COPY client/package.json client/package-lock.json ./
 
 # Installer les dépendances du client
 RUN npm install
+
+# Copier les fichiers sources du client
+COPY client/ .
 
 # Construire l'application React
 RUN npm run build
@@ -19,17 +22,20 @@ FROM node:18-alpine
 # Définir le répertoire de travail pour le backend
 WORKDIR /app
 
-# Copier les fichiers sources du backend et le build du client
+# Copier les fichiers package.json et package-lock.json spécifiques au backend
+COPY package.json package-lock.json ./
+
+# Installer les dépendances du backend
+RUN npm install && npm cache clean --force
+
+# Copier les fichiers sources du backend
 COPY . .
 
 # Copier les fichiers de build de React générés lors de la première étape
-COPY --from=build /app/client/build ./client/build
-
-# Installer les dépendances du backend
-RUN npm install
+COPY --from=build /app/client/build /app/client/build
 
 # Exposer le port sur lequel l'application s'exécute
 EXPOSE 3001
 
 # Commande à exécuter lorsque le conteneur est démarré
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

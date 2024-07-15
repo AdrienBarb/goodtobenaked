@@ -67,6 +67,7 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:${{ env.IMAGE_TAG }}
             docker run --rm ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:${{ env.IMAGE_TAG }} npm run migrate-up
 
       - name: Deploy to server
