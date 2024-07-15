@@ -67,7 +67,7 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker run --rm ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:${{ env.IMAGE_TAG }} npm run migrate
+            docker run --rm ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:${{ env.IMAGE_TAG }} npm run migrate-up
 
       - name: Deploy to server
         if: github.ref == 'refs/heads/main'
@@ -77,8 +77,8 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend:latest
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-frontend:latest
             docker stack deploy -c ./docker-stack.yml goodtobenaked
 
       - name: Deploy to staging server
@@ -89,6 +89,6 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend:staging
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend:staging
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:staging
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-frontend:staging
             docker stack deploy -c ./docker-stack-staging.yml goodtobenaked-staging
