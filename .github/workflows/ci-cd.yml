@@ -83,7 +83,7 @@ jobs:
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             docker system prune -f
-            docker stack deploy -c ./docker-stack.yml goodtobenaked
+            docker stack deploy --with-registry-auth -c ./docker-stack.yml goodtobenaked
 
       - name: Deploy to staging server
         if: github.ref == 'refs/heads/staging'
@@ -94,4 +94,4 @@ jobs:
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             docker system prune -f
-            docker stack deploy -c ./docker-stack-staging.yml goodtobenaked-staging
+            docker stack deploy --with-registry-auth -c ./docker-stack-staging.yml goodtobenaked-staging
