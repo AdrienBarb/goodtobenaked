@@ -67,14 +67,14 @@ jobs:
       - name: Build and push frontend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend:${{ env.IMAGE_TAG }}:latest \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend-${{ env.IMAGE_TAG }}:latest \
             $ARGS \
             -f frontend/Dockerfile.prod --push ./frontend
 
       - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }}:latest \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest \
             -f backend/Dockerfile.prod --push ./backend
 
       - name: Wait for Docker Hub synchronization
@@ -87,8 +87,8 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }}:latest
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend:${{ env.IMAGE_TAG }}:latest
+            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest
+            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend-${{ env.IMAGE_TAG }}:latest
             docker pull traefik:v2.6
 
       - name: Deploy to server
