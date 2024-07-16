@@ -40,7 +40,7 @@ services:
       - "./acme.json:/letsencrypt/acme.json"
 
   frontend:
-    image: adrienbarb/goodtobenaked-frontend-staging:latest
+    image: adrienbarb/goodtobenaked-frontend:staging
     environment:
       - NODE_ENV=staging
     secrets:
@@ -58,7 +58,7 @@ services:
         - "traefik.http.routers.frontend.tls.certresolver=myresolver"
 
   backend:
-    image: adrienbarb/goodtobenaked-backend-staging:latest
+    image: adrienbarb/goodtobenaked-backend:staging
     environment:
       - NODE_ENV=staging
     secrets:

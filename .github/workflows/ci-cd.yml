@@ -34,7 +34,7 @@ jobs:
         id: set-env-vars
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "IMAGE_TAG=prod" >> $GITHUB_ENV
+            echo "IMAGE_TAG=latest" >> $GITHUB_ENV
             echo "ARGS=--build-arg NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001 \
                   --build-arg NEXT_PUBLIC_API_URL=https://api.nastynipples.com/ \
                   --build-arg NEXT_PUBLIC_BASE_URL=https://www.nastynipples.com \
@@ -50,14 +50,14 @@ jobs:
       - name: Build and push frontend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend-${{ env.IMAGE_TAG }}:latest \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend:${{ env.IMAGE_TAG }} \
             $ARGS \
             -f frontend/Dockerfile.prod --push ./frontend
 
       - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }} \
             -f backend/Dockerfile.prod --push ./backend
 
       - name: Deploy to server
@@ -68,8 +68,11 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
+            docker login
             docker system prune -f
-            docker stack deploy --with-registry-auth -c ./docker-stack.yml goodtobenaked
+            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml goodtobenaked
+            docker service update --force goodtobenaked-staging_backend
+            docker service update --force goodtobenaked-staging_frontend
 
       - name: Deploy to staging server
         if: github.ref == 'refs/heads/staging'
@@ -79,5 +82,8 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
+            docker login
             docker system prune -f
-            docker stack deploy --with-registry-auth -c ./docker-stack-staging.yml goodtobenaked-staging
+            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack-staging.yml goodtobenaked-staging
+            docker service update --force goodtobenaked-staging_backend
+            docker service update --force goodtobenaked-staging_frontend
