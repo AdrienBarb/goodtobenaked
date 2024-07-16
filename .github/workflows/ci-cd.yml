@@ -60,6 +60,20 @@ jobs:
             -t $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest \
             -f backend/Dockerfile.prod --push ./backend
 
+      - name: Wait for Docker Hub synchronization
+        run: sleep 60
+
+      - name: Ensure images are available on all nodes
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: root
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest
+            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend-${{ env.IMAGE_TAG }}:latest
+            docker pull traefik:v2.6
+
       - name: Deploy to server
         if: github.ref == 'refs/heads/main'
         uses: appleboy/ssh-action@v0.1.0
@@ -68,6 +82,7 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
+            docker system prune -f
             docker stack deploy -c ./docker-stack.yml goodtobenaked
 
       - name: Deploy to staging server
@@ -78,4 +93,5 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
+            docker system prune -f
             docker stack deploy -c ./docker-stack-staging.yml goodtobenaked-staging
