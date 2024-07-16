@@ -34,7 +34,7 @@ jobs:
         id: set-env-vars
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+            echo "IMAGE_TAG=prod" >> $GITHUB_ENV
             echo "ARGS=--build-arg NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001 \
                   --build-arg NEXT_PUBLIC_API_URL=https://api.nastynipples.com/ \
                   --build-arg NEXT_PUBLIC_BASE_URL=https://www.nastynipples.com \
@@ -50,14 +50,14 @@ jobs:
       - name: Build and push frontend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend:${{ env.IMAGE_TAG }} \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend-${{ env.IMAGE_TAG }}:latest \
             $ARGS \
             -f frontend/Dockerfile.prod --push ./frontend
 
       - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }} \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest \
             -f backend/Dockerfile.prod --push ./backend
 
       - name: Deploy to server
@@ -68,8 +68,7 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:latest
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-frontend:latest
+            docker system prune -f
             docker stack deploy -c ./docker-stack.yml goodtobenaked
             docker service scale goodtobenaked_migrate=1
             while [ $(docker service ps goodtobenaked_migrate --format '{{.CurrentState}}' | grep -E 'Running|Complete' | wc -l) -ne 1 ]; do sleep 1; done
@@ -83,8 +82,7 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-backend:staging
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/goodtobenaked-frontend:staging
+            docker system prune -f
             docker stack deploy -c ./docker-stack-staging.yml goodtobenaked-staging
             docker service scale goodtobenaked-staging_migrate=1
             while [ $(docker service ps goodtobenaked-staging_migrate --format '{{.CurrentState}}' | grep -E 'Running|Complete' | wc -l) -ne 1 ]; do sleep 1; done
