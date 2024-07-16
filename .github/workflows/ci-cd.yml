@@ -27,6 +27,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Log in to Docker Hub
+        run: echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+
       - name: Set environment-specific variables
         id: set-env-vars
         run: |
@@ -56,9 +59,6 @@ jobs:
           docker buildx build --platform linux/amd64 \
             -t $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest \
             -f backend/Dockerfile.prod --push ./backend
-
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Deploy to server
         if: github.ref == 'refs/heads/main'
