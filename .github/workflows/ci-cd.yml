@@ -63,6 +63,15 @@ jobs:
       - name: Wait for Docker Hub synchronization
         run: sleep 60
 
+      - name: Log in to Docker Hub on server
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: root
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          script: |
+            echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+
       - name: Ensure images are available on all nodes
         uses: appleboy/ssh-action@v0.1.0
         with:
