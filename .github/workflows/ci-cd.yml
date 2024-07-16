@@ -71,8 +71,8 @@ jobs:
             docker login
             docker system prune -f
             docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml goodtobenaked
-            docker service update --force goodtobenaked-staging_backend
-            docker service update --force goodtobenaked-staging_frontend
+            docker service update --force goodtobenaked_backend
+            docker service update --force goodtobenaked_frontend
 
       - name: Deploy to staging server
         if: github.ref == 'refs/heads/staging'
