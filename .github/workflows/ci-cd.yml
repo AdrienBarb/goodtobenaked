@@ -27,8 +27,25 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to Docker Hub
-        run: echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - name: Log in to Docker Hub locally
+        run: |
+          echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+          mkdir -p ~/.docker
+          cat ~/.docker/config.json
+
+      - name: Generate Docker config file
+        run: |
+          mkdir -p .docker
+          echo "{\"auths\": {\"https://index.docker.io/v1/\": {\"auth\": \"$(echo -n $DOCKERHUB_USERNAME:$DOCKERHUB_ACCESS_TOKEN | base64)\"}}}" > .docker/config.json
+
+      - name: Copy Docker config to server
+        uses: appleboy/scp-action@v0.1.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: root
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          source: ".docker/config.json"
+          target: "/root/.docker/config.json"
 
       - name: Set environment-specific variables
         id: set-env-vars
@@ -50,27 +67,18 @@ jobs:
       - name: Build and push frontend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend-${{ env.IMAGE_TAG }}:latest \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend:${{ env.IMAGE_TAG }}:latest \
             $ARGS \
             -f frontend/Dockerfile.prod --push ./frontend
 
       - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest \
+            -t $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }}:latest \
             -f backend/Dockerfile.prod --push ./backend
 
       - name: Wait for Docker Hub synchronization
         run: sleep 60
-
-      - name: Log in to Docker Hub on server
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ env.SSH_PRIVATE_KEY }}
-          script: |
-            echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
 
       - name: Ensure images are available on all nodes
         uses: appleboy/ssh-action@v0.1.0
@@ -79,8 +87,8 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend-${{ env.IMAGE_TAG }}:latest
-            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend-${{ env.IMAGE_TAG }}:latest
+            docker pull $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }}:latest
+            docker pull $DOCKERHUB_USERNAME/goodtobenaked-frontend:${{ env.IMAGE_TAG }}:latest
             docker pull traefik:v2.6
 
       - name: Deploy to server
