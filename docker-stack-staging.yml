@@ -93,41 +93,6 @@ services:
         - "traefik.http.routers.backend.tls=true"
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
 
-  migrate:
-    image: adrienbarb/goodtobenaked-backend-staging:latest
-    command: ["npm", "run", "migrate-up"]
-    environment:
-      - NODE_ENV=staging
-    secrets:
-      - JWT_SECRET
-      - MONGODB_URI
-      - INTERNAL_CLIENT_URL
-      - CLIENT_URL
-      - MAIL_GUN_API_KEY
-      - MAIL_GUN_BASE_URL
-      - ADMIN_PRIVATE_KEY
-      - STRIPE_API_KEY
-      - NOTION_API_KEY
-      - CLOUDFRONT_URL
-      - SLACK_TOKEN
-      - MAILCHIMP_API_KEY
-      - S3_BUCKET_MEDIA
-      - S3_BUCKET_PROCESSED_MEDIA
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
-      - AWS_REGION
-      - STRIPE_PUBLISHABLE_KEY
-      - STRIPE_ENDPOINT_SECRET
-    networks:
-      - app-network
-    deploy:
-      replicas: 0
-      restart_policy:
-        condition: none
-      placement:
-        constraints:
-          - node.role == manager
-
 secrets:
   NEXTAUTH_SECRET:
     external: true

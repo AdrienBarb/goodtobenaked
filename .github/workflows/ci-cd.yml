@@ -69,9 +69,6 @@ jobs:
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             docker stack deploy -c ./docker-stack.yml goodtobenaked
-            docker service scale goodtobenaked_migrate=1
-            while [ $(docker service ps goodtobenaked_migrate --format '{{.CurrentState}}' | grep -E 'Running|Complete' | wc -l) -ne 1 ]; do sleep 1; done
-            docker service scale goodtobenaked_migrate=0
 
       - name: Deploy to staging server
         if: github.ref == 'refs/heads/staging'
@@ -82,6 +79,3 @@ jobs:
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             docker stack deploy -c ./docker-stack-staging.yml goodtobenaked-staging
-            docker service scale goodtobenaked-staging_migrate=1
-            while [ $(docker service ps goodtobenaked-staging_migrate --format '{{.CurrentState}}' | grep -E 'Running|Complete' | wc -l) -ne 1 ]; do sleep 1; done
-            docker service scale goodtobenaked-staging_migrate=0
