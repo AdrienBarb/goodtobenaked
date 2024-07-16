@@ -1,2 +1,12 @@
 node_modules
-npm-debug.log
+client/node_modules
+build
+dist
+.DS_Store
+.git
+.gitignore
+docker-compose.yml
+Dockerfile
+Dockerfile.prod
+Dockerfile.dev
+README.md
