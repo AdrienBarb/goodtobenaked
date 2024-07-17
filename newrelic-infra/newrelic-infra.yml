@@ -1,0 +1,6 @@
+license_key: eu01xx656a509133db8911aaf2c30487FFFFNRAL
+logs:
+  - name: backend_logs
+    file: /var/log/backend.log
+  - name: frontend_logs
+    file: /var/log/frontend.log
