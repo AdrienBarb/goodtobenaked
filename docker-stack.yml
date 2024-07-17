@@ -63,6 +63,8 @@ services:
         - "traefik.http.services.frontend.loadbalancer.server.port=3000"
         - "traefik.http.routers.frontend.tls=true"
         - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+        - "com.newrelic.logs.include=true"
+        - "com.newrelic.logs.parser=auto"
 
   backend:
     image: adrienbarb/goodtobenaked-backend:latest
@@ -102,6 +104,24 @@ services:
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
+        - "com.newrelic.logs.include=true"
+        - "com.newrelic.logs.parser=auto"
+
+  newrelic-infra:
+    image: adrienbarb/gtbn-newrelic-infra:latest
+    cap_add:
+      - SYS_PTRACE
+    pid: host
+    privileged: true
+    volumes:
+      - "/:/host:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      mode: global
+      restart_policy:
+        condition: any
+    networks:
+      - app-network
 
 secrets:
   NEXTAUTH_SECRET:
