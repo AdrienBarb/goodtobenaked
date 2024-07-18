@@ -18,7 +18,7 @@ const CreditCard = ({ currentPackage, isSelected, onClick, index }) => {
       }}
     >
       <div className={styles.topWrapper}>
-        <div className={styles.coins}>{currentPackage.coinsAmount}</div>
+        <div className={styles.coins}>{currentPackage.coinsAmount / 100}</div>
         <div className={styles.credit}>CREDITS</div>
       </div>
       <span className={styles.divider}></span>

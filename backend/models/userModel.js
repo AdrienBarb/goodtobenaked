@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { NOTIFICATIONS_TYPE } = require('../lib/constants');
 
 const socialMediaLinkSchema = new mongoose.Schema({
   twitter: {

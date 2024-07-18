@@ -6,7 +6,6 @@ import {
 } from '@stripe/react-stripe-js';
 import useAuthToken from '../hooks/useAuthToken';
 import axios from 'axios';
-import { packages } from '../constants/packages';
 import SimpleButton from './SimpleButton';
 import styles from '../styles/CheckoutForm.module.scss';
 import ErrorModal from './ErrorModal';

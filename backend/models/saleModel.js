@@ -2,17 +2,9 @@ const mongoose = require('mongoose');
 
 const amountSchema = mongoose.Schema(
   {
-    baseValue: {
+    fiatValue: {
       type: Number,
       required: true,
-      default: 0,
-    },
-    commission: {
-      type: Number,
-      default: 0,
-    },
-    baseValueWithCommission: {
-      type: Number,
       default: 0,
     },
     creditValue: {

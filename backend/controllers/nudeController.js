@@ -35,13 +35,10 @@ const createNude = asyncHandler(async (req, res, next) => {
     priceDetails: {},
   };
 
-  const { basePrice, basePriceWithCommission, creditPrice, commission } =
-    getMediaPrice(price, user.isAmbassador ? 0 : user.salesFee);
+  const { fiatPrice, creditPrice } = getMediaPrice(price);
 
-  nudeObject.priceDetails.basePrice = basePrice;
-  nudeObject.priceDetails.basePriceWithCommission = basePriceWithCommission;
+  nudeObject.priceDetails.fiatPrice = fiatPrice;
   nudeObject.priceDetails.creditPrice = creditPrice;
-  nudeObject.priceDetails.commission = commission;
 
   const createdNude = await nudeModel.create(nudeObject);
 
@@ -178,17 +175,14 @@ const editNude = asyncHandler(async (req, res, next) => {
   nude.isFree = isFree;
   nude.tags = tags;
 
-  const { basePrice, basePriceWithCommission, creditPrice, commission } =
-    getMediaPrice(price, user.isAmbassador ? 0 : user.salesFee);
+  const { fiatPrice, creditPrice } = getMediaPrice(price);
 
-  nude.priceDetails.basePrice = basePrice;
-  nude.priceDetails.basePriceWithCommission = basePriceWithCommission;
+  nude.priceDetails.fiatPrice = fiatPrice;
   nude.priceDetails.creditPrice = creditPrice;
-  nude.priceDetails.commission = commission;
 
   await nude.save();
 
-  res.status(201).json(nude);
+  res.status(200).json(nude);
 });
 
 const archivedNude = asyncHandler(async (req, res, next) => {
@@ -261,9 +255,7 @@ const buyNude = asyncHandler(async (req, res, next) => {
           saleType: 'nude',
           nude: nude,
           amount: {
-            baseValue: nude.priceDetails.basePrice,
-            commission: nude.priceDetails.commission,
-            baseValueWithCommission: nude.priceDetails.basePriceWithCommission,
+            fiatValue: nude.priceDetails.fiatPrice,
             creditValue: nude.priceDetails.creditPrice,
             currency: nude.priceDetails.currency,
           },

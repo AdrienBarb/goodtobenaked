@@ -1,23 +1,12 @@
-const getMediaPrice = (price, salesFee = 0.2) => {
+const getMediaPrice = (price) => {
   if (isNaN(price)) return 0;
 
-  const euroToCreditRate = 30 / 7.99;
-
-  let formattedPrice = parseFloat(price) * 100;
-
-  let commission = formattedPrice * salesFee;
-
-  let priceWithCommission = formattedPrice + commission;
-
-  let priceInCredits = priceWithCommission * euroToCreditRate;
-
-  priceInCredits = Math.ceil(priceInCredits / 100);
+  const formattedPrice = parseFloat(price) * 100;
+  const roundedPrice = Math.round(formattedPrice);
 
   return {
-    basePrice: Math.round(formattedPrice),
-    basePriceWithCommission: Math.round(priceWithCommission),
-    commission: Math.round(commission),
-    creditPrice: priceInCredits,
+    fiatPrice: roundedPrice,
+    creditPrice: roundedPrice,
   };
 };
 

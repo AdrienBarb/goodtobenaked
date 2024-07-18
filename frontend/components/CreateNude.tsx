@@ -69,12 +69,14 @@ const CreateNude: FC<CreateNudeProps> = () => {
     try {
       const currentNude = await fetchData(`/api/nudes/${nudeId}`);
 
+      console.log("currentNude ", currentNude);
+
       formik.setFieldValue("description", currentNude?.description);
-      formik.setFieldValue("price", currentNude.priceDetails.basePrice / 100);
+      formik.setFieldValue("price", currentNude.priceDetails.fiatPrice / 100);
       formik.setFieldValue("tags", [
         ...TAGS.filter((el) => currentNude.tags.includes(el.value)),
       ]);
-      setFetchedPrice(currentNude.priceDetails.basePrice / 100);
+      setFetchedPrice(currentNude.priceDetails.fiatPrice / 100);
     } catch (error) {
       console.log(error);
     }
@@ -102,8 +104,6 @@ const CreateNude: FC<CreateNudeProps> = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log("values ", values);
-
       if (!nudeId && selectedMedias.length === 0) {
         toast.error(t("error.missingMedias"));
         return;
@@ -127,10 +127,7 @@ const CreateNude: FC<CreateNudeProps> = () => {
     },
   });
 
-  const totalPrice = getMediaPrice(
-    formik.values.price || 0,
-    session?.user?.isAmbassador ? 0 : session?.user?.salesFee
-  );
+  const totalPrice = getMediaPrice(formik.values.price || 0);
 
   const handleSubmitForm = () => {
     formik.handleSubmit();
