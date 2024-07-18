@@ -7,7 +7,7 @@
   text-align: center;
   width: 100%;
   box-sizing: border-box;
-  justify-content: space-between;
+  justify-content: center;
   height: 238px;
   font-family: Karla;
 
@@ -26,8 +26,8 @@
   }
 
   .price {
-    font-size: 26px;
-    font-weight: 600;
+    font-size: 22px;
+    font-weight: 300;
   }
 
   .bonusWrapper {
@@ -56,6 +56,6 @@
     width: 80%;
     display: block;
     background-color: rgba(0, 0, 0, 0.1);
-    margin: 0.6rem 0;
+    margin: 1.6rem 0;
   }
 }

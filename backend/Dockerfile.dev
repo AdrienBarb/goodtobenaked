@@ -25,8 +25,8 @@ WORKDIR /app
 # Copier les fichiers package.json et package-lock.json spécifiques au backend
 COPY package.json package-lock.json ./
 
-# Installer les dépendances du backend
-RUN npm install && npm cache clean --force
+# Installer les dépendances du backend y compris les devDependencies
+RUN npm install --only=development && npm cache clean --force
 
 # Copier les fichiers sources du backend
 COPY . .
@@ -34,8 +34,18 @@ COPY . .
 # Copier les fichiers de build de React générés lors de la première étape
 COPY --from=build /app/client/build /app/client/build
 
+# Installer les dépendances du client React
+WORKDIR /app/client
+RUN npm install
+
+# Définir le répertoire de travail pour le backend à nouveau
+WORKDIR /app
+
 # Exposer le port sur lequel l'application s'exécute
 EXPOSE 3001
+
+# Installer les outils nécessaires pour le développement
+RUN npm install -g nodemon
 
 # Commande à exécuter lorsque le conteneur est démarré
 CMD ["npm", "run", "dev"]

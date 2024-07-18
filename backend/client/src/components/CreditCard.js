@@ -24,7 +24,7 @@ const CreditCard = ({ currentPackage, isSelected, onClick, index }) => {
       <span className={styles.divider}></span>
       <div className={styles.price}>{`${currentPackage.price / 100}€`}</div>
 
-      <div className={styles.bonusWrapper}>
+      {/* <div className={styles.bonusWrapper}>
         {currentPackage.bonus && (
           <div className={styles.bonus}>{`${currentPackage.bonus} Bonus`}</div>
         )}
@@ -33,7 +33,7 @@ const CreditCard = ({ currentPackage, isSelected, onClick, index }) => {
             2,
           )}€/crédits`}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
