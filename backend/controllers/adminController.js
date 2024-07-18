@@ -1,28 +1,11 @@
 const asyncHandler = require('express-async-handler');
-const Creator = require('../models/creatorModel');
 const userModel = require('../models/userModel');
-const Conflict = require('../models/conflictModel');
 const Invoice = require('../models/invoiceModel');
 const CreatorIdentityVerification = require('../models/creatorIdentityVerificationModel');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const emailService = require('../lib/email');
-const { createCreatorNotionCard } = require('../lib/services/notion');
 const config = require('../config');
-
-// @desc Get all creators
-// @route GET /api/admin/creators
-// @access Private
-const getCreators = asyncHandler(async (req, res, next) => {
-  const creators = await Creator.find({ verified: { $ne: 'verified' } });
-
-  if (creators) {
-    res.status(200).json(creators);
-  } else {
-    res.status(500).json('Error while fetching creators');
-    throw new Error('Error while fetching creators');
-  }
-});
 
 // @desc Get current creator
 // @route GET /api/admin/creators/:creatorId
@@ -30,7 +13,7 @@ const getCreators = asyncHandler(async (req, res, next) => {
 const getCurrentCreatorIdentityCheck = asyncHandler(async (req, res, next) => {
   const { creatorId } = req.params;
 
-  const creator = await Creator.findById(creatorId);
+  const creator = await userModel.findById(creatorId);
 
   const identityVerication = await CreatorIdentityVerification.findOne({
     userId: creator?._id,
@@ -122,23 +105,6 @@ const changeVerificationState = asyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc Get all conflicts
-// @route GET /api/admin/conflicts
-// @access Private
-const getConflicts = asyncHandler(async (req, res, next) => {
-  const conflicts = await Conflict.find({ state: 'open' })
-    .populate('creator')
-    .populate('member')
-    .populate('order');
-
-  if (conflicts) {
-    res.status(200).json(conflicts);
-  } else {
-    res.status(500).json('Error while fetching creators');
-    throw new Error('Error while fetching creators');
-  }
-});
-
 // @desc Change verification state
 // @route POST /api/admin/invoices/:invoiceId
 // @access Private
@@ -170,9 +136,7 @@ const payCreator = asyncHandler(async (req, res, next) => {
 });
 
 module.exports = {
-  getCreators,
   getCurrentCreatorIdentityCheck,
   changeVerificationState,
-  getConflicts,
   payCreator,
 };

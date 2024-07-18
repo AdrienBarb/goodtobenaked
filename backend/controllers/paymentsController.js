@@ -1,5 +1,4 @@
 const asyncHandler = require('express-async-handler');
-const memberModel = require('../models/memberModel');
 const creditTransactionModel = require('../models/creditTransactionModel');
 const userModel = require('../models/userModel');
 const config = require('../config');

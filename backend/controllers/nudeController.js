@@ -3,7 +3,6 @@ const nudeModel = require('../models/nudeModel');
 const CustomError = require('../lib/error/CustomError');
 const { getMediaPrice } = require('../lib/utils/price');
 const { default: mongoose } = require('mongoose');
-const nudeSoldModel = require('../models/nudeSoldModel');
 const { executeInTransaction } = require('../db');
 const { notifySlack } = require('../lib/services/slack');
 const userModel = require('../models/userModel');
@@ -229,16 +228,6 @@ const buyNude = asyncHandler(async (req, res, next) => {
 
   if (user.creditAmount < nude.priceDetails.creditPrice) {
     return next(new CustomError(400, 'not_enough_credit'));
-  }
-
-  const existingSoldNude = await nudeSoldModel.find({
-    nude: nude,
-    buyer: user,
-    status: 'succeeded',
-  });
-
-  if (existingSoldNude.length > 0) {
-    return next(new CustomError(400, 'already_buy'));
   }
 
   //add member to paidMembers of the nude

@@ -1,12 +1,10 @@
 const asyncHandler = require('express-async-handler');
-const Creator = require('../models/creatorModel');
 const Invoice = require('../models/invoiceModel');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const emailService = require('../lib/email');
 const { createUserInvoice } = require('../lib/income/createUserInvoice');
 const { notifySlack } = require('../lib/services/slack');
 const saleModel = require('../models/saleModel');
-const memberModel = require('../models/memberModel');
 const userModel = require('../models/userModel');
 const config = require('../config');
 
