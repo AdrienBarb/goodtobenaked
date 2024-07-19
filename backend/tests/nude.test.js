@@ -37,7 +37,7 @@ afterEach(async () => {
 
 describe('Create a nude', () => {
   test('A user can create a nude', async () => {
-    const user = await createUser();
+    const user = await createUser({});
     const media = await createMedia(user);
     const userToken = generateToken(user._id);
 
@@ -67,7 +67,7 @@ describe('Create a nude', () => {
 
 describe('Edit a nude', () => {
   test('A user can edit a nude', async () => {
-    const user = await createUser();
+    const user = await createUser({});
     const media = await createMedia(user);
     const nude = await createNude({ user, medias: [media] });
     const userToken = generateToken(user._id);
@@ -94,7 +94,7 @@ describe('Edit a nude', () => {
   });
 
   test('Should return 400 if required fields are missing', async () => {
-    const user = await createUser();
+    const user = await createUser({});
     const media = await createMedia(user);
     const nude = await createNude({ user, medias: [media] });
     const userToken = generateToken(user._id);
@@ -110,7 +110,7 @@ describe('Edit a nude', () => {
   });
 
   test('Should return 404 if nude does not exist', async () => {
-    const user = await createUser();
+    const user = await createUser({});
     const userToken = generateToken(user._id);
     const nonExistentId = new mongoose.Types.ObjectId();
 
@@ -127,8 +127,8 @@ describe('Edit a nude', () => {
   });
 
   test('Should return 400 if user is not authorized to edit', async () => {
-    const user1 = await createUser();
-    const user2 = await createUser();
+    const user1 = await createUser({});
+    const user2 = await createUser({});
     const media = await createMedia(user1);
     const nude = await createNude({ user: user1, medias: [media] });
     const user2Token = generateToken(user2._id);
@@ -146,7 +146,7 @@ describe('Edit a nude', () => {
   });
 
   test('Should return 400 if nude visibility is private', async () => {
-    const user = await createUser();
+    const user = await createUser({});
     const media = await createMedia(user);
     const nude = await createNude({
       user,
@@ -170,7 +170,7 @@ describe('Edit a nude', () => {
 
 describe('Buy a nude', () => {
   test('A user can buy a nude', async () => {
-    const user = await createUser();
+    const user = await createUser({});
     const media = await createMedia(user);
     const nude = await createNude({ user, medias: [media] });
     const userToken = generateToken(user._id);
@@ -198,7 +198,7 @@ describe('Buy a nude', () => {
   });
 
   test('A user cant buy a nude if not enough credit', async () => {
-    const user = await createUser(1000);
+    const user = await createUser({ creditAmount: 1000 });
     const media = await createMedia(user);
     const nude = await createNude({ user, medias: [media] });
     const userToken = generateToken(user._id);

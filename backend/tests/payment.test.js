@@ -36,7 +36,7 @@ afterEach(async () => {
 
 describe('Create a payment intent', () => {
   test('A user can create a payment intent', async () => {
-    const user = await createUser();
+    const user = await createUser({});
     const userToken = generateToken(user._id);
 
     const res = await request(app)
@@ -55,7 +55,7 @@ describe('Create a payment intent', () => {
 
 describe('Checkout', () => {
   test('It create a transaction', async () => {
-    const user = await createUser();
+    const user = await createUser({});
     const userToken = generateToken(user._id);
 
     const res = await request(app)
@@ -102,7 +102,7 @@ describe('Stripe Webhook: getStripeUpdates', () => {
   });
 
   test('Should handle payment_intent.succeeded event', async () => {
-    const user = await createUser();
+    const user = await createUser({});
 
     const transaction = new creditTransactionModel({
       user: user._id,
@@ -128,8 +128,6 @@ describe('Stripe Webhook: getStripeUpdates', () => {
       payload: payloadString,
       secret: config.stripeEndpointSecret,
     });
-
-    console.log('payloadString ', payloadString);
 
     const res = await request(app)
       .post('/webhook')

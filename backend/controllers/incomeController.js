@@ -2,24 +2,22 @@ const asyncHandler = require('express-async-handler');
 const Invoice = require('../models/invoiceModel');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const emailService = require('../lib/email');
-const { createUserInvoice } = require('../lib/income/createUserInvoice');
 const { notifySlack } = require('../lib/services/slack');
 const saleModel = require('../models/saleModel');
 const userModel = require('../models/userModel');
 const config = require('../config');
+const generateInvoice = require('../lib/pdf/generateInvoice');
+const calculateCurrentBalanceWithCommission = require('../lib/utils/calculateCurrentBalanceWithCommission');
 
 const getBalances = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
 
   const sales = await saleModel.find({ owner: user, isPaid: false });
 
-  const currentBalance = sales.reduce(
-    (acc, currentValue) => acc + currentValue.amount.baseValue,
-    0,
-  );
+  const currentBalance = calculateCurrentBalanceWithCommission(sales);
 
   res.status(200).json({
-    balances: currentBalance / 100,
+    balances: currentBalance,
   });
 });
 
@@ -70,7 +68,38 @@ const getInvoices = asyncHandler(async (req, res, next) => {
 const createInvoice = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
 
-  await createUserInvoice(user);
+  const sales = await saleModel.find({ owner: user, isPaid: false });
+
+  const currentBalance = calculateCurrentBalanceWithCommission(sales);
+
+  if (currentBalance === 0) {
+    return;
+  }
+
+  if (!user?.bankAccount?.name || !user?.bankAccount?.iban) {
+    emailService.notifyCreatorForMissingBankDetails(user.email);
+    return;
+  }
+
+  const { invoiceTitle, filePath } = await generateInvoice(
+    user,
+    currentBalance,
+  );
+
+  await Invoice.create({
+    user: user,
+    title: invoiceTitle,
+    path: filePath,
+    paid: false,
+    toBePaid: currentBalance,
+  });
+
+  await saleModel.updateMany(
+    { owner: user, isPaid: false },
+    {
+      isPaid: true,
+    },
+  );
 
   if (user.emailNotification) {
     emailService.creatorAskPayment(user.email);

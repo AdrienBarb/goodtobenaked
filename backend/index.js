@@ -87,7 +87,9 @@ app.get('/config', (req, res) => {
 
 app.use((err, req, res, next) => {
   notifyErrorSlack(err.stack);
-  console.log(err);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(err);
+  }
   res.status(err.statusCode || 500).send(err.message);
 });
 
