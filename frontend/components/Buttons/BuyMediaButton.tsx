@@ -70,7 +70,7 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
         }}
       >
         {t("common.unlockForCredit", {
-          creditNumber: nude.priceDetails.creditPrice,
+          creditNumber: nude.priceDetails.creditPrice / 100,
         })}
       </SimpleButton>
       <ConfirmationModal
@@ -87,7 +87,7 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
         isLoading={isLoading}
         confirmAction={handleBuyNude}
         text={t("common.unlockCreditConfirmation", {
-          creditNumber: nude.priceDetails.creditPrice,
+          creditNumber: nude.priceDetails.creditPrice / 100,
         })}
         buttonText={t("common.unlockNow")}
       />

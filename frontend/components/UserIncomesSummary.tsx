@@ -88,7 +88,7 @@ const UserIncomesSummary = () => {
         </HeaderSection>
         <div className={styles.line}>
           <Text>{t("incomes.yourBalanceIs")}</Text>
-          <Text weight="bolder">{`${balances} €`}</Text>
+          <Text weight="bolder">{`${balances / 100} €`}</Text>
         </div>
       </div>
       <SuccessModal

@@ -263,22 +263,6 @@ const buyNude = asyncHandler(async (req, res, next) => {
       ],
       { session },
     );
-
-    if (nude.user.referredBy) {
-      await saleModel.create(
-        [
-          {
-            owner: nude.user.referredBy,
-            fromUser: nude.user._id,
-            saleType: 'commission',
-            amount: {
-              baseValue: Math.round(nude.priceDetails.basePrice * 0.05),
-            },
-          },
-        ],
-        { session },
-      );
-    }
   });
 
   await notifySlack('Une vente de nude');

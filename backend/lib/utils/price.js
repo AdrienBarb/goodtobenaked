@@ -10,22 +10,15 @@ const getMediaPrice = (price) => {
   };
 };
 
-const getPriceInFiatFromCredits = (creditPrice, salesFee = 0.2) => {
+const getPriceInFiatFromCredits = (creditPrice) => {
   if (isNaN(creditPrice)) return 0;
 
-  const euroToCreditRate = 30 / 7.99;
-
-  let priceInEuros = (creditPrice * 100) / euroToCreditRate;
-
-  let formattedPrice = priceInEuros / (1 + salesFee);
-
-  let commission = formattedPrice * salesFee;
+  const formatted = parseFloat(creditPrice) * 100;
+  const rounded = Math.round(formatted);
 
   return {
-    basePrice: Math.round(formattedPrice),
-    basePriceWithCommission: Math.round(priceInEuros),
-    commission: Math.round(commission),
-    creditPrice: creditPrice,
+    fiatPrice: rounded,
+    creditPrice: rounded,
   };
 };
 

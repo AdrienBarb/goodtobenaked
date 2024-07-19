@@ -843,11 +843,7 @@ const sendTips = asyncHandler(async (req, res, next) => {
     return next(new CustomError(404, 'not_found'));
   }
 
-  const { basePrice, basePriceWithCommission, creditPrice, commission } =
-    getPriceInFiatFromCredits(
-      tipsAmount,
-      user.isAmbassador ? 0 : user.salesFee,
-    );
+  const { fiatPrice, creditPrice } = getPriceInFiatFromCredits(tipsAmount);
 
   if (user.creditAmount < creditPrice) {
     return next(new CustomError(400, errorMessages.NOT_ENOUGH_CREDIT));
@@ -871,9 +867,7 @@ const sendTips = asyncHandler(async (req, res, next) => {
           fromUser: user._id,
           saleType: 'tip',
           amount: {
-            baseValue: basePrice,
-            commission: commission,
-            baseValueWithCommission: basePriceWithCommission,
+            fiatValue: fiatPrice,
             creditValue: creditPrice,
             currency: 'EUR',
           },
@@ -881,22 +875,6 @@ const sendTips = asyncHandler(async (req, res, next) => {
       ],
       { session },
     );
-
-    if (userWhoReceiveTips.referredBy) {
-      await saleModel.create(
-        [
-          {
-            owner: userWhoReceiveTips.referredBy,
-            fromUser: userWhoReceiveTips._id,
-            saleType: 'commission',
-            amount: {
-              baseValue: Math.round(basePrice * 0.05),
-            },
-          },
-        ],
-        { session },
-      );
-    }
   });
 
   res.status(200).json(creditPrice);
