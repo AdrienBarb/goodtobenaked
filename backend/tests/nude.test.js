@@ -12,7 +12,6 @@ const userModel = require('../models/userModel');
 
 let replSet;
 
-// Connection à la base de données avant tous les tests
 beforeAll(async () => {
   replSet = await MongoMemoryReplSet.create({
     replSet: { count: 1 },
@@ -22,13 +21,11 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 });
 
-// Fermeture de la connexion après tous les tests
 afterAll(async () => {
   await mongoose.connection.close();
   await replSet.stop();
 });
 
-// Nettoyage de la base de données après chaque test
 afterEach(async () => {
   const collections = mongoose.connection.collections;
 
