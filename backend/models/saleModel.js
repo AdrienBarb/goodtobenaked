@@ -37,7 +37,7 @@ const saleSchema = mongoose.Schema(
     saleType: {
       type: String,
       required: true,
-      enum: ['nude', 'commission', 'tip'],
+      enum: ['nude', 'commission', 'tip', 'message'],
     },
     nude: {
       type: mongoose.Schema.Types.ObjectId,

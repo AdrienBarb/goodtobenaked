@@ -16,6 +16,7 @@ pnpm-lock.yaml
 /coverage
 
 # next.js
+frontend/.next/
 /.next/
 .next/
 /out/

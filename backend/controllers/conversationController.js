@@ -3,6 +3,9 @@ const Conversation = require('../models/conversationModel');
 const Message = require('../models/messageModel');
 const userModel = require('../models/userModel');
 const { errorMessages } = require('../lib/constants');
+const CustomError = require('../lib/error/CustomError');
+const { executeInTransaction } = require('../db');
+const saleModel = require('../models/saleModel');
 
 const createConversation = asyncHandler(async (req, res, next) => {
   const { userId } = req.body;
@@ -196,7 +199,7 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
 
 const getConversation = asyncHandler(async (req, res, next) => {
   const conversation = await Conversation.findById(req.params.conversationId)
-    .populate('participants', '_id pseudo image.profil')
+    .populate('participants', '_id pseudo image.profil userType')
     .populate('messages');
 
   res.status(200).json(conversation);
@@ -211,7 +214,9 @@ const sendMessage = asyncHandler(async (req, res, next) => {
     return next(new CustomError(400, errorMessages.MISSING_FIELDS));
   }
 
-  const conversation = await Conversation.findById(conversationId);
+  const conversation = await Conversation.findById(conversationId).populate(
+    'participants',
+  );
 
   if (!conversation) {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
@@ -219,6 +224,15 @@ const sendMessage = asyncHandler(async (req, res, next) => {
 
   if (conversation.blockedUsers?.includes(user._id)) {
     return next(new CustomError(400, errorMessages.YOURE_BLOCKED));
+  }
+
+  const otherParticipant = conversation.participants.find(
+    (participant) => !participant._id.equals(user._id),
+  );
+  const isOtherParticipantCreator = otherParticipant.userType === 'creator';
+
+  if (isOtherParticipantCreator && user.creditAmount < 25) {
+    return next(new CustomError(400, errorMessages.NOT_ENOUGH_CREDIT));
   }
 
   let messageValues = {
@@ -232,12 +246,42 @@ const sendMessage = asyncHandler(async (req, res, next) => {
 
   const message = await Message.create(messageValues);
 
-  await Conversation.updateOne(
-    { _id: conversation },
-    {
-      $push: { messages: message },
-    },
-  );
+  await executeInTransaction(async (session) => {
+    await Conversation.updateOne(
+      { _id: conversation },
+      {
+        $push: { messages: message },
+      },
+      { session },
+    );
+
+    if (isOtherParticipantCreator) {
+      const newMemberCreditAmount = user.creditAmount - 25;
+
+      await userModel.updateOne(
+        { _id: user._id },
+        {
+          creditAmount: newMemberCreditAmount,
+        },
+        { session },
+      );
+
+      await saleModel.create(
+        [
+          {
+            owner: otherParticipant._id,
+            fromUser: user._id,
+            saleType: 'message',
+            amount: {
+              fiatValue: 25,
+              creditValue: 25,
+            },
+          },
+        ],
+        { session },
+      );
+    }
+  });
 
   res.status(201).json(message);
 });

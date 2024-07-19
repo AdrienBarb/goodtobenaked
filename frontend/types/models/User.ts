@@ -39,6 +39,7 @@ export interface User {
   gender?: Gender;
   image?: Image;
   emailNotification: boolean;
+  userType: "creator" | "member";
   description?: string;
   socialMediaLink?: SocialMediaLink;
   nationality?: string;

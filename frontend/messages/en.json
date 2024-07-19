@@ -630,6 +630,7 @@
   },
   "conversation": {
     "send": "Send",
+    "sendFor": "Send for {creditAmount} credits",
     "sendNude": "Send Nude",
     "writeMessage": "Write a message",
     "message": "Message"
