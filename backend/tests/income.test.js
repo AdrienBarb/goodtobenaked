@@ -42,12 +42,14 @@ describe('Get Balances', () => {
       owner: user,
       amount: { fiatValue: 500, creditValue: 500 },
       isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
     });
 
     const sale2 = await createSale({
       owner: user,
       amount: { fiatValue: 600, creditValue: 600 },
       isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
     });
 
     const sale3 = await createSale({
@@ -61,7 +63,8 @@ describe('Get Balances', () => {
       .auth(userToken, { type: 'bearer' });
 
     expect(res.status).toEqual(200);
-    expect(res.body.balances).toEqual(1100);
+    expect(res.body.available).toEqual(500);
+    expect(res.body.pending).toEqual(600);
   });
 
   test('A user can get his current balance with commission for users outside promotion period', async () => {
@@ -73,12 +76,14 @@ describe('Get Balances', () => {
       owner: user,
       amount: { fiatValue: 500, creditValue: 500 },
       isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
     });
 
     const sale2 = await createSale({
       owner: user,
       amount: { fiatValue: 600, creditValue: 600 },
       isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
     });
 
     const sale3 = await createSale({
@@ -92,7 +97,8 @@ describe('Get Balances', () => {
       .auth(userToken, { type: 'bearer' });
 
     expect(res.status).toEqual(200);
-    expect(res.body.balances).toEqual(880);
+    expect(res.body.available).toEqual(400);
+    expect(res.body.pending).toEqual(480);
   });
 });
 
@@ -134,19 +140,21 @@ describe('Create invoices', () => {
     const userToken = generateToken(user._id);
     const sale = await createSale({
       owner: user,
-      amount: { fiatValue: 500, creditValue: 500 },
+      amount: { fiatValue: 10000, creditValue: 10000 },
       isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
     });
 
     const sale2 = await createSale({
       owner: user,
-      amount: { fiatValue: 600, creditValue: 600 },
+      amount: { fiatValue: 6000, creditValue: 6000 },
       isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
     });
 
     const sale3 = await createSale({
       owner: user,
-      amount: { fiatValue: 600, creditValue: 600 },
+      amount: { fiatValue: 6000, creditValue: 6000 },
       isPaid: true,
     });
 
@@ -157,13 +165,13 @@ describe('Create invoices', () => {
     expect(res.status).toEqual(200);
 
     const fetchedInvoice = await invoiceModel.findOne({ user: user._id });
-    expect(fetchedInvoice.toBePaid).toEqual(1100);
+    expect(fetchedInvoice.toBePaid).toEqual(10000);
 
     const fetchedSale1 = await saleModel.findById(sale._id);
     expect(fetchedSale1.isPaid).toEqual(true);
 
     const fetchedSale2 = await saleModel.findById(sale2._id);
-    expect(fetchedSale2.isPaid).toEqual(true);
+    expect(fetchedSale2.isPaid).toEqual(false);
   });
 
   test('A user can get his invoice created with commission for users outside promotion period', async () => {
@@ -173,14 +181,57 @@ describe('Create invoices', () => {
     const userToken = generateToken(user._id);
     const sale = await createSale({
       owner: user,
+      amount: { fiatValue: 10000, creditValue: 10000 },
+      isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
+    });
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 6000, creditValue: 6000 },
+      isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
+    });
+
+    const sale3 = await createSale({
+      owner: user,
+      amount: { fiatValue: 6000, creditValue: 6000 },
+      isPaid: true,
+    });
+
+    const res = await request(app)
+      .post(`/api/incomes/create-invoice`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    const fetchedInvoice = await invoiceModel.findOne({ user: user._id });
+    expect(fetchedInvoice.toBePaid).toEqual(8000);
+
+    const fetchedSale1 = await saleModel.findById(sale._id);
+    expect(fetchedSale1.isPaid).toEqual(true);
+
+    const fetchedSale2 = await saleModel.findById(sale2._id);
+    expect(fetchedSale2.isPaid).toEqual(false);
+  });
+
+  test('A user can get his invoice created if available balance is under 50 euros', async () => {
+    const user = await createUser({
+      promotionEndDate: moment().subtract(1, 'months').toDate(),
+    });
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
       amount: { fiatValue: 500, creditValue: 500 },
       isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
     });
 
     const sale2 = await createSale({
       owner: user,
       amount: { fiatValue: 600, creditValue: 600 },
       isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
     });
 
     const sale3 = await createSale({
@@ -193,15 +244,6 @@ describe('Create invoices', () => {
       .post(`/api/incomes/create-invoice`)
       .auth(userToken, { type: 'bearer' });
 
-    expect(res.status).toEqual(200);
-
-    const fetchedInvoice = await invoiceModel.findOne({ user: user._id });
-    expect(fetchedInvoice.toBePaid).toEqual(880);
-
-    const fetchedSale1 = await saleModel.findById(sale._id);
-    expect(fetchedSale1.isPaid).toEqual(true);
-
-    const fetchedSale2 = await saleModel.findById(sale2._id);
-    expect(fetchedSale2.isPaid).toEqual(true);
+    expect(res.status).toEqual(400);
   });
 });

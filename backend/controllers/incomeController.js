@@ -8,16 +8,20 @@ const userModel = require('../models/userModel');
 const config = require('../config');
 const generateInvoice = require('../lib/pdf/generateInvoice');
 const calculateCurrentBalanceWithCommission = require('../lib/utils/calculateCurrentBalanceWithCommission');
+const moment = require('moment');
+const CustomError = require('../lib/error/CustomError');
+const { errorMessages } = require('../lib/constants');
 
 const getBalances = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
 
-  const sales = await saleModel.find({ owner: user, isPaid: false });
-
-  const currentBalance = calculateCurrentBalanceWithCommission(sales, user);
+  const { available, pending } = await calculateCurrentBalanceWithCommission(
+    user,
+  );
 
   res.status(200).json({
-    balances: currentBalance,
+    available,
+    pending,
   });
 });
 
@@ -68,12 +72,10 @@ const getInvoices = asyncHandler(async (req, res, next) => {
 const createInvoice = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
 
-  const sales = await saleModel.find({ owner: user, isPaid: false });
+  const { available } = await calculateCurrentBalanceWithCommission(user);
 
-  const currentBalance = calculateCurrentBalanceWithCommission(sales, user);
-
-  if (currentBalance === 0) {
-    return;
+  if (available < 5000) {
+    return next(new CustomError(400, errorMessages.NOT_ENOUGH_BALANCE));
   }
 
   if (!user?.bankAccount?.name || !user?.bankAccount?.iban) {
@@ -81,21 +83,18 @@ const createInvoice = asyncHandler(async (req, res, next) => {
     return;
   }
 
-  const { invoiceTitle, filePath } = await generateInvoice(
-    user,
-    currentBalance,
-  );
+  const { invoiceTitle, filePath } = await generateInvoice(user, available);
 
   await Invoice.create({
     user: user,
     title: invoiceTitle,
     path: filePath,
     paid: false,
-    toBePaid: currentBalance,
+    toBePaid: available,
   });
 
   await saleModel.updateMany(
-    { owner: user, isPaid: false },
+    { owner: user, isPaid: false, availableDate: { $lte: moment().toDate() } },
     {
       isPaid: true,
     },

@@ -36,22 +36,26 @@ describe('calculateCurrentBalanceWithCommission', () => {
       promotionEndDate: moment().add(1, 'months').toDate(),
     });
 
-    const sales = [
-      await createSale({
-        owner: user,
-        amount: { fiatValue: 600, creditValue: 600 },
-        isPaid: false,
-      }),
-      await createSale({
-        owner: user,
-        amount: { fiatValue: 500, creditValue: 500 },
-        isPaid: false,
-      }),
-    ];
+    await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
+    });
 
-    const balance = calculateCurrentBalanceWithCommission(sales, user);
+    await createSale({
+      owner: user,
+      amount: { fiatValue: 500, creditValue: 500 },
+      isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
+    });
 
-    expect(balance).toEqual(1100);
+    const { available, pending } = await calculateCurrentBalanceWithCommission(
+      user,
+    );
+
+    expect(available).toEqual(600);
+    expect(pending).toEqual(500);
   });
 
   test('should correctly calculate the current balance with commission for users outside promotion period', async () => {
@@ -59,30 +63,37 @@ describe('calculateCurrentBalanceWithCommission', () => {
       promotionEndDate: moment().subtract(1, 'months').toDate(),
     });
 
-    const sales = [
-      await createSale({
-        owner: user,
-        amount: { fiatValue: 600, creditValue: 600 },
-        isPaid: false,
-      }),
-      await createSale({
-        owner: user,
-        amount: { fiatValue: 500, creditValue: 500 },
-        isPaid: false,
-      }),
-    ];
+    await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
+    });
 
-    const balance = calculateCurrentBalanceWithCommission(sales, user);
+    await createSale({
+      owner: user,
+      amount: { fiatValue: 500, creditValue: 500 },
+      isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
+    });
 
-    expect(balance).toEqual(880);
+    const { available, pending } = await calculateCurrentBalanceWithCommission(
+      user,
+    );
+
+    expect(available).toEqual(480);
+    expect(pending).toEqual(400);
   });
 
   test('should return 0 if no sales are provided', async () => {
     const user = await createUser({
       promotionEndDate: moment().subtract(1, 'months').toDate(),
     });
-    const sales = [];
-    const balance = calculateCurrentBalanceWithCommission(sales, user);
-    expect(balance).toEqual(0);
+
+    const { available, pending } = await calculateCurrentBalanceWithCommission(
+      user,
+    );
+    expect(available).toEqual(0);
+    expect(pending).toEqual(0);
   });
 });

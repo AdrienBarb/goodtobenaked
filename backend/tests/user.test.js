@@ -51,7 +51,6 @@ describe('Register', () => {
     expect(res.body.creditAmount).toEqual(0);
 
     const fetchedUser = await userModel.findById(res.body._id);
-    console.log(fetchedUser);
     const expectedPromotionEndDate = moment
       .utc(fetchedUser.createdAt)
       .add(3, 'months')
@@ -83,6 +82,12 @@ describe('Send tips', () => {
     expect(fetchedSale.amount.creditValue).toEqual(200);
     expect(fetchedSale.isPaid).toEqual(false);
     expect(fetchedSale.fromUser).toEqual(user._id);
+    const expectedAvailableDate = moment
+      .utc(fetchedSale.createdAt)
+      .add(7, 'days')
+      .startOf('day')
+      .toDate();
+    expect(fetchedSale.availableDate).toEqual(expectedAvailableDate);
 
     const fetchedUser = await userModel.findById(user._id);
     expect(fetchedUser.creditAmount).toEqual(9800);

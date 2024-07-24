@@ -9,6 +9,7 @@ const generateToken = require('../lib/utils/jwt');
 const createNude = require('./factory/nudeFactory');
 const saleModel = require('../models/saleModel');
 const userModel = require('../models/userModel');
+const moment = require('moment');
 
 let replSet;
 
@@ -192,6 +193,12 @@ describe('Buy a nude', () => {
     const fetchedSale = await saleModel.findOne({ nude: nude._id });
     expect(fetchedSale.amount.fiatValue).toEqual(3000);
     expect(fetchedSale.amount.creditValue).toEqual(3000);
+    const expectedAvailableDate = moment
+      .utc(fetchedSale.createdAt)
+      .add(7, 'days')
+      .startOf('day')
+      .toDate();
+    expect(fetchedSale.availableDate).toEqual(expectedAvailableDate);
 
     const fetchedUser = await userModel.findById(user._id);
     expect(fetchedUser.creditAmount).toEqual(7000);

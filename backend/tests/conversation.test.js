@@ -7,6 +7,7 @@ const generateToken = require('../lib/utils/jwt');
 const createConversation = require('./factory/conversationFactory');
 const saleModel = require('../models/saleModel');
 const userModel = require('../models/userModel');
+const moment = require('moment');
 
 let replSet;
 
@@ -89,6 +90,12 @@ describe('Send a message', () => {
     expect(fetchedSale.fromUser.toString()).toEqual(user._id.toString());
     expect(fetchedSale.amount.fiatValue).toEqual(25);
     expect(fetchedSale.amount.creditValue).toEqual(25);
+    const expectedAvailableDate = moment
+      .utc(fetchedSale.createdAt)
+      .add(7, 'days')
+      .startOf('day')
+      .toDate();
+    expect(fetchedSale.availableDate).toEqual(expectedAvailableDate);
 
     const fetchedUser = await userModel.findById(user._id);
     expect(fetchedUser.creditAmount).toEqual(5);

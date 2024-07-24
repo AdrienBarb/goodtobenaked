@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const amountSchema = mongoose.Schema(
   {
@@ -46,6 +47,10 @@ const saleSchema = mongoose.Schema(
     isPaid: {
       type: Boolean,
       default: false,
+    },
+    availableDate: {
+      type: Date,
+      default: () => moment.utc().add(7, 'days').startOf('day').toDate(),
     },
   },
   {
