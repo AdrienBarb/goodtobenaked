@@ -1,14 +1,12 @@
 const mongoose = require('mongoose');
 const request = require('supertest');
 const app = require('../index');
-const nudeModel = require('../models/nudeModel');
-const createMedia = require('./factory/mediaFactory');
 const createUser = require('./factory/userFactory');
 const { MongoMemoryReplSet } = require('mongodb-memory-server');
 const generateToken = require('../lib/utils/jwt');
-const createNude = require('./factory/nudeFactory');
 const saleModel = require('../models/saleModel');
 const userModel = require('../models/userModel');
+const moment = require('moment');
 
 let replSet;
 
@@ -33,6 +31,34 @@ afterEach(async () => {
     const collection = collections[key];
     await collection.deleteMany();
   }
+});
+
+describe('Register', () => {
+  test('A user can register', async () => {
+    const res = await request(app).post(`/api/users`).send({
+      pseudo: 'adrien',
+      email: 'adrien@gmail.com',
+      password: 'jesaispas',
+    });
+
+    expect(res.status).toEqual(201);
+    expect(res.body._id).toBeDefined();
+    expect(res.body.token).toBeDefined();
+    expect(res.body.pseudo).toEqual('adrien');
+    expect(res.body.isAccountVerified).toEqual(false);
+    expect(res.body.isAmbassador).toEqual(false);
+    expect(res.body.salesFee).toEqual(0.2);
+    expect(res.body.creditAmount).toEqual(0);
+
+    const fetchedUser = await userModel.findById(res.body._id);
+    console.log(fetchedUser);
+    const expectedPromotionEndDate = moment
+      .utc(fetchedUser.createdAt)
+      .add(3, 'months')
+      .startOf('day')
+      .toDate();
+    expect(fetchedUser.promotionEndDate).toEqual(expectedPromotionEndDate);
+  });
 });
 
 describe('Send tips', () => {

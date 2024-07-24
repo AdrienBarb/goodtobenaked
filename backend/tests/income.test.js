@@ -7,6 +7,7 @@ const generateToken = require('../lib/utils/jwt');
 const createSale = require('./factory/saleFactory');
 const invoiceModel = require('../models/invoiceModel');
 const saleModel = require('../models/saleModel');
+const moment = require('moment');
 
 let replSet;
 
@@ -34,8 +35,39 @@ afterEach(async () => {
 });
 
 describe('Get Balances', () => {
-  test('A user can get his current balance', async () => {
+  test('A user can get his current balance with commission for users in promotion period', async () => {
     const user = await createUser({});
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
+      amount: { fiatValue: 500, creditValue: 500 },
+      isPaid: false,
+    });
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: false,
+    });
+
+    const sale3 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: true,
+    });
+
+    const res = await request(app)
+      .get(`/api/incomes/balances`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+    expect(res.body.balances).toEqual(1100);
+  });
+
+  test('A user can get his current balance with commission for users outside promotion period', async () => {
+    const user = await createUser({
+      promotionEndDate: moment().subtract(1, 'months').toDate(),
+    });
     const userToken = generateToken(user._id);
     const sale = await createSale({
       owner: user,
@@ -97,8 +129,47 @@ describe('Get Sales', () => {
 });
 
 describe('Create invoices', () => {
-  test('A user can get his invoice created', async () => {
+  test('A user can get his invoice created with commission for users in promotion period', async () => {
     const user = await createUser({});
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
+      amount: { fiatValue: 500, creditValue: 500 },
+      isPaid: false,
+    });
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: false,
+    });
+
+    const sale3 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: true,
+    });
+
+    const res = await request(app)
+      .post(`/api/incomes/create-invoice`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    const fetchedInvoice = await invoiceModel.findOne({ user: user._id });
+    expect(fetchedInvoice.toBePaid).toEqual(1100);
+
+    const fetchedSale1 = await saleModel.findById(sale._id);
+    expect(fetchedSale1.isPaid).toEqual(true);
+
+    const fetchedSale2 = await saleModel.findById(sale2._id);
+    expect(fetchedSale2.isPaid).toEqual(true);
+  });
+
+  test('A user can get his invoice created with commission for users outside promotion period', async () => {
+    const user = await createUser({
+      promotionEndDate: moment().subtract(1, 'months').toDate(),
+    });
     const userToken = generateToken(user._id);
     const sale = await createSale({
       owner: user,
