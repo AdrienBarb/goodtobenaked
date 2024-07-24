@@ -14,7 +14,7 @@ const getBalances = asyncHandler(async (req, res, next) => {
 
   const sales = await saleModel.find({ owner: user, isPaid: false });
 
-  const currentBalance = calculateCurrentBalanceWithCommission(sales);
+  const currentBalance = calculateCurrentBalanceWithCommission(sales, user);
 
   res.status(200).json({
     balances: currentBalance,
@@ -70,7 +70,7 @@ const createInvoice = asyncHandler(async (req, res, next) => {
 
   const sales = await saleModel.find({ owner: user, isPaid: false });
 
-  const currentBalance = calculateCurrentBalanceWithCommission(sales);
+  const currentBalance = calculateCurrentBalanceWithCommission(sales, user);
 
   if (currentBalance === 0) {
     return;

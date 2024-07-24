@@ -19,8 +19,6 @@ const {
 } = require('@aws-sdk/client-s3');
 const sharp = require('sharp');
 const creatorIdentityVerificationModel = require('../models/creatorIdentityVerificationModel');
-const { generateRandomCode } = require('../lib/utils');
-const verificationCodeModel = require('../models/verificationCodeModel');
 const nudeModel = require('../models/nudeModel');
 const conversationModel = require('../models/conversationModel');
 const { getPriceInFiatFromCredits } = require('../lib/utils/price');
@@ -28,7 +26,7 @@ const saleModel = require('../models/saleModel');
 const config = require('../config');
 
 const register = asyncHandler(async (req, res, next) => {
-  const { pseudo, email, password, referral } = req.body;
+  const { pseudo, email, password } = req.body;
 
   if (!pseudo || !email || !password) {
     return next(new CustomError(400, errorMessages.MISSING_FIELDS));
@@ -62,15 +60,6 @@ const register = asyncHandler(async (req, res, next) => {
       },
       { session },
     );
-
-    //Create referral
-    if (referral) {
-      const referralUser = await userModel.findById(referral);
-
-      if (referralUser) {
-        user.referredBy = referralUser;
-      }
-    }
 
     await user.save({ session });
   });
