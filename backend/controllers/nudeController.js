@@ -224,7 +224,6 @@ const buyNude = asyncHandler(async (req, res, next) => {
     return next(new CustomError(400, 'not_enough_credit'));
   }
 
-  //add member to paidMembers of the nude
   await executeInTransaction(async (session) => {
     await nudeModel.updateOne(
       { _id: nude?._id },
@@ -234,7 +233,6 @@ const buyNude = asyncHandler(async (req, res, next) => {
       { session },
     );
 
-    //set new credit amount
     const newMemberCreditAmount =
       user.creditAmount - nude.priceDetails.creditPrice;
 
@@ -246,7 +244,6 @@ const buyNude = asyncHandler(async (req, res, next) => {
       { session },
     );
 
-    //create sale for the nude
     await saleModel.create(
       [
         {
