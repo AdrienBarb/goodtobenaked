@@ -2,9 +2,7 @@ import { Nude } from "./Nude";
 import { User } from "./User";
 
 interface Amount {
-  baseValue: number;
-  commission: number;
-  baseValueWithCommission: number;
+  fiatValue: number;
   creditValue: number;
   currency: "USD" | "EUR";
 }
@@ -17,6 +15,7 @@ export interface Sale {
   saleType: "nude" | "commission" | "tip";
   nude?: Nude;
   isPaid: boolean;
+  availableDate: Date;
   createdAt: Date;
   updatedAt: Date;
 }

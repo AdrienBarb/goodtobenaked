@@ -84,39 +84,45 @@ const UserIncomesSummary = () => {
     <div className={styles.container}>
       <div className={styles.wrapper}>
         <div className={styles.cardWrapper}>
-          <div className={styles.balanceCard}>
+          <div
+            className={styles.balanceCard}
+            style={{ backgroundColor: "#cecaff" }}
+          >
             <div className={styles.popoverWrapper}>
               <SimplePopover
                 description={t("incomes.availablePopoverDescription")}
               >
-                <FontAwesomeIcon
-                  icon={faCircleInfo}
-                  color="#d9d7f6"
-                  size="lg"
-                />
+                <FontAwesomeIcon icon={faCircleInfo} color="white" size="lg" />
               </SimplePopover>
             </div>
-            <Text>{t("incomes.available")}</Text>
-            <Text weight="bolder" fontSize={22}>{`${
-              availableBalance / 100
-            } €`}</Text>
+            <Text customStyles={{ color: "white" }}>
+              {t("incomes.available")}
+            </Text>
+            <Text
+              customStyles={{ color: "white" }}
+              weight="bolder"
+              fontSize={22}
+            >{`${availableBalance / 100} €`}</Text>
           </div>
-          <div className={styles.balanceCard}>
+          <div
+            className={styles.balanceCard}
+            style={{ backgroundColor: "#f29d69" }}
+          >
             <div className={styles.popoverWrapper}>
               <SimplePopover
                 description={t("incomes.pendingPopoverDescription")}
               >
-                <FontAwesomeIcon
-                  icon={faCircleInfo}
-                  color="#d9d7f6"
-                  size="lg"
-                />
+                <FontAwesomeIcon icon={faCircleInfo} color="white" size="lg" />
               </SimplePopover>
             </div>
-            <Text>{t("incomes.pending")}</Text>
-            <Text weight="bolder" fontSize={22}>{`${
-              pendingBalance / 100
-            } €`}</Text>
+            <Text customStyles={{ color: "white" }}>
+              {t("incomes.pending")}
+            </Text>
+            <Text
+              customStyles={{ color: "white" }}
+              weight="bolder"
+              fontSize={22}
+            >{`${pendingBalance / 100} €`}</Text>
           </div>
         </div>
 
