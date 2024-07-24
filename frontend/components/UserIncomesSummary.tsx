@@ -12,10 +12,14 @@ import Text from "./Text";
 import ConfirmationModal from "./ConfirmationModal";
 import { useRouter } from "@/navigation";
 import SuccessModal from "./SucessModal";
+import SimplePopover from "./SimplePopover";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
 const UserIncomesSummary = () => {
   //localstate
-  const [balances, setBalances] = useState(0);
+  const [availableBalance, setAvailableBalance] = useState(0);
+  const [pendingBalance, setPendingBalance] = useState(0);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [openAlertModal, setOpenAlertModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -37,9 +41,10 @@ const UserIncomesSummary = () => {
 
   const getBalances = async () => {
     try {
-      const { balances } = await fetchData(`/api/incomes/balances`);
+      const { available, pending } = await fetchData(`/api/incomes/balances`);
 
-      setBalances(balances);
+      setAvailableBalance(available);
+      setPendingBalance(pending);
     } catch (error) {
       console.log(error);
     }
@@ -55,7 +60,8 @@ const UserIncomesSummary = () => {
     {
       onSuccess: () => {
         setOpenSuccessModal(true);
-        setBalances(0);
+        setAvailableBalance(0);
+        setPendingBalance(0);
       },
     }
   );
@@ -66,7 +72,7 @@ const UserIncomesSummary = () => {
       return;
     }
 
-    if (balances <= 0) {
+    if (availableBalance < 5000) {
       toast.error(t("error.current_wallet_empty"));
       return;
     }
@@ -77,19 +83,54 @@ const UserIncomesSummary = () => {
   return (
     <div className={styles.container}>
       <div className={styles.wrapper}>
-        <HeaderSection title={t("incomes.balanceInEuro")}>
-          <SimpleButton
-            onClick={handleBankTransfer}
-            isLoading={isLoading}
-            disabled={balances <= 0}
-          >
-            {t("incomes.transfer_action")}
-          </SimpleButton>
-        </HeaderSection>
-        <div className={styles.line}>
-          <Text>{t("incomes.yourBalanceIs")}</Text>
-          <Text weight="bolder">{`${balances / 100} €`}</Text>
+        <div className={styles.cardWrapper}>
+          <div className={styles.balanceCard}>
+            <div className={styles.popoverWrapper}>
+              <SimplePopover
+                description={t("incomes.availablePopoverDescription")}
+              >
+                <FontAwesomeIcon
+                  icon={faCircleInfo}
+                  color="#d9d7f6"
+                  size="lg"
+                />
+              </SimplePopover>
+            </div>
+            <Text>{t("incomes.available")}</Text>
+            <Text weight="bolder" fontSize={22}>{`${
+              availableBalance / 100
+            } €`}</Text>
+          </div>
+          <div className={styles.balanceCard}>
+            <div className={styles.popoverWrapper}>
+              <SimplePopover
+                description={t("incomes.pendingPopoverDescription")}
+              >
+                <FontAwesomeIcon
+                  icon={faCircleInfo}
+                  color="#d9d7f6"
+                  size="lg"
+                />
+              </SimplePopover>
+            </div>
+            <Text>{t("incomes.pending")}</Text>
+            <Text weight="bolder" fontSize={22}>{`${
+              pendingBalance / 100
+            } €`}</Text>
+          </div>
         </div>
+
+        <SimpleButton
+          onClick={handleBankTransfer}
+          isLoading={isLoading}
+          disabled={availableBalance < 5000}
+          customStyles={{
+            width: "100%",
+            marginTop: "1rem",
+          }}
+        >
+          {t("incomes.transfer_action")}
+        </SimpleButton>
       </div>
       <SuccessModal
         open={openSuccessModal}

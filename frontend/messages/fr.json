@@ -184,7 +184,7 @@
     "back_home": "Page d'accueille",
     "report_bug": "Signaler un bug",
     "should_enter_bank_details": "Veuillez saisir vos informations bancaires dans l'onglet \"Paramètres\"",
-    "current_wallet_empty": "Votre solde actuel est de 0.",
+    "current_wallet_empty": "Votre solde disponible doit être supérieur à 50 euros.",
     "fileTooBig": "Le fichier est trop gros. Veuillez télécharger un fichier de moins de 3 Go.",
     "sureDeleteThisMedia": "Etes-vous sur de vouloir supprimer cette image/video ?",
     "sureDeleteThisNude": "Etes-vous sur de vouloir supprimer ce nude ?",
@@ -696,7 +696,11 @@
     "noSales": "Aucune vente",
     "noInvoices": "Aucune facture",
     "invoice_number": "Désignation",
-    "invoice_status": "Status"
+    "invoice_status": "Status",
+    "available": "Disponible",
+    "pending": "En attente",
+    "availablePopoverDescription": "C’est le solde qui peut être retiré. Le solde doit être supérieur à 50 € pour pouvoir être retiré.",
+    "pendingPopoverDescription": "Pour des raisons de sécurité, toutes les ventes ont un délai de 7 jours avant de devenir disponibles."
   },
   "referral": {
     "reffer_friends": "Parrainez des amis",
