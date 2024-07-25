@@ -121,8 +121,6 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     .populate('medias')
     .lean();
 
-  console.log('nudes ', nudes.length);
-
   const nextCursor =
     nudes.length === limit ? nudes[nudes.length - 1]._id : null;
 
@@ -225,6 +223,7 @@ const buyNude = asyncHandler(async (req, res, next) => {
   }
 
   await executeInTransaction(async (session) => {
+    //Add buyer to paidMembers of the nude
     await nudeModel.updateOne(
       { _id: nude?._id },
       {
@@ -233,6 +232,7 @@ const buyNude = asyncHandler(async (req, res, next) => {
       { session },
     );
 
+    //Remove credit from the buyer
     const newMemberCreditAmount =
       user.creditAmount - nude.priceDetails.creditPrice;
 
@@ -244,6 +244,7 @@ const buyNude = asyncHandler(async (req, res, next) => {
       { session },
     );
 
+    //Create a sale
     await saleModel.create(
       [
         {
@@ -260,6 +261,14 @@ const buyNude = asyncHandler(async (req, res, next) => {
       ],
       { session },
     );
+
+    //Add userId in nudeBuyers array of the nude owner
+    const owner = await userModel.findById(nude.user);
+    const userId = user._id.toString();
+    if (!owner.nudeBuyers.includes(userId)) {
+      owner.nudeBuyers = [...owner.nudeBuyers, userId];
+    }
+    await owner.save({ session });
   });
 
   await notifySlack('Une vente de nude');

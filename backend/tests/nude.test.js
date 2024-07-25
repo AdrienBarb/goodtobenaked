@@ -148,9 +148,10 @@ describe('Edit a nude', () => {
 
   test('Should return 400 if nude visibility is private', async () => {
     const user = await createUser({});
-    const media = await createMedia(user);
+    const owner = await createUser({});
+    const media = await createMedia(owner);
     const nude = await createNude({
-      user,
+      user: owner,
       medias: [media],
       visibility: 'private',
     });
@@ -172,8 +173,9 @@ describe('Edit a nude', () => {
 describe('Buy a nude', () => {
   test('A user can buy a nude', async () => {
     const user = await createUser({});
-    const media = await createMedia(user);
-    const nude = await createNude({ user, medias: [media] });
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const nude = await createNude({ user: owner, medias: [media] });
     const userToken = generateToken(user._id);
 
     const res = await request(app)
@@ -190,7 +192,7 @@ describe('Buy a nude', () => {
       expect.arrayContaining([user._id.toString()]),
     );
 
-    const fetchedSale = await saleModel.findOne({ nude: nude._id });
+    const fetchedSale = await saleModel.findOne({ owner: owner._id });
     expect(fetchedSale.amount.fiatValue).toEqual(3000);
     expect(fetchedSale.amount.creditValue).toEqual(3000);
     const expectedAvailableDate = moment
@@ -206,8 +208,9 @@ describe('Buy a nude', () => {
 
   test('A user cant buy a nude if not enough credit', async () => {
     const user = await createUser({ creditAmount: 1000 });
-    const media = await createMedia(user);
-    const nude = await createNude({ user, medias: [media] });
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const nude = await createNude({ user: owner, medias: [media] });
     const userToken = generateToken(user._id);
 
     const res = await request(app)
@@ -218,5 +221,54 @@ describe('Buy a nude', () => {
       });
 
     expect(res.status).toEqual(400);
+  });
+
+  test('The userId is added in the nudeBuyers array of the owner', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const nude = await createNude({ user: owner, medias: [media] });
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .post(`/api/nudes/buy`)
+      .auth(userToken, { type: 'bearer' })
+      .send({
+        nudeId: nude._id,
+      });
+
+    const fetchedOwner = await userModel.findById(owner._id);
+    expect(fetchedOwner.nudeBuyers).toEqual(
+      expect.arrayContaining([user._id.toString()]),
+    );
+    expect(fetchedOwner.nudeBuyers.length).toEqual(1);
+  });
+
+  test('The userId is added in the nudeBuyers array of the owner only once', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const nude = await createNude({ user: owner, medias: [media] });
+    const userToken = generateToken(user._id);
+
+    await request(app)
+      .post(`/api/nudes/buy`)
+      .auth(userToken, { type: 'bearer' })
+      .send({
+        nudeId: nude._id,
+      });
+
+    await request(app)
+      .post(`/api/nudes/buy`)
+      .auth(userToken, { type: 'bearer' })
+      .send({
+        nudeId: nude._id,
+      });
+
+    const fetchedOwner = await userModel.findById(owner._id);
+    expect(fetchedOwner.nudeBuyers).toEqual(
+      expect.arrayContaining([user._id.toString()]),
+    );
+    expect(fetchedOwner.nudeBuyers.length).toEqual(1);
   });
 });

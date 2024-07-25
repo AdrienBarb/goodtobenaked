@@ -155,6 +155,18 @@ const userSchema = mongoose.Schema(
       type: [],
       default: [],
     },
+    profileViewers: {
+      type: [],
+      default: [],
+    },
+    messageSenders: {
+      type: [],
+      default: [],
+    },
+    nudeBuyers: {
+      type: [],
+      default: [],
+    },
     version: {
       type: Number,
       default: 2,

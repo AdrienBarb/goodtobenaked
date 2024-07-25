@@ -109,3 +109,53 @@ describe('Send tips', () => {
     expect(res.status).toEqual(400);
   });
 });
+
+describe('Profile visit', () => {
+  test('A user can visit a other user profile', async () => {
+    const visitor = await createUser({});
+    const visitedUser = await createUser({});
+    const userToken = generateToken(visitor._id);
+
+    const res = await request(app)
+      .post(`/api/users/profile-visit`)
+      .auth(userToken, { type: 'bearer' })
+      .send({
+        userId: visitedUser._id.toString(),
+      });
+
+    expect(res.status).toEqual(200);
+
+    const fetchedUser = await userModel.findById(visitedUser._id);
+
+    expect(fetchedUser.profileViewers).toEqual(
+      expect.arrayContaining([visitor._id.toString()]),
+    );
+    expect(fetchedUser.profileViewers.length).toEqual(1);
+  });
+
+  test('A visit is created only once', async () => {
+    const visitor = await createUser({});
+    const visitedUser = await createUser({});
+    const userToken = generateToken(visitor._id);
+
+    await request(app)
+      .post(`/api/users/profile-visit`)
+      .auth(userToken, { type: 'bearer' })
+      .send({
+        userId: visitedUser._id.toString(),
+      });
+
+    await request(app)
+      .post(`/api/users/profile-visit`)
+      .auth(userToken, { type: 'bearer' })
+      .send({
+        userId: visitedUser._id.toString(),
+      });
+
+    const fetchedUser = await userModel.findById(visitedUser._id);
+    expect(fetchedUser.profileViewers).toEqual(
+      expect.arrayContaining([visitor._id.toString()]),
+    );
+    expect(fetchedUser.profileViewers.length).toEqual(1);
+  });
+});

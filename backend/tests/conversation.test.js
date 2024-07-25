@@ -101,3 +101,48 @@ describe('Send a message', () => {
     expect(fetchedUser.creditAmount).toEqual(5);
   });
 });
+
+describe('Create conversation', () => {
+  test('userId is added in messageSenders', async () => {
+    const user = await createUser({});
+    const user2 = await createUser({});
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .post(`/api/conversations`)
+      .auth(userToken, { type: 'bearer' })
+      .send({ userId: user2._id.toString() });
+
+    expect(res.status).toEqual(201);
+
+    const fetchedUser2 = await userModel.findById(user2._id);
+
+    expect(fetchedUser2.messageSenders).toEqual(
+      expect.arrayContaining([user._id.toString()]),
+    );
+    expect(fetchedUser2.messageSenders.length).toEqual(1);
+  });
+
+  test('userId is added in messageSenders only once', async () => {
+    const user = await createUser({});
+    const user2 = await createUser({});
+    const userToken = generateToken(user._id);
+
+    await request(app)
+      .post(`/api/conversations`)
+      .auth(userToken, { type: 'bearer' })
+      .send({ userId: user2._id.toString() });
+
+    await request(app)
+      .post(`/api/conversations`)
+      .auth(userToken, { type: 'bearer' })
+      .send({ userId: user2._id.toString() });
+
+    const fetchedUser2 = await userModel.findById(user2._id);
+
+    expect(fetchedUser2.messageSenders).toEqual(
+      expect.arrayContaining([user._id.toString()]),
+    );
+    expect(fetchedUser2.messageSenders.length).toEqual(1);
+  });
+});

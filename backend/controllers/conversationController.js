@@ -17,15 +17,27 @@ const createConversation = asyncHandler(async (req, res, next) => {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
   }
 
+  //Find conversation if exist
   let conversation = await Conversation.findOne({
     participants: { $all: [firstParticipant._id, secondParticipant._id] },
   });
 
+  //If not exist, create one
   if (!conversation) {
     conversation = await Conversation.create({
       participants: [firstParticipant._id, secondParticipant._id],
     });
   }
+
+  //Add firstParticipant ID in messageSenders array of secondParticipant
+  const firstParticipantId = firstParticipant._id.toString();
+  if (!secondParticipant.messageSenders.includes(firstParticipantId)) {
+    secondParticipant.messageSenders = [
+      ...secondParticipant.messageSenders,
+      firstParticipantId,
+    ];
+  }
+  await secondParticipant.save();
 
   res.status(201).json(conversation);
 });

@@ -265,15 +265,13 @@ const profileVisit = asyncHandler(async (req, res, next) => {
   }
 
   await executeInTransaction(async (session) => {
-    await profileVisitModel.create(
-      [
-        {
-          visitor: visitor,
-          visitedUser: visitedUser,
-        },
-      ],
-      { session },
-    );
+    const visitorId = visitor._id.toString();
+
+    if (!visitedUser.profileViewers.includes(visitorId)) {
+      visitedUser.profileViewers = [...visitedUser.profileViewers, visitorId];
+    }
+
+    await visitedUser.save({ session });
 
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const existingNotification = await notificationModel.findOne({
@@ -468,7 +466,6 @@ const refreshCreditAmount = asyncHandler(async (req, res, next) => {
 });
 
 const notificationSubscribe = asyncHandler(async (req, res, next) => {
-  console.log('je passe laaa ');
   const user = await userModel.findById(req.user.id);
   const { userId } = req.body;
 

@@ -8,7 +8,6 @@ import NotificationCard from "./NotificationCard";
 import { useAppDispatch } from "@/store/store";
 import { setUnreadNotifications } from "@/features/notification/notificationSlice";
 import { USER_INAPP_NOTIFICATION } from "@/constants/constants";
-import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import FiltersWrapper from "./FiltersWrapper";
 import FilterSelect from "./FilterSelect";
