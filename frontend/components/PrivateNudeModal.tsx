@@ -230,7 +230,9 @@ const PrivateNudeModal: FC<Props> = ({
                 customStyles={{ width: "100%" }}
                 isLoading={isLoading || isMessageCreateLoading}
               >
-                {t("common.send")}
+                {otherUser?.userType === "creator"
+                  ? t("conversation.sendFor", { creditAmount: 0.25 })
+                  : t("conversation.send")}
               </FullButton>
             </div>
           </div>

@@ -11,6 +11,10 @@ const UserFactory = new Factory()
   .attr('bankAccount.name', 'Adrien Barbier')
   .attr('bankAccount.iban', 'FR1234567890')
   .attr('creditAmount', 10000)
+  .attr('notificationSubscribers', [])
+  .attr('profileViewers', [])
+  .attr('messageSenders', [])
+  .attr('nudeBuyers', [])
   .attr(
     'promotionEndDate',
     moment.utc().add(3, 'months').startOf('day').toDate(),
@@ -20,11 +24,19 @@ const createUser = async ({
   creditAmount = 10000,
   userType = 'creator',
   promotionEndDate = moment.utc().add(3, 'months').startOf('day').toDate(),
+  notificationSubscribers = [],
+  profileViewers = [],
+  messageSenders = [],
+  nudeBuyers = [],
 }) => {
   const userData = UserFactory.build({
     creditAmount,
     userType,
     promotionEndDate,
+    notificationSubscribers,
+    profileViewers,
+    messageSenders,
+    nudeBuyers,
   });
   const user = new userModel(userData);
   return user.save();

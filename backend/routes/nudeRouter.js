@@ -7,6 +7,7 @@ const {
   editNude,
   archivedNude,
   buyNude,
+  createPush,
 } = require('../controllers/nudeController');
 const { userProtect } = require('../middleware/authUserMiddleware');
 const {
@@ -16,6 +17,7 @@ const {
 const router = express.Router();
 
 router.post('/', userProtect, createNude);
+router.post('/push', userProtect, createPush);
 router.get('/', identifyUserIfConnected, getAllNudes);
 router.get('/:nudeId', getCurrentNude);
 router.put('/:nudeId/archived', userProtect, archivedNude);

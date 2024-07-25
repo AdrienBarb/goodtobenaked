@@ -10,6 +10,8 @@ const createNude = require('./factory/nudeFactory');
 const saleModel = require('../models/saleModel');
 const userModel = require('../models/userModel');
 const moment = require('moment');
+const conversationModel = require('../models/conversationModel');
+const messageModel = require('../models/messageModel');
 
 let replSet;
 
@@ -270,5 +272,48 @@ describe('Buy a nude', () => {
       expect.arrayContaining([user._id.toString()]),
     );
     expect(fetchedOwner.nudeBuyers.length).toEqual(1);
+  });
+});
+
+describe('Create a push', () => {
+  test('A user can create a push', async () => {
+    const user1 = await createUser({});
+    const user2 = await createUser({ userType: 'member' });
+    const user3 = await createUser({ userType: 'member' });
+    const user4 = await createUser({ userType: 'member' });
+
+    //create owner
+    const owner = await createUser({
+      notificationSubscribers: [user1._id.toString(), user2._id.toString()],
+      profileViewers: [user2._id.toString(), user3._id.toString()],
+      messageSenders: [user3._id.toString(), user4._id.toString()],
+      nudeBuyers: [user4._id.toString()],
+    });
+    const media = await createMedia(owner);
+    const ownerToken = generateToken(owner._id);
+
+    const res = await request(app)
+      .post(`/api/nudes/push`)
+      .auth(ownerToken, { type: 'bearer' })
+      .send({
+        selectedMedias: [media._id],
+        description: 'Description',
+        isFree: false,
+        price: 22.99,
+        usersList: [
+          'notificationSubscribers',
+          'profileViewers',
+          'messageSenders',
+          'nudeBuyers',
+        ],
+      });
+
+    expect(res.status).toEqual(201);
+
+    const fetchedConversations = await conversationModel.find();
+    expect(fetchedConversations.length).toEqual(3);
+
+    const fetchedMessages = await messageModel.find();
+    expect(fetchedMessages.length).toEqual(3);
   });
 });

@@ -161,7 +161,13 @@
     "uploadImage": "Upload image",
     "weUploadYourFile": "Your media is being prepared. Don't close this window",
     "weAreFormattingYourMedia": "We are formatting your media, it may takes 10 minutes",
-    "maxSizeImage": "The maximum size of the files is 10 MB for photos and 5 GO for videos."
+    "maxSizeImage": "The maximum size of the files is 10 MB for photos and 5 GO for videos.",
+    "notificationSubscribers": "Notification Subscribers",
+    "profileViewers": "Profile Viewers",
+    "messageSenders": "Message Senders",
+    "nudeBuyers": "Nude Buyers",
+    "pushExplanation": "By sending a “Push”, you can directly target specific types of users. The nude will be sent directly via message.",
+    "whichGroupOfUsers": "Please select the user groups to whom you want to send this nude:"
   },
   "home": {
     "title": "GOODTOBENAKED",

@@ -9,17 +9,9 @@ const messageSchema = mongoose.Schema(
     text: {
       type: String,
     },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
-    },
     nude: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Nude',
-    },
-    media: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Media',
     },
     seen: {
       type: Boolean,

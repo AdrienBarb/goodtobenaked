@@ -8,6 +8,8 @@ const { notifySlack } = require('../lib/services/slack');
 const userModel = require('../models/userModel');
 const saleModel = require('../models/saleModel');
 const { errorMessages } = require('../lib/constants');
+const conversationModel = require('../models/conversationModel');
+const messageModel = require('../models/messageModel');
 
 const createNude = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
@@ -276,6 +278,90 @@ const buyNude = asyncHandler(async (req, res, next) => {
   res.status(200).json('Succeed');
 });
 
+const createPush = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.user.id);
+  const { selectedMedias, message, isFree, price, usersList } = req.body;
+
+  if (!message || selectedMedias.length === 0) {
+    return next(new CustomError(400, errorMessages.MISSING_FIELDS));
+  }
+
+  if (!isFree && !price) {
+    return next(new CustomError(400, errorMessages.MISSING_FIELDS));
+  }
+
+  // Récupérer les IDs des listes d'utilisateurs sélectionnées
+  let userIds = [];
+
+  if (usersList.includes('notificationSubscribers')) {
+    userIds = userIds.concat(user.notificationSubscribers);
+  }
+  if (usersList.includes('profileViewers')) {
+    userIds = userIds.concat(user.profileViewers);
+  }
+  if (usersList.includes('messageSenders')) {
+    userIds = userIds.concat(user.messageSenders);
+  }
+  if (usersList.includes('nudeBuyers')) {
+    userIds = userIds.concat(user.nudeBuyers);
+  }
+
+  // Éliminer les doublons
+  userIds = [...new Set(userIds)];
+
+  // Filtrer les utilisateurs de type 'member'
+  const members = await userModel.find({
+    _id: { $in: userIds },
+    userType: 'member',
+  });
+
+  const memberIds = members.map((member) => member._id);
+
+  const nudeObject = {
+    user: user._id,
+    medias: selectedMedias,
+    isFree: isFree,
+    visibility: 'private',
+    priceDetails: {},
+  };
+
+  const { fiatPrice, creditPrice } = getMediaPrice(price);
+
+  nudeObject.priceDetails.fiatPrice = fiatPrice;
+  nudeObject.priceDetails.creditPrice = creditPrice;
+
+  const createdNude = await nudeModel.create(nudeObject);
+
+  // Envoyer le "Nude" à chaque utilisateur
+  for (const memberId of memberIds) {
+    let conversation = await conversationModel.findOne({
+      participants: { $all: [user._id, memberId] },
+    });
+
+    if (!conversation) {
+      conversation = await conversationModel.create({
+        participants: [user._id, memberId],
+      });
+    }
+
+    // Envoyer le message avec le "Nude"
+    const messageValues = {
+      sender: user._id,
+      nude: createdNude._id,
+      text: message,
+    };
+
+    const createdMessage = await messageModel.create(messageValues);
+
+    await conversationModel.updateOne(
+      { _id: conversation._id },
+      { $push: { messages: createdMessage._id } },
+    );
+  }
+
+  res.status(201).json(createdNude);
+});
+
 module.exports = {
   createNude,
   getAllNudes,
@@ -283,4 +369,5 @@ module.exports = {
   editNude,
   archivedNude,
   buyNude,
+  createPush,
 };

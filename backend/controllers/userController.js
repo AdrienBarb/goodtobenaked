@@ -194,7 +194,7 @@ const getAccountOwner = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo email image version isAmbassador address salesFee country verified lastLogin description notificationSubscribers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
+      'pseudo email image version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
     )
     .populate('gender')
     .lean();
