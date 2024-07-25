@@ -210,11 +210,42 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
 });
 
 const getConversation = asyncHandler(async (req, res, next) => {
-  const conversation = await Conversation.findById(req.params.conversationId)
-    .populate('participants', '_id pseudo image.profil userType')
-    .populate('messages');
+  const conversation = await Conversation.findById(
+    req.params.conversationId,
+  ).populate('participants', '_id pseudo image.profil userType');
+
+  if (!conversation) {
+    return next(new CustomError(404, errorMessages.NOT_FOUND));
+  }
 
   res.status(200).json(conversation);
+});
+
+const getConversationMessages = asyncHandler(async (req, res, next) => {
+  const { conversationId } = req.params;
+  const { cursor } = req.query;
+
+  console.log('receivedCursor');
+
+  let filter = { conversation: conversationId };
+
+  if (cursor) {
+    filter.createdAt = { $lt: new Date(cursor) };
+  }
+
+  const messages = await Message.find(filter)
+    .sort({ createdAt: 1 })
+    .limit(12)
+    .exec();
+
+  const nextCursor = messages.length > 0 ? messages[0].createdAt : null;
+
+  console.log('nextCursor ', nextCursor);
+
+  res.status(200).json({
+    messages,
+    nextCursor,
+  });
 });
 
 const sendMessage = asyncHandler(async (req, res, next) => {
@@ -250,6 +281,7 @@ const sendMessage = asyncHandler(async (req, res, next) => {
   let messageValues = {
     sender: user._id,
     text: text,
+    conversation: conversation,
   };
 
   if (nudeId) {
@@ -347,4 +379,5 @@ module.exports = {
   manageBlockUser,
   sendMessage,
   checkIfUnreadMessages,
+  getConversationMessages,
 };

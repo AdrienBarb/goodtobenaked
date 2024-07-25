@@ -14,6 +14,14 @@ const getConversation = async (conversationId: string) => {
   return response.data;
 };
 
+const getConversationMessages = async (conversationId: string) => {
+  const response = await axiosInstance.get(
+    `/api/conversations/${conversationId}/messages`
+  );
+
+  return response.data;
+};
+
 const checkIfUnreadMessages = async () => {
   const response = await axiosInstance.get(
     `/api/conversations/unread-messages`
@@ -26,6 +34,7 @@ const conversationService = {
   getAllConversations,
   getConversation,
   checkIfUnreadMessages,
+  getConversationMessages,
 };
 
 export default conversationService;
