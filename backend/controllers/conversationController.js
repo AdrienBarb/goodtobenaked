@@ -145,7 +145,8 @@ const getAllConversations = asyncHandler(async (req, res, next) => {
   const conversations = await Conversation.aggregate(pipeline);
 
   const nextCursor =
-    conversations.length > 0
+    conversations.length > 0 &&
+    conversations[conversations.length - 1].lastMessage
       ? conversations[
           conversations.length - 1
         ].lastMessage.createdAt.toISOString()
