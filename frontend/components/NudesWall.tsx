@@ -7,6 +7,7 @@ import { Nude } from "@/types/models/Nude";
 import useApi from "@/lib/hooks/useApi";
 import Title from "./Title";
 import dynamic from "next/dynamic";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 interface Props {
   initialNudesDatas: {
@@ -20,7 +21,7 @@ const Loader = dynamic(() => import("@/components/Loader"), { ssr: false });
 
 const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
   //localstate
-  const [nudeList, setNudeList] = useState<Nude[]>([]);
+  const [nudeList, setNudeList] = useState<Nude[]>(initialNudesDatas.nudes);
   const [globalLoading, setGlobalLoading] = useState(true);
 
   const queryKey = useMemo(() => ["feedList", { userId }], [userId]);
@@ -50,25 +51,11 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
 
   const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    if (nudeList.length === 0 || !hasNextPage || globalLoading) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNextPage, fetchNextPage, nudeList.length, globalLoading]);
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage && !globalLoading,
+  });
 
   return (
     <div className={styles.container}>
@@ -78,26 +65,34 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
             Nudes
           </Title>
 
-          <div className={styles.nudeCardList}>
-            {nudeList.map((currentNude: Nude, index: number) => {
-              return (
-                <NudeCard
-                  nude={currentNude}
-                  key={index}
-                  display="card"
-                  showUserMenu={true}
-                  setNudeList={setNudeList}
-                />
-              );
-            })}
-          </div>
-
-          <div
-            style={{ height: "10rem", display: "block", width: "100%" }}
-            ref={loadMoreRef}
-          >
-            {isFetchingNextPage && <Loader />}
-          </div>
+          {globalLoading ? (
+            <Loader style={{ color: "#cecaff" }} />
+          ) : (
+            <>
+              <div className={styles.nudeCardList}>
+                {nudeList.map((currentNude: Nude, index: number) => {
+                  return (
+                    <NudeCard
+                      nude={currentNude}
+                      key={index}
+                      display="card"
+                      showUserMenu={true}
+                      setNudeList={setNudeList}
+                    />
+                  );
+                })}
+              </div>
+              <div
+                style={{
+                  height: "10rem",
+                  display: hasNextPage ? "flex" : "none",
+                }}
+                ref={loadMoreRef}
+              >
+                {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

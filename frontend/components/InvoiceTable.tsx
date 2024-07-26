@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import axiosInstance from "@/lib/axios/axiosConfig";
 import dynamic from "next/dynamic";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 const Loader = dynamic(() => import("@/components/Loader"), { ssr: false });
 
@@ -40,6 +41,7 @@ const InvoiceTable = () => {
       onSuccess: (data: any) => {
         setInvoices(data?.pages.flatMap((page: any) => page.invoices));
       },
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -64,25 +66,11 @@ const InvoiceTable = () => {
 
   const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    if (!hasNextPage) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNextPage, fetchNextPage]);
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage,
+  });
 
   return (
     <div className={styles.container}>
@@ -117,10 +105,10 @@ const InvoiceTable = () => {
       })}
 
       <div
-        style={{ height: "10rem", display: "block", width: "100%" }}
+        style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}
         ref={loadMoreRef}
       >
-        {isFetchingNextPage && <Loader />}
+        {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
       </div>
     </div>
   );

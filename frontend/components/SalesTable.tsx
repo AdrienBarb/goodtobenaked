@@ -10,6 +10,7 @@ import Text from "./Text";
 import { Sale } from "@/types/models/Sale";
 import dynamic from "next/dynamic";
 import { Link } from "@/navigation";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 const Loader = dynamic(() => import("@/components/Loader"), { ssr: false });
 
@@ -41,6 +42,7 @@ const SalesTable = () => {
       onSuccess: (data: any) => {
         setSales(data?.pages.flatMap((page: any) => page.sales));
       },
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -70,25 +72,11 @@ const SalesTable = () => {
 
   const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    if (!hasNextPage) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNextPage, fetchNextPage]);
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage,
+  });
 
   const isAvailable = (availableDate: Date) => {
     return isBefore(new Date(availableDate), new Date());
@@ -157,10 +145,10 @@ const SalesTable = () => {
       })}
 
       <div
-        style={{ height: "10rem", display: "block", width: "100%" }}
+        style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}
         ref={loadMoreRef}
       >
-        {isFetchingNextPage && <Loader />}
+        {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
       </div>
     </div>
   );

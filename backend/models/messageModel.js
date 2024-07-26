@@ -17,6 +17,11 @@ const messageSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    conversation: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Conversation',
+      required: true,
+    },
     notified: {
       type: Boolean,
       default: false,

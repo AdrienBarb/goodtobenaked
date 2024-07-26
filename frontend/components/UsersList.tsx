@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { BODY_TYPE, HAIR_COLOR } from "@/constants/formValue";
 import FiltersWrapper from "./FiltersWrapper";
 import dynamic from "next/dynamic";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 const ageFilters = ["18-22", "22-30", "30-40", "40+"];
 
@@ -36,6 +37,8 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
   });
   const queryKey = useMemo(() => ["usersList", filters], [filters]);
   const t = useTranslations();
+  const [usersList, setUsersList] = useState(initialUsersDatas.users);
+  const [globalLoading, setGlobalLoading] = useState(true);
 
   const { useInfinite } = useApi();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinite(
@@ -53,32 +56,21 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
         ],
         pageParams: [null],
       },
+      onSuccess: (data: any) => {
+        setUsersList(data?.pages.flatMap((page: any) => page.users));
+        setGlobalLoading(false);
+      },
+      refetchOnWindowFocus: false,
     }
   );
 
   const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    if (!hasNextPage) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNextPage, fetchNextPage]);
-
-  const users = data?.pages.flatMap((page) => page.users);
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage && !globalLoading,
+  });
 
   const handleSelectBodyTypeChange = (
     value: {
@@ -86,6 +78,8 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
       label: string;
     } | null
   ) => {
+    setGlobalLoading(true);
+
     setFilters({
       ...filters,
       bodyType: value ? value.value : "",
@@ -98,6 +92,8 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
       label: string;
     } | null
   ) => {
+    setGlobalLoading(true);
+
     setFilters({
       ...filters,
       hairColor: value ? value.value : "",
@@ -110,6 +106,8 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
       label: string;
     } | null
   ) => {
+    setGlobalLoading(true);
+
     setFilters({
       ...filters,
       age: value ? value.value : "",
@@ -141,18 +139,26 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
           })}
         />
       </FiltersWrapper>
-      <div className={styles.userList}>
-        {users?.length &&
-          users.map((currentUser, index) => {
-            return <UserCard key={index} user={currentUser} />;
-          })}
-      </div>
-      <div
-        style={{ height: "10rem", display: "block", width: "100%" }}
-        ref={loadMoreRef}
-      >
-        {isFetchingNextPage && <Loader />}
-      </div>
+
+      {globalLoading ? (
+        <Loader style={{ color: "#cecaff" }} />
+      ) : (
+        <>
+          <div className={styles.userList}>
+            {usersList?.length &&
+              usersList.map((currentUser, index) => {
+                return <UserCard key={index} user={currentUser} />;
+              })}
+          </div>
+
+          <div
+            style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}
+            ref={loadMoreRef}
+          >
+            {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
+          </div>
+        </>
+      )}
     </div>
   );
 };

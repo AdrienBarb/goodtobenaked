@@ -44,14 +44,17 @@ const createConversation = asyncHandler(async (req, res, next) => {
 
 const getAllConversations = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
+  const { cursor } = req.query;
 
-  const conversations = await Conversation.aggregate([
+  let matchConditions = {
+    participants: user._id,
+    isArchived: false,
+    messages: { $exists: true, $not: { $size: 0 } },
+  };
+
+  const pipeline = [
     {
-      $match: {
-        participants: user._id,
-        isArchived: false,
-        messages: { $exists: true, $not: { $size: 0 } },
-      },
+      $match: matchConditions,
     },
     {
       $lookup: {
@@ -75,6 +78,7 @@ const getAllConversations = asyncHandler(async (req, res, next) => {
           },
         },
         messages: 1,
+        updatedAt: 1,
       },
     },
     {
@@ -111,18 +115,47 @@ const getAllConversations = asyncHandler(async (req, res, next) => {
         lastMessage: { $arrayElemAt: ['$messages', -1] },
       },
     },
+  ];
+
+  if (cursor) {
+    pipeline.push({
+      $match: {
+        'lastMessage.createdAt': { $lt: new Date(cursor) },
+      },
+    });
+  }
+
+  pipeline.push(
     {
-      $sort: { lastMessage: -1 },
+      $sort: { 'lastMessage.createdAt': -1 },
+    },
+    {
+      $limit: 30,
     },
     {
       $project: {
         participantDetails: 1,
         unreadMessage: 1,
+        lastMessage: 1,
+        updatedAt: 1,
       },
     },
-  ]);
+  );
 
-  res.status(200).json(conversations);
+  const conversations = await Conversation.aggregate(pipeline);
+
+  const nextCursor =
+    conversations.length > 0 &&
+    conversations[conversations.length - 1].lastMessage
+      ? conversations[
+          conversations.length - 1
+        ].lastMessage.createdAt.toISOString()
+      : null;
+
+  res.status(200).json({
+    conversations,
+    nextCursor,
+  });
 });
 
 const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
@@ -210,11 +243,25 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
 });
 
 const getConversation = asyncHandler(async (req, res, next) => {
-  const conversation = await Conversation.findById(req.params.conversationId)
-    .populate('participants', '_id pseudo image.profil userType')
-    .populate('messages');
+  const conversation = await Conversation.findById(
+    req.params.conversationId,
+  ).populate('participants', '_id pseudo image.profil userType');
+
+  if (!conversation) {
+    return next(new CustomError(404, errorMessages.NOT_FOUND));
+  }
 
   res.status(200).json(conversation);
+});
+
+const getConversationMessages = asyncHandler(async (req, res, next) => {
+  const { conversationId } = req.params;
+
+  let filter = { conversation: conversationId };
+
+  const messages = await Message.find(filter).sort({ createdAt: 1 });
+
+  res.status(200).json(messages);
 });
 
 const sendMessage = asyncHandler(async (req, res, next) => {
@@ -250,6 +297,7 @@ const sendMessage = asyncHandler(async (req, res, next) => {
   let messageValues = {
     sender: user._id,
     text: text,
+    conversation: conversation,
   };
 
   if (nudeId) {
@@ -347,4 +395,5 @@ module.exports = {
   manageBlockUser,
   sendMessage,
   checkIfUnreadMessages,
+  getConversationMessages,
 };

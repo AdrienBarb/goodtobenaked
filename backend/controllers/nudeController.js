@@ -349,6 +349,7 @@ const createPush = asyncHandler(async (req, res, next) => {
       sender: user._id,
       nude: createdNude._id,
       text: message,
+      conversation: conversation,
     };
 
     const createdMessage = await messageModel.create(messageValues);

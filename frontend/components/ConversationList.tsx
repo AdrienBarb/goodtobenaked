@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import styles from "@/styles/ConversationList.module.scss";
 import ConversationCard from "./ConversationCard";
 import { useTranslations } from "next-intl";
@@ -12,37 +12,64 @@ import AppMessage from "./AppMessage";
 import ClassicButton from "./Buttons/ClassicButton";
 import { useAppDispatch } from "@/store/store";
 import { checkIfUnreadMessages } from "@/features/conversation/conversationSlice";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
+import Loader from "./Loader";
 
 interface Props {
-  initialConversationsDatas: Conversation[];
+  initialConversationsDatas: {
+    conversations: Conversation[];
+    nextCursor: string;
+  };
 }
 
 const ConversationList: FC<Props> = ({ initialConversationsDatas }) => {
   //traduction
   const t = useTranslations();
   const [conversationsList, setConversationsList] = useState<Conversation[]>(
-    initialConversationsDatas
+    initialConversationsDatas.conversations
   );
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const { fetchData } = useApi();
+  const queryKey = useMemo(() => ["conversationsList", {}], []);
+
+  const { useInfinite } = useApi();
 
   useEffect(() => {
     dispatch(checkIfUnreadMessages());
   }, []);
 
-  const getConversations = async () => {
-    const r = await fetchData("/api/conversations");
+  const { fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinite(
+    queryKey,
+    `/api/conversations`,
+    {},
+    {
+      getNextPageParam: (lastPage: any) => lastPage.nextCursor || undefined,
+      initialData: {
+        pages: [
+          {
+            conversations: initialConversationsDatas.conversations,
+            nextCursor: initialConversationsDatas.nextCursor,
+          },
+        ],
+        pageParams: [null],
+      },
+      onSuccess: (data: any) => {
+        setConversationsList(
+          data?.pages.flatMap((page: any) => page.conversations)
+        );
+      },
+      refetchOnWindowFocus: false,
+    }
+  );
 
-    setConversationsList(r);
-  };
+  const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    getConversations();
-  }, []);
-
-  console.log("conversationsList ", conversationsList);
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage,
+  });
 
   useEffect(() => {
     if (!socket) return;
@@ -70,19 +97,27 @@ const ConversationList: FC<Props> = ({ initialConversationsDatas }) => {
   return (
     <div className={styles.container}>
       {conversationsList.length > 0 ? (
-        conversationsList.map(
-          (currentConversation: Conversation, index: number) => {
-            return (
-              <Link
-                href={`/dashboard/account/messages/${currentConversation._id}`}
-                prefetch
-                key={index}
-              >
-                <ConversationCard conversation={currentConversation} />
-              </Link>
-            );
-          }
-        )
+        <>
+          {conversationsList.map(
+            (currentConversation: Conversation, index: number) => {
+              return (
+                <Link
+                  href={`/dashboard/account/messages/${currentConversation._id}`}
+                  prefetch
+                  key={index}
+                >
+                  <ConversationCard conversation={currentConversation} />
+                </Link>
+              );
+            }
+          )}
+          <div
+            style={{ height: "4rem", display: hasNextPage ? "flex" : "none" }}
+            ref={loadMoreRef}
+          >
+            {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
+          </div>
+        </>
       ) : (
         <AppMessage
           title={t("error.no_conversations")}
