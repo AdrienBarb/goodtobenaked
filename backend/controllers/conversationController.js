@@ -223,29 +223,12 @@ const getConversation = asyncHandler(async (req, res, next) => {
 
 const getConversationMessages = asyncHandler(async (req, res, next) => {
   const { conversationId } = req.params;
-  const { cursor } = req.query;
-
-  console.log('receivedCursor');
 
   let filter = { conversation: conversationId };
 
-  if (cursor) {
-    filter.createdAt = { $lt: new Date(cursor) };
-  }
+  const messages = await Message.find(filter);
 
-  const messages = await Message.find(filter)
-    .sort({ createdAt: 1 })
-    .limit(12)
-    .exec();
-
-  const nextCursor = messages.length > 0 ? messages[0].createdAt : null;
-
-  console.log('nextCursor ', nextCursor);
-
-  res.status(200).json({
-    messages,
-    nextCursor,
-  });
+  res.status(200).json(messages);
 });
 
 const sendMessage = asyncHandler(async (req, res, next) => {

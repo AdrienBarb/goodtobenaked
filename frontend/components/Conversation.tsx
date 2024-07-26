@@ -12,15 +12,10 @@ import socket from "@/lib/socket/socket";
 import { Message } from "@/types/models/Message";
 import { Conversation } from "@/types/models/Conversation";
 import UserMessage from "./Message";
-import Loader from "./Loader";
-import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 interface Props {
   initialConversationDatas: Conversation;
-  initialMessagesDatas: {
-    messages: Message[];
-    nextCursor: string;
-  };
+  initialMessagesDatas: Message[];
 }
 
 const CurrentConversation: FC<Props> = ({
@@ -28,9 +23,8 @@ const CurrentConversation: FC<Props> = ({
   initialMessagesDatas,
 }) => {
   //localstate
-  const [messagesList, setMessagesList] = useState<Message[]>(
-    initialMessagesDatas.messages
-  );
+  const [messagesList, setMessagesList] =
+    useState<Message[]>(initialMessagesDatas);
   const [conversation, setConversation] = useState(initialConversationDatas);
 
   const { otherUser } = useConversationUsers(
@@ -42,12 +36,8 @@ const CurrentConversation: FC<Props> = ({
 
   //others
   const ref = useChatScroll(messagesList);
-  const queryKey = useMemo(
-    () => ["messageList", { conversationId }],
-    [conversationId]
-  );
 
-  const { fetchData, useInfinite } = useApi();
+  const { fetchData, useGet } = useApi();
 
   const getConversation = async () => {
     try {
@@ -60,36 +50,17 @@ const CurrentConversation: FC<Props> = ({
     }
   };
 
-  const { data, fetchNextPage, hasNextPage, refetch, isFetchingNextPage } =
-    useInfinite(
-      queryKey,
-      `/api/conversations/${conversationId}/messages`,
-      {},
-      {
-        getNextPageParam: (lastPage: any) => lastPage.nextCursor || undefined,
-        initialData: {
-          pages: [
-            {
-              messages: initialMessagesDatas.messages,
-              nextCursor: initialMessagesDatas.nextCursor,
-            },
-          ],
-          pageParams: [null],
-        },
-        onSuccess: (data: any) => {
-          setMessagesList(data?.pages.flatMap((page: any) => page.messages));
-        },
-        refetchOnWindowFocus: false,
-      }
-    );
-
-  const loadMoreRef = useRef(null);
-
-  useIntersectionObserver({
-    target: loadMoreRef,
-    onIntersect: fetchNextPage,
-    enabled: hasNextPage && !isFetchingNextPage,
-  });
+  useGet(
+    `/api/conversations/${conversationId}/messages`,
+    {},
+    {
+      initialData: initialConversationDatas,
+      refetchOnWindowFocus: false,
+      onSuccess: (data) => {
+        setMessagesList(data);
+      },
+    }
+  );
 
   useEffect(() => {
     if (conversationId) {
@@ -101,15 +72,16 @@ const CurrentConversation: FC<Props> = ({
     if (!socket) return;
 
     socket?.off("getMessage")?.on("getMessage", (data) => {
-      if (data && data.message && data.message._id) {
+      if (
+        data &&
+        data.message &&
+        data.message._id &&
+        data.message.conversation._id === conversationId
+      ) {
         setMessagesList((prev) => [...prev, data.message]);
       }
     });
   }, []);
-
-  console.log("messagesList ", messagesList);
-
-  console.log("hasNextPage ", hasNextPage);
 
   return (
     <ConversationWrapper
@@ -118,12 +90,6 @@ const CurrentConversation: FC<Props> = ({
       setConversation={setConversation}
     >
       <div className={styles.chatBoxTop} ref={ref}>
-        <div
-          style={{ height: "2rem", display: hasNextPage ? "block" : "none" }}
-          ref={loadMoreRef}
-        >
-          {isFetchingNextPage && <Loader />}
-        </div>
         {messagesList.map((currentMessage, index) => {
           return (
             <UserMessage
