@@ -25,6 +25,8 @@ frontend/.next/
 # production
 /client/build
 
+scripts/
+
 # misc
 .DS_Store
 *.pem

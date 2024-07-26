@@ -15,6 +15,8 @@ export const useIntersectionObserver = ({
       return;
     }
 
+    console.log("jepasse");
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

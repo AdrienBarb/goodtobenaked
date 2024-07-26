@@ -10,6 +10,7 @@ import ActionTabsMenu from "./ActionTabsMenu";
 import { useTranslations } from "next-intl";
 import NoResults from "./Common/NoResults";
 import dynamic from "next/dynamic";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 interface Props {
   initialNudesDatas: {
@@ -110,7 +111,10 @@ const NudesFeed: FC<Props> = ({ initialNudesDatas }) => {
       )}
 
       {globalLoading ? (
-        <Loader />
+        <Loader
+          style={{ color: "#cecaff" }}
+          containerStyle={{ margin: "2rem 0" }}
+        />
       ) : (
         <>
           <div className={styles.feedList}>
@@ -131,10 +135,10 @@ const NudesFeed: FC<Props> = ({ initialNudesDatas }) => {
           </div>
 
           <div
-            style={{ height: "10rem", display: "block", width: "100%" }}
+            style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}
             ref={loadMoreRef}
           >
-            {isFetchingNextPage && <Loader />}
+            {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
           </div>
         </>
       )}

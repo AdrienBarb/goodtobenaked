@@ -12,6 +12,7 @@ import FilterSelect from "./FilterSelect";
 import { TAGS, tagList } from "@/constants/constants";
 import FiltersWrapper from "./FiltersWrapper";
 import dynamic from "next/dynamic";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 interface Props {
   initialNudesDatas: {
@@ -35,7 +36,7 @@ const NudesExplore: FC<Props> = ({ initialNudesDatas }) => {
   const t = useTranslations();
   const [globalLoading, setGlobalLoading] = useState(true);
   const queryKey = useMemo(() => ["exploreList", { filters }], [filters]);
-  const [nudeList, setNudeList] = useState<Nude[]>([]);
+  const [nudeList, setNudeList] = useState<Nude[]>(initialNudesDatas.nudes);
 
   const { data: session } = useSession();
 
@@ -65,25 +66,11 @@ const NudesExplore: FC<Props> = ({ initialNudesDatas }) => {
 
   const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    if (nudeList.length === 0 || !hasNextPage || globalLoading) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNextPage, fetchNextPage, nudeList.length, globalLoading]);
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage && !globalLoading,
+  });
 
   const handleSelectStateChange = (
     value: { value: string; label: string } | null
@@ -149,7 +136,7 @@ const NudesExplore: FC<Props> = ({ initialNudesDatas }) => {
       </FiltersWrapper>
 
       {globalLoading ? (
-        <Loader />
+        <Loader style={{ color: "#cecaff" }} />
       ) : (
         <>
           {nudeList.length ? (
@@ -165,10 +152,10 @@ const NudesExplore: FC<Props> = ({ initialNudesDatas }) => {
           )}
 
           <div
-            style={{ height: "10rem", display: "block", width: "100%" }}
+            style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}
             ref={loadMoreRef}
           >
-            {isFetchingNextPage && <Loader />}
+            {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
           </div>
         </>
       )}
