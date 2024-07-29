@@ -189,6 +189,12 @@ describe('Buy a nude', () => {
 
     expect(res.status).toEqual(200);
 
+    res.body.medias.forEach((m) => {
+      expect(m.blurredKey).toBeDefined();
+      expect(m.posterKey).toBeDefined();
+      expect(m.convertedKey).toBeDefined();
+    });
+
     const fetchedNude = await nudeModel.findById(nude._id);
     expect(fetchedNude.paidMembers).toEqual(
       expect.arrayContaining([user._id.toString()]),
@@ -297,7 +303,7 @@ describe('Create a push', () => {
       .auth(ownerToken, { type: 'bearer' })
       .send({
         selectedMedias: [media._id],
-        description: 'Description',
+        message: 'Description',
         isFree: false,
         price: 22.99,
         usersList: [
@@ -315,5 +321,375 @@ describe('Create a push', () => {
 
     const fetchedMessages = await messageModel.find();
     expect(fetchedMessages.length).toEqual(3);
+  });
+});
+
+describe('Get All Nudes', () => {
+  test('if not connected : A user can see free nudes', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media],
+    });
+    const nude2 = await createNude({
+      user: owner,
+      medias: [media2],
+    });
+    const nude3 = await createNude({
+      user: owner,
+      medias: [media3],
+    });
+
+    const res = await request(app).get(`/api/nudes`);
+
+    expect(res.status).toEqual(200);
+
+    res.body.nudes.forEach((currentNude) => {
+      currentNude.medias.forEach((currentMedia) => {
+        expect(currentMedia.blurredKey).toBeDefined();
+        expect(currentMedia.posterKey).toBeDefined();
+        expect(currentMedia.convertedKey).not.toBeNull();
+      });
+    });
+  });
+
+  test('if not connected : A user cant see paid nudes ', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media],
+      isFree: false,
+      paidMembers: [user._id.toString()],
+    });
+    const nude2 = await createNude({
+      user: owner,
+      medias: [media2],
+      isFree: false,
+      paidMembers: [user._id.toString()],
+    });
+    const nude3 = await createNude({
+      user: owner,
+      medias: [media3],
+      isFree: false,
+      paidMembers: [user._id.toString()],
+    });
+
+    const res = await request(app).get(`/api/nudes`);
+
+    expect(res.status).toEqual(200);
+
+    res.body.nudes.forEach((currentNude) => {
+      currentNude.medias.forEach((currentMedia) => {
+        expect(currentMedia.blurredKey).toBeDefined();
+        expect(currentMedia.posterKey).toBeDefined();
+        expect(currentMedia.convertedKey).toEqual(null);
+      });
+    });
+    expect(res.body.nudes.length).toEqual(3);
+  });
+
+  test('if connected : A user can see bought nudes', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media],
+      isFree: false,
+      paidMembers: [user._id.toString()],
+    });
+    const nude2 = await createNude({
+      user: owner,
+      medias: [media2],
+      isFree: false,
+      paidMembers: [user._id.toString()],
+    });
+    const nude3 = await createNude({
+      user: owner,
+      medias: [media3],
+      isFree: false,
+      paidMembers: [user._id.toString()],
+    });
+
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .get(`/api/nudes`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    res.body.nudes.forEach((currentNude) => {
+      currentNude.medias.forEach((currentMedia) => {
+        expect(currentMedia.blurredKey).toBeDefined();
+        expect(currentMedia.posterKey).toBeDefined();
+        expect(currentMedia.convertedKey).not.toBeNull();
+      });
+    });
+    expect(res.body.nudes.length).toEqual(3);
+  });
+
+  test('if connected : A user cant see paid nudes', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media],
+      isFree: false,
+    });
+    const nude2 = await createNude({
+      user: owner,
+      medias: [media2],
+      isFree: false,
+    });
+    const nude3 = await createNude({
+      user: owner,
+      medias: [media3],
+      isFree: false,
+    });
+
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .get(`/api/nudes`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    res.body.nudes.forEach((currentNude) => {
+      currentNude.medias.forEach((currentMedia) => {
+        expect(currentMedia.blurredKey).toBeDefined();
+        expect(currentMedia.posterKey).toBeDefined();
+        expect(currentMedia.convertedKey).toBeNull();
+      });
+    });
+    expect(res.body.nudes.length).toEqual(3);
+  });
+
+  test('if connected : A user can see his nudes', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media],
+      isFree: false,
+    });
+    const nude2 = await createNude({
+      user: owner,
+      medias: [media2],
+      isFree: false,
+    });
+    const nude3 = await createNude({
+      user: owner,
+      medias: [media3],
+      isFree: false,
+    });
+
+    const ownerToken = generateToken(owner._id);
+
+    const res = await request(app)
+      .get(`/api/nudes`)
+      .auth(ownerToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    res.body.nudes.forEach((currentNude) => {
+      currentNude.medias.forEach((currentMedia) => {
+        expect(currentMedia.blurredKey).toBeDefined();
+        expect(currentMedia.posterKey).toBeDefined();
+        expect(currentMedia.convertedKey).not.toBeNull();
+      });
+    });
+    expect(res.body.nudes.length).toEqual(3);
+  });
+
+  test('A user cant see archived nudes', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media],
+      isArchived: true,
+    });
+    const nude2 = await createNude({
+      user: owner,
+      medias: [media2],
+      isArchived: true,
+    });
+    const nude3 = await createNude({
+      user: owner,
+      medias: [media3],
+      isArchived: true,
+    });
+
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .get(`/api/nudes`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+    expect(res.body.nudes.length).toEqual(0);
+  });
+
+  test('A user cant see private nudes', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media],
+      visibility: 'private',
+    });
+    const nude2 = await createNude({
+      user: owner,
+      medias: [media2],
+      visibility: 'private',
+    });
+    const nude3 = await createNude({
+      user: owner,
+      medias: [media3],
+      visibility: 'private',
+    });
+
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .get(`/api/nudes`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+    expect(res.body.nudes.length).toEqual(0);
+  });
+});
+
+describe('Get Current Nude', () => {
+  test('A user can see free nude', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media, media2, media3],
+    });
+
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .get(`/api/nudes/${nude._id}`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    res.body.medias.forEach((currentMedia) => {
+      expect(currentMedia.blurredKey).toBeDefined();
+      expect(currentMedia.posterKey).toBeDefined();
+      expect(currentMedia.convertedKey).not.toBeNull();
+    });
+  });
+
+  test('A user cant see paid nude', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media, media2, media3],
+      isFree: false,
+    });
+
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .get(`/api/nudes/${nude._id}`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    res.body.medias.forEach((currentMedia) => {
+      expect(currentMedia.blurredKey).toBeDefined();
+      expect(currentMedia.posterKey).toBeDefined();
+      expect(currentMedia.convertedKey).toBeNull();
+    });
+  });
+
+  test('A user can see bought nude', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media, media2, media3],
+      isFree: false,
+      paidMembers: [user._id.toString()],
+    });
+
+    const userToken = generateToken(user._id);
+
+    const res = await request(app)
+      .get(`/api/nudes/${nude._id}`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    res.body.medias.forEach((currentMedia) => {
+      expect(currentMedia.blurredKey).toBeDefined();
+      expect(currentMedia.posterKey).toBeDefined();
+      expect(currentMedia.convertedKey).not.toBeNull();
+    });
+  });
+
+  test('A owner can see his nude', async () => {
+    const user = await createUser({});
+    const owner = await createUser({});
+    const media = await createMedia(owner);
+    const media2 = await createMedia(owner);
+    const media3 = await createMedia(owner);
+    const nude = await createNude({
+      user: owner,
+      medias: [media, media2, media3],
+      isFree: false,
+    });
+
+    const ownerToken = generateToken(owner._id);
+
+    const res = await request(app)
+      .get(`/api/nudes/${nude._id}`)
+      .auth(ownerToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    res.body.medias.forEach((currentMedia) => {
+      expect(currentMedia.blurredKey).toBeDefined();
+      expect(currentMedia.posterKey).toBeDefined();
+      expect(currentMedia.convertedKey).not.toBeNull();
+    });
   });
 });

@@ -64,6 +64,10 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
         isLoading={isLoading}
         customStyles={{
           padding: "0.4rem 0.8rem",
+          position: "absolute",
+          width: "100%",
+          maxWidth: "320px",
+          minHeight: "40px",
         }}
       >
         {t("common.unlockForCredit", {

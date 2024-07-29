@@ -41,6 +41,7 @@ const S3Image: FC<CustomImageProps> = ({
       priority
       style={{
         borderRadius: "6px",
+        backgroundColor: "#cecaff",
         ...styles,
       }}
     />

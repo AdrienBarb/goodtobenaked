@@ -58,9 +58,7 @@ const FullScreenMedia: React.FC<FullScreenMediaProps> = ({
               )}
 
               {!canView && !isOwner && (
-                <div className={styles.buyButton}>
-                  <BuyMediaButton nude={nude} setCurrentNude={setCurrentNude} />
-                </div>
+                <BuyMediaButton nude={nude} setCurrentNude={setCurrentNude} />
               )}
             </div>
           </div>
