@@ -15,10 +15,11 @@ const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
   const firstMedia = nude.medias[0];
   const currentMedia = nude.medias[currentMediaIndex];
 
+  console.log("firstMedia ", currentMedia.convertedKey);
+
   if (!canView) {
     return (
       <S3Image
-        cloudfrontUrl={process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA}
         imageKey={firstMedia.blurredKey}
         imageAlt={`media`}
         fill={true}
@@ -32,7 +33,6 @@ const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
   if (type === "card") {
     return (
       <S3Image
-        cloudfrontUrl={process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA}
         imageKey={currentMedia.posterKey}
         imageAlt={`media`}
         fill={true}
@@ -46,7 +46,6 @@ const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
   if (currentMedia.mediaType === "image") {
     return (
       <S3Image
-        cloudfrontUrl={process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA}
         imageKey={currentMedia.convertedKey}
         imageAlt={`media`}
         fill={true}
@@ -60,9 +59,7 @@ const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
   if (currentMedia.mediaType === "video") {
     return (
       <ReactPlayer
-        url={
-          process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA + currentMedia.convertedKey
-        }
+        url={currentMedia.convertedKey}
         width={"100%"}
         height={"100%"}
         style={{

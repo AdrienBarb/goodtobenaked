@@ -10,6 +10,7 @@ const saleModel = require('../models/saleModel');
 const { errorMessages } = require('../lib/constants');
 const conversationModel = require('../models/conversationModel');
 const messageModel = require('../models/messageModel');
+const signUrl = require('../lib/utils/signedUrl');
 
 const createNude = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
@@ -120,14 +121,46 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     .sort({ createdAt: -1 })
     .limit(limit)
     .populate('user', 'pseudo image.profil')
-    .populate('medias')
+    .populate(
+      'medias',
+      'user mediaType convertedKey blurredKey posterKey status',
+    )
     .lean();
 
+  console.log('req.user.id ', req.user.id);
+
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+  const updatedNudes = nudes.map((nude) => {
+    const updatedMedias = nude.medias.map((media) => {
+      return {
+        _id: media._id,
+        user: media.user,
+        mediaType: media.mediaType,
+        convertedKey: media.convertedKey
+          ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
+          : null,
+        blurredKey: media.blurredKey
+          ? `${cloudFrontUrl}${media.blurredKey}`
+          : null,
+        posterKey: media.posterKey
+          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+          : null,
+        status: media.status,
+      };
+    });
+    return {
+      ...nude,
+      medias: updatedMedias,
+    };
+  });
+
   const nextCursor =
-    nudes.length === limit ? nudes[nudes.length - 1]._id : null;
+    updatedNudes.length === limit
+      ? updatedNudes[updatedNudes.length - 1]._id
+      : null;
 
   res.status(200).json({
-    nudes,
+    nudes: updatedNudes,
     nextCursor,
   });
 });

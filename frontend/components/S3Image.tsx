@@ -5,7 +5,6 @@ import { ImageLoader } from "next/image";
 interface CustomImageProps {
   imageKey: string;
   imageAlt: string;
-  cloudfrontUrl: string | undefined;
   styles?: CSSProperties;
   fill?: boolean;
   width?: number | undefined;
@@ -19,19 +18,13 @@ const S3Image: FC<CustomImageProps> = ({
   fill = true,
   width,
   height,
-  cloudfrontUrl,
 }) => {
-  const myLoader: ImageLoader = ({ src, width, quality }) => {
-    return cloudfrontUrl + `${src}?w=${width}&q=${quality || 65}`;
-  };
-
   if (!imageKey) {
     return;
   }
 
   return (
     <Image
-      loader={myLoader}
       src={imageKey}
       alt={imageAlt}
       width={width}

@@ -448,7 +448,18 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
     },
   });
 
-  const users = await userModel.aggregate(aggregateQuery);
+  let users = await userModel.aggregate(aggregateQuery);
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+
+  users = users.map((user) => {
+    if (user.image.profil) {
+      user.image.profil = `${cloudFrontUrl}${user.image.profil}`;
+    }
+    if (user.image.banner) {
+      user.image.banner = `${cloudFrontUrl}${user.image.banner}`;
+    }
+    return user;
+  });
 
   const nextCursor =
     users.length > 0 ? users[users.length - 1].lastLogin.toISOString() : null;
