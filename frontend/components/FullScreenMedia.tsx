@@ -56,18 +56,16 @@ const FullScreenMedia: React.FC<FullScreenMediaProps> = ({
                   setCurrentMediaIndex={setCurrentMediaIndex}
                 />
               )}
+
+              {!canView && !isOwner && (
+                <BuyMediaButton nude={nude} setCurrentNude={setCurrentNude} />
+              )}
             </div>
           </div>
 
           <div className={styles.top}>
             <NudeUserDetails nude={nude} showAvatar />
           </div>
-
-          {!canView && !isOwner && (
-            <div className={styles.buyButton}>
-              <BuyMediaButton nude={nude} setCurrentNude={setCurrentNude} />
-            </div>
-          )}
         </div>
       </div>
     </Modal>

@@ -28,6 +28,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/app
+      - ./backend/keys:/app/keys
       - /app/node_modules
       - ./backend/client:/app/client
       - /app/client/node_modules

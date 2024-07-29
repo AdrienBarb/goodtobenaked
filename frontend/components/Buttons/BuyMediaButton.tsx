@@ -32,14 +32,11 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
   const navigateToPayment = useNavigateToPayment();
   const { usePost } = useApi();
   const { mutate: buyNude, isLoading } = usePost("/api/nudes/buy", {
-    onSuccess: () => {
+    onSuccess: (updatedNude) => {
       dispatch(getCreditAmount());
 
       if (session?.user?.id) {
-        setCurrentNude({
-          ...nude,
-          paidMembers: [...nude.paidMembers, session?.user?.id],
-        });
+        setCurrentNude(updatedNude);
       }
     },
   });
@@ -67,6 +64,10 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
         isLoading={isLoading}
         customStyles={{
           padding: "0.4rem 0.8rem",
+          position: "absolute",
+          width: "100%",
+          maxWidth: "320px",
+          minHeight: "40px",
         }}
       >
         {t("common.unlockForCredit", {

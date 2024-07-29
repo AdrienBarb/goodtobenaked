@@ -38,7 +38,7 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
   const queryKey = useMemo(() => ["usersList", filters], [filters]);
   const t = useTranslations();
   const [usersList, setUsersList] = useState(initialUsersDatas.users);
-  const [globalLoading, setGlobalLoading] = useState(true);
+  const [globalLoading, setGlobalLoading] = useState(false);
 
   const { useInfinite } = useApi();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinite(

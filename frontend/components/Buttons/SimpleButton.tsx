@@ -50,7 +50,7 @@ const SimpleButton: FC<SimpleButtonProps> = ({
       disabled={disabled}
     >
       {isLoading ? (
-        <CircularProgress sx={{ color: "#1C131E" }} size={20} />
+        <CircularProgress sx={{ color: "white" }} size={20} />
       ) : (
         children
       )}

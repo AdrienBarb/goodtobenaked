@@ -11,6 +11,7 @@ const {
 } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const config = require('../config');
+const signedUrl = require('../lib/utils/signedUrl');
 
 const generateUploadUrl = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
@@ -113,7 +114,21 @@ const getAllMedias = asyncHandler(async (req, res) => {
     })
     .sort({ createdAt: -1 });
 
-  res.status(200).json(medias);
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+
+  const updatedMedias = medias.map((media) => {
+    return {
+      _id: media._id,
+      user: media.user,
+      mediaType: media.mediaType,
+      posterKey: media.posterKey
+        ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+        : null,
+      status: media.status,
+    };
+  });
+
+  res.status(200).json(updatedMedias);
 });
 
 const deleteMedia = asyncHandler(async (req, res, next) => {

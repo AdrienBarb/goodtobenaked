@@ -19,7 +19,7 @@ const router = express.Router();
 router.post('/', userProtect, createNude);
 router.post('/push', userProtect, createPush);
 router.get('/', identifyUserIfConnected, getAllNudes);
-router.get('/:nudeId', getCurrentNude);
+router.get('/:nudeId', userProtect, getCurrentNude);
 router.put('/:nudeId/archived', userProtect, archivedNude);
 router.put('/:nudeId', userProtect, editNude);
 router.post('/buy', userProtect, buyNude);

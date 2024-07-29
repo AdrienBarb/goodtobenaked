@@ -27,7 +27,6 @@ const UserCard: FC<Props> = ({ user }) => {
         <div className={styles.imageWrapper}>
           {user.image?.profil && (
             <S3Image
-              cloudfrontUrl={process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA}
               imageKey={user.image?.profil}
               imageAlt={`${user.pseudo} - profile picture`}
               fill={true}

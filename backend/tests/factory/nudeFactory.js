@@ -12,10 +12,25 @@ const NudeFactory = new Factory()
   .attr('isFree', true)
   .attr('medias', [() => new mongoose.Types.ObjectId()])
   .attr('visibility', 'public')
-  .attr('isArchived', false);
+  .attr('isArchived', false)
+  .attr('paidMembers', []);
 
-const createNude = async ({ user, visibility = 'public', medias }) => {
-  const nudeData = NudeFactory.build({ user, visibility, medias });
+const createNude = async ({
+  user,
+  visibility = 'public',
+  medias,
+  isFree = true,
+  paidMembers = [],
+  isArchived = false,
+}) => {
+  const nudeData = NudeFactory.build({
+    user,
+    visibility,
+    medias,
+    isFree,
+    paidMembers,
+    isArchived,
+  });
   const nude = new nudeModel(nudeData);
   return nude.save();
 };

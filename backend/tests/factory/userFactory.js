@@ -8,6 +8,7 @@ const UserFactory = new Factory()
   .attr('email', faker.internet.email)
   .attr('password', faker.internet.password)
   .attr('userType', 'creator')
+  .attr('isAccountVerified', true)
   .attr('bankAccount.name', 'Adrien Barbier')
   .attr('bankAccount.iban', 'FR1234567890')
   .attr('creditAmount', 10000)
@@ -28,6 +29,7 @@ const createUser = async ({
   profileViewers = [],
   messageSenders = [],
   nudeBuyers = [],
+  isAccountVerified = true,
 }) => {
   const userData = UserFactory.build({
     creditAmount,
@@ -37,6 +39,7 @@ const createUser = async ({
     profileViewers,
     messageSenders,
     nudeBuyers,
+    isAccountVerified,
   });
   const user = new userModel(userData);
   return user.save();
