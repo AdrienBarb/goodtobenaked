@@ -71,7 +71,6 @@ services:
       - ADMIN_PRIVATE_KEY
       - STRIPE_API_KEY
       - NOTION_API_KEY
-      - CLOUDFRONT_URL
       - SLACK_TOKEN
       - MAILCHIMP_API_KEY
       - S3_BUCKET_MEDIA
@@ -88,7 +87,7 @@ services:
       - app-network
     deploy:
       replicas: 1
-      labels:
+      labels:d
         - "traefik.enable=true"
         - "traefik.http.routers.backend.rule=Host(`api-staging.nastynipples.com`)"
         - "traefik.http.routers.backend.entrypoints=websecure"
