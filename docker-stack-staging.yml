@@ -81,6 +81,9 @@ services:
       - AWS_REGION
       - STRIPE_PUBLISHABLE_KEY
       - STRIPE_ENDPOINT_SECRET
+      - CLOUDFRONT_URL
+      - PRIVATE_KEY_PATH
+      - KEY_PAIR_ID
     networks:
       - app-network
     deploy:
@@ -92,6 +95,8 @@ services:
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
+    volumes:
+      - "./keys:/keys"
 
 secrets:
   NEXTAUTH_SECRET:
@@ -114,8 +119,6 @@ secrets:
     external: true
   NOTION_API_KEY:
     external: true
-  CLOUDFRONT_URL:
-    external: true
   SLACK_TOKEN:
     external: true
   MAILCHIMP_API_KEY:
@@ -133,6 +136,12 @@ secrets:
   STRIPE_PUBLISHABLE_KEY:
     external: true
   STRIPE_ENDPOINT_SECRET:
+    external: true
+  CLOUDFRONT_URL:
+    external: true
+  PRIVATE_KEY_PATH:
+    external: true
+  KEY_PAIR_ID:
     external: true
 
 networks:
