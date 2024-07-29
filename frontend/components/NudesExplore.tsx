@@ -34,7 +34,7 @@ const NudesExplore: FC<Props> = ({ initialNudesDatas }) => {
     tag: "",
   });
   const t = useTranslations();
-  const [globalLoading, setGlobalLoading] = useState(true);
+  const [globalLoading, setGlobalLoading] = useState(false);
   const queryKey = useMemo(() => ["exploreList", { filters }], [filters]);
   const [nudeList, setNudeList] = useState<Nude[]>(initialNudesDatas.nudes);
 

@@ -127,18 +127,18 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     )
     .lean();
 
-  console.log('req.user.id ', req.user.id);
-
   const cloudFrontUrl = process.env.CLOUDFRONT_URL;
   const updatedNudes = nudes.map((nude) => {
     const updatedMedias = nude.medias.map((media) => {
+      const isOwnerOrPaidMember =
+        req.user?.id &&
+        (nude.paidMembers.includes(req.user.id) ||
+          nude.user._id.toString() === req.user.id);
+
       return {
         _id: media._id,
         user: media.user,
         mediaType: media.mediaType,
-        convertedKey: media.convertedKey
-          ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
-          : null,
         blurredKey: media.blurredKey
           ? `${cloudFrontUrl}${media.blurredKey}`
           : null,
@@ -146,8 +146,13 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
           ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
           : null,
         status: media.status,
+        convertedKey:
+          (isOwnerOrPaidMember || nude.isFree) && media.convertedKey
+            ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
+            : null,
       };
     });
+
     return {
       ...nude,
       medias: updatedMedias,
@@ -170,10 +175,41 @@ const getCurrentNude = asyncHandler(async (req, res, next) => {
 
   const nude = await nudeModel
     .findById(nudeId)
-    .populate('user')
-    .populate('medias');
+    .populate('user', 'pseudo image.profil')
+    .populate(
+      'medias',
+      'user mediaType convertedKey blurredKey posterKey status',
+    )
+    .lean();
 
-  res.status(200).json(nude);
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+
+  res.status(200).json({
+    ...nude,
+    medias: nude.medias.map((media) => {
+      const isOwnerOrPaidMember =
+        req.user?.id &&
+        (nude.paidMembers.includes(req.user.id) ||
+          nude.user._id.toString() === req.user.id);
+
+      return {
+        _id: media._id,
+        user: media.user,
+        mediaType: media.mediaType,
+        blurredKey: media.blurredKey
+          ? `${cloudFrontUrl}${media.blurredKey}`
+          : null,
+        posterKey: media.posterKey
+          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+          : null,
+        status: media.status,
+        convertedKey:
+          (isOwnerOrPaidMember || nude.isFree) && media.convertedKey
+            ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
+            : null,
+      };
+    }),
+  });
 });
 
 const editNude = asyncHandler(async (req, res, next) => {
@@ -308,7 +344,36 @@ const buyNude = asyncHandler(async (req, res, next) => {
 
   await notifySlack('Une vente de nude');
 
-  res.status(200).json('Succeed');
+  const updatedNude = await nudeModel
+    .findById(nude._id)
+    .populate('user', 'pseudo image.profil')
+    .populate(
+      'medias',
+      'user mediaType convertedKey blurredKey posterKey status',
+    )
+    .lean();
+
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+  res.status(200).json({
+    ...updatedNude,
+    medias: updatedNude.medias.map((media) => {
+      return {
+        _id: media._id,
+        user: media.user,
+        mediaType: media.mediaType,
+        blurredKey: media.blurredKey
+          ? `${cloudFrontUrl}${media.blurredKey}`
+          : null,
+        posterKey: media.posterKey
+          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+          : null,
+        status: media.status,
+        convertedKey: media.convertedKey
+          ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
+          : null,
+      };
+    }),
+  });
 });
 
 const createPush = asyncHandler(async (req, res, next) => {

@@ -3,6 +3,8 @@ import { Nude } from "@/types/models/Nude";
 import useCanView from "@/lib/hooks/useCanView";
 import S3Image from "./S3Image";
 import ReactPlayer from "react-player";
+import { Media } from "@/types/models/Media";
+import useIsOwner from "@/lib/hooks/useIsOwner";
 
 interface Props {
   nude: Nude;
@@ -12,12 +14,13 @@ interface Props {
 
 const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
   const canView = useCanView(nude);
+  const isOwner = useIsOwner(nude.user._id);
   const firstMedia = nude.medias[0];
-  const currentMedia = nude.medias[currentMediaIndex];
+  const currentMedia: Media = nude.medias[currentMediaIndex];
 
   console.log("firstMedia ", currentMedia.convertedKey);
 
-  if (!canView) {
+  if (!canView && !isOwner && firstMedia.blurredKey) {
     return (
       <S3Image
         imageKey={firstMedia.blurredKey}
@@ -30,7 +33,7 @@ const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
     );
   }
 
-  if (type === "card") {
+  if (type === "card" && currentMedia.posterKey) {
     return (
       <S3Image
         imageKey={currentMedia.posterKey}
@@ -43,7 +46,7 @@ const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
     );
   }
 
-  if (currentMedia.mediaType === "image") {
+  if (currentMedia.mediaType === "image" && currentMedia.convertedKey) {
     return (
       <S3Image
         imageKey={currentMedia.convertedKey}

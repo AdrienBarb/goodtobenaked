@@ -32,14 +32,11 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
   const navigateToPayment = useNavigateToPayment();
   const { usePost } = useApi();
   const { mutate: buyNude, isLoading } = usePost("/api/nudes/buy", {
-    onSuccess: () => {
+    onSuccess: (updatedNude) => {
       dispatch(getCreditAmount());
 
       if (session?.user?.id) {
-        setCurrentNude({
-          ...nude,
-          paidMembers: [...nude.paidMembers, session?.user?.id],
-        });
+        setCurrentNude(updatedNude);
       }
     },
   });

@@ -19,12 +19,17 @@ const S3Image: FC<CustomImageProps> = ({
   width,
   height,
 }) => {
+  const myLoader: ImageLoader = ({ src }) => {
+    return src;
+  };
+
   if (!imageKey) {
     return;
   }
 
   return (
     <Image
+      loader={myLoader}
       src={imageKey}
       alt={imageAlt}
       width={width}
