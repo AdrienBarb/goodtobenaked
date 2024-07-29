@@ -11,6 +11,7 @@ const errorMessages = {
   INVALID_CODE: 'invalid_code',
   YOURE_BLOCKED: 'youre_blocked',
   NOT_ENOUGH_CREDIT: 'not_enough_credit',
+  NOT_ENOUGH_BALANCE: 'not_enough_balance',
 };
 
 const NOTIFICATIONS_TYPE = ['profile_viewed'];

@@ -314,7 +314,7 @@ const AppMenu: FC<Props> = ({ setOpenDrawer }) => {
                           {t("navigation.becomeCreator")}
                         </div>
                       </button>
-                      <button
+                      {/* <button
                         className={clsx(
                           styles.card,
                           path === appRouter.referral && styles.isSelected
@@ -331,7 +331,7 @@ const AppMenu: FC<Props> = ({ setOpenDrawer }) => {
                           <UilLink />
                           {t("navigation.referral")}
                         </div>
-                      </button>
+                      </button> */}
                       <button
                         className={clsx(
                           styles.card,

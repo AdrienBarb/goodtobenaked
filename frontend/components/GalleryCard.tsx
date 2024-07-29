@@ -114,7 +114,6 @@ const GalleryCard: FC<GalleryCardProps> = ({
         </div>
         {media.posterKey && (
           <S3Image
-            cloudfrontUrl={process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA}
             imageKey={media.posterKey}
             imageAlt={`media`}
             fill={true}

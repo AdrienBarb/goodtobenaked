@@ -1,24 +1,16 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import TableHead from "@mui/material/TableHead";
 import styles from "@/styles/SalesTable.module.scss";
-import NoResults from "@/components/Common/NoResults";
-import { format } from "date-fns";
+import { format, isBefore } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslations } from "next-intl";
 import useApi from "@/lib/hooks/useApi";
 import Text from "./Text";
 import { Sale } from "@/types/models/Sale";
-import clsx from "clsx";
-import TableRowSkeleton from "./LoadingSkeleton/TableRowSkeleton";
 import dynamic from "next/dynamic";
+import { Link } from "@/navigation";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 const Loader = dynamic(() => import("@/components/Loader"), { ssr: false });
 
@@ -50,6 +42,7 @@ const SalesTable = () => {
       onSuccess: (data: any) => {
         setSales(data?.pages.flatMap((page: any) => page.sales));
       },
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -66,6 +59,9 @@ const SalesTable = () => {
       case "tip":
         value = t("incomes.tipsLabel");
         break;
+      case "message":
+        value = t("incomes.messageLabel");
+        break;
 
       default:
         break;
@@ -76,164 +72,85 @@ const SalesTable = () => {
 
   const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    if (!hasNextPage) return;
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage,
+  });
 
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNextPage, fetchNextPage]);
+  const isAvailable = (availableDate: Date) => {
+    return isBefore(new Date(availableDate), new Date());
+  };
 
   return (
-    <TableContainer
-      component={Paper}
-      sx={{ boxShadow: "none", backgroundColor: "#fff0eb" }}
-    >
-      <Table
-        sx={{ minWidth: 500 }}
-        size="small"
-        aria-label="custom pagination table"
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">
-              <Text weight="bolder">{t("incomes.amountLabel")}</Text>
-            </TableCell>
-            <TableCell sx={{}} align="left">
-              <Text weight="bolder">{t("incomes.typeLabel")}</Text>
-            </TableCell>
-            <TableCell sx={{}} align="left">
-              <Text weight="bolder">{t("incomes.userLabel")}</Text>
-            </TableCell>
-            <TableCell sx={{}} align="left">
-              <Text weight="bolder">{t("incomes.dateLabel")}</Text>
-            </TableCell>
-            <TableCell sx={{}} align="left"></TableCell>
-          </TableRow>
-        </TableHead>
+    <div className={styles.container}>
+      {sales.map((currentSale: Sale, index) => {
+        const available = isAvailable(currentSale.availableDate);
 
-        <TableBody>
-          {isFetching ? (
-            <>
-              <TableRow
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+        return (
+          <div
+            className={styles.saleCard}
+            key={index}
+            style={{
+              backgroundColor: currentSale.isPaid
+                ? "rgba(0, 0, 0, 0.4)"
+                : available
+                ? "#cecaff"
+                : "#f29d69",
+            }}
+          >
+            <div>
+              <Text
+                weight="bolder"
+                customStyles={{ color: "white", marginBottom: "0.2rem" }}
+                fontSize={18}
               >
-                <TableCell
-                  colSpan={6}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <TableRowSkeleton />
-                </TableCell>
-              </TableRow>
-              <TableRow
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell
-                  colSpan={6}
-                  sx={{
-                    width: "100%",
-                  }}
-                >
-                  <TableRowSkeleton />
-                </TableCell>
-              </TableRow>
-            </>
-          ) : sales.length > 0 ? (
-            sales.map((currentSale: Sale, index: number) => (
-              <TableRow
-                key={index}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell
-                  scope="row"
-                  sx={{
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <Text>{`${currentSale.amount.baseValue / 100} €`}</Text>
-                </TableCell>
-
-                <TableCell
-                  scope="row"
-                  sx={{
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <Text>{getSaleType(currentSale.saleType)}</Text>
-                </TableCell>
-
-                <TableCell
-                  scope="row"
-                  sx={{
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <Text>
-                    {currentSale.fromUser ? currentSale.fromUser?.pseudo : "-"}
-                  </Text>
-                </TableCell>
-                <TableCell
-                  scope="row"
-                  sx={{
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  <Text>
-                    {format(new Date(currentSale?.createdAt), "dd MMMM yyyy", {
+                {getSaleType(currentSale.saleType)}
+              </Text>
+              <div className={styles.nameAndDate}>
+                {currentSale?.fromUser?._id && (
+                  <Link
+                    href={`/dashboard/community/${currentSale.fromUser._id}`}
+                  >
+                    {`${currentSale.fromUser.pseudo}`}
+                  </Link>
+                )}
+                <Text customStyles={{ color: "white" }} fontSize={14}>
+                  {`le ${format(
+                    new Date(currentSale?.createdAt),
+                    "dd MMMM yyyy",
+                    {
                       locale: fr,
-                    })}
-                  </Text>
-                </TableCell>
-                <TableCell scope="row" align="right">
-                  {currentSale?.isPaid ? (
-                    <div className={clsx(styles.chip, styles.paid)}>
-                      {t("incomes.paid")}
-                    </div>
-                  ) : (
-                    <div className={clsx(styles.chip, styles.waiting)}>
-                      {t("incomes.waiting")}
-                    </div>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell
-                colSpan={6}
-                sx={{
-                  width: "100%",
-                }}
-              >
-                <NoResults text={t("incomes.noSales")} />
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+                    }
+                  )}`}
+                </Text>
+              </div>
+            </div>
+            <div className={styles.value}>
+              <Text
+                weight="bolder"
+                customStyles={{ color: "white" }}
+                fontSize={20}
+              >{`${currentSale.amount.fiatValue / 100} €`}</Text>
+              <Text fontSize={12} customStyles={{ color: "white" }}>
+                {currentSale.isPaid
+                  ? t("incomes.paid")
+                  : available
+                  ? t("incomes.available")
+                  : t("incomes.pending")}
+              </Text>
+            </div>
+          </div>
+        );
+      })}
+
       <div
-        style={{ height: "10rem", display: "block", width: "100%" }}
+        style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}
         ref={loadMoreRef}
       >
-        {isFetchingNextPage && <Loader />}
+        {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
       </div>
-    </TableContainer>
+    </div>
   );
 };
 

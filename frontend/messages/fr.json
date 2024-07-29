@@ -161,7 +161,13 @@
     "uploadImage": "Uploader l'image",
     "weUploadYourFile": "Votre média est en cours de préparation. Veuillez ne pas fermer cette fenêtre.",
     "weAreFormattingYourMedia": "Nous formatons ton média, cela peut prendre jusqu'à 10 minutes",
-    "maxSizeImage": "La taille maximum des fichiers est de 10 MB pour les images, et 5 GO pour les vidéos."
+    "maxSizeImage": "La taille maximum des fichiers est de 10 MB pour les images, et 5 GO pour les vidéos.",
+    "notificationSubscribers": "Abonnés aux Notifications",
+    "profileViewers": "Visiteurs du Profil",
+    "messageSenders": "Expéditeurs de Messages",
+    "nudeBuyers": "Acheteurs de Nudes",
+    "pushExplanation": "En envoyant un « Push », vous pouvez cibler directement certains types d’utilisateurs. Le nude sera envoyé directement par message. ",
+    "whichGroupOfUsers": "Veuillez sélectionner les groupes d’utilisateurs auxquels vous souhaitez envoyer ce nude :"
   },
   "home": {
     "title": "GOODTOBENAKED",
@@ -184,7 +190,7 @@
     "back_home": "Page d'accueille",
     "report_bug": "Signaler un bug",
     "should_enter_bank_details": "Veuillez saisir vos informations bancaires dans l'onglet \"Paramètres\"",
-    "current_wallet_empty": "Votre solde actuel est de 0.",
+    "current_wallet_empty": "Votre solde disponible doit être supérieur à 50 euros.",
     "fileTooBig": "Le fichier est trop gros. Veuillez télécharger un fichier de moins de 3 Go.",
     "sureDeleteThisMedia": "Etes-vous sur de vouloir supprimer cette image/video ?",
     "sureDeleteThisNude": "Etes-vous sur de vouloir supprimer ce nude ?",
@@ -630,6 +636,7 @@
   },
   "conversation": {
     "send": "Envoyer",
+    "sendFor": "Envoyer pour {creditAmount} crédits",
     "sendNude": "Envoyer un nude",
     "writeMessage": "Écrire un message",
     "message": "Message"
@@ -693,10 +700,15 @@
     "nudeSaleLabel": "Vente de nude",
     "commissionLabel": "Commission",
     "tipsLabel": "Tips",
+    "messageLabel": "Message",
     "noSales": "Aucune vente",
     "noInvoices": "Aucune facture",
     "invoice_number": "Désignation",
-    "invoice_status": "Status"
+    "invoice_status": "Status",
+    "available": "Disponible",
+    "pending": "En attente",
+    "availablePopoverDescription": "C’est le solde qui peut être retiré. Le solde doit être supérieur à 50 € pour pouvoir être retiré.",
+    "pendingPopoverDescription": "Pour des raisons de sécurité, toutes les ventes ont un délai de 7 jours avant de devenir disponibles."
   },
   "referral": {
     "reffer_friends": "Parrainez des amis",

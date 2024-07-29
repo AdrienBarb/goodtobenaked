@@ -1,11 +1,8 @@
-import { Creator } from "./Creator";
 import { Media } from "./Media";
 import { User } from "./User";
 
 interface PriceDetails {
-  basePrice: number;
-  commission: number;
-  basePriceWithCommission: number;
+  fiatPrice: number;
   creditPrice: number;
   currency: "USD" | "EUR";
 }
@@ -15,7 +12,6 @@ export interface Nude {
   user: User;
   description?: string;
   priceDetails: PriceDetails;
-  totalPrice: number;
   isArchived: boolean;
   isFree: boolean;
   paidMembers: string[];

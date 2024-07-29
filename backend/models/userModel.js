@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { NOTIFICATIONS_TYPE } = require('../lib/constants');
+const moment = require('moment');
 
 const socialMediaLinkSchema = new mongoose.Schema({
   twitter: {
@@ -155,6 +155,18 @@ const userSchema = mongoose.Schema(
       type: [],
       default: [],
     },
+    profileViewers: {
+      type: [],
+      default: [],
+    },
+    messageSenders: {
+      type: [],
+      default: [],
+    },
+    nudeBuyers: {
+      type: [],
+      default: [],
+    },
     version: {
       type: Number,
       default: 2,
@@ -170,6 +182,10 @@ const userSchema = mongoose.Schema(
     creditAmount: {
       type: Number,
       default: 0,
+    },
+    promotionEndDate: {
+      type: Date,
+      default: () => moment.utc().add(3, 'months').startOf('day').toDate(),
     },
   },
   {

@@ -8,12 +8,12 @@ import NotificationCard from "./NotificationCard";
 import { useAppDispatch } from "@/store/store";
 import { setUnreadNotifications } from "@/features/notification/notificationSlice";
 import { USER_INAPP_NOTIFICATION } from "@/constants/constants";
-import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import FiltersWrapper from "./FiltersWrapper";
 import FilterSelect from "./FilterSelect";
 import AppMessage from "./AppMessage";
 import dynamic from "next/dynamic";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 const Loader = dynamic(() => import("@/components/Loader"), { ssr: false });
 
@@ -66,25 +66,11 @@ const NotificationsList: FC<Props> = ({ initialNotificationsData }) => {
 
   const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    if (!hasNextPage) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNextPage, fetchNextPage]);
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage,
+  });
 
   const { mutate: markNotificationsAsRead, isLoading } = usePut(
     `/api/notifications/mark-as-read`,
@@ -139,10 +125,10 @@ const NotificationsList: FC<Props> = ({ initialNotificationsData }) => {
       </ul>
 
       <div
-        style={{ height: "10rem", display: "block", width: "100%" }}
+        style={{ height: "4rem", display: hasNextPage ? "flex" : "none" }}
         ref={loadMoreRef}
       >
-        {isFetchingNextPage && <Loader />}
+        {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
       </div>
     </div>
   );

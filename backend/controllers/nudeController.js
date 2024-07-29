@@ -3,12 +3,14 @@ const nudeModel = require('../models/nudeModel');
 const CustomError = require('../lib/error/CustomError');
 const { getMediaPrice } = require('../lib/utils/price');
 const { default: mongoose } = require('mongoose');
-const nudeSoldModel = require('../models/nudeSoldModel');
 const { executeInTransaction } = require('../db');
 const { notifySlack } = require('../lib/services/slack');
 const userModel = require('../models/userModel');
 const saleModel = require('../models/saleModel');
 const { errorMessages } = require('../lib/constants');
+const conversationModel = require('../models/conversationModel');
+const messageModel = require('../models/messageModel');
+const signUrl = require('../lib/utils/signedUrl');
 
 const createNude = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
@@ -36,13 +38,10 @@ const createNude = asyncHandler(async (req, res, next) => {
     priceDetails: {},
   };
 
-  const { basePrice, basePriceWithCommission, creditPrice, commission } =
-    getMediaPrice(price, user.isAmbassador ? 0 : user.salesFee);
+  const { fiatPrice, creditPrice } = getMediaPrice(price);
 
-  nudeObject.priceDetails.basePrice = basePrice;
-  nudeObject.priceDetails.basePriceWithCommission = basePriceWithCommission;
+  nudeObject.priceDetails.fiatPrice = fiatPrice;
   nudeObject.priceDetails.creditPrice = creditPrice;
-  nudeObject.priceDetails.commission = commission;
 
   const createdNude = await nudeModel.create(nudeObject);
 
@@ -122,16 +121,51 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     .sort({ createdAt: -1 })
     .limit(limit)
     .populate('user', 'pseudo image.profil')
-    .populate('medias')
+    .populate(
+      'medias',
+      'user mediaType convertedKey blurredKey posterKey status',
+    )
     .lean();
 
-  console.log('nudes ', nudes.length);
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+  const updatedNudes = nudes.map((nude) => {
+    const updatedMedias = nude.medias.map((media) => {
+      const isOwnerOrPaidMember =
+        req.user?.id &&
+        (nude.paidMembers.includes(req.user.id) ||
+          nude.user._id.toString() === req.user.id);
+
+      return {
+        _id: media._id,
+        user: media.user,
+        mediaType: media.mediaType,
+        blurredKey: media.blurredKey
+          ? `${cloudFrontUrl}${media.blurredKey}`
+          : null,
+        posterKey: media.posterKey
+          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+          : null,
+        status: media.status,
+        convertedKey:
+          (isOwnerOrPaidMember || nude.isFree) && media.convertedKey
+            ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
+            : null,
+      };
+    });
+
+    return {
+      ...nude,
+      medias: updatedMedias,
+    };
+  });
 
   const nextCursor =
-    nudes.length === limit ? nudes[nudes.length - 1]._id : null;
+    updatedNudes.length === limit
+      ? updatedNudes[updatedNudes.length - 1]._id
+      : null;
 
   res.status(200).json({
-    nudes,
+    nudes: updatedNudes,
     nextCursor,
   });
 });
@@ -141,10 +175,41 @@ const getCurrentNude = asyncHandler(async (req, res, next) => {
 
   const nude = await nudeModel
     .findById(nudeId)
-    .populate('user')
-    .populate('medias');
+    .populate('user', 'pseudo image.profil')
+    .populate(
+      'medias',
+      'user mediaType convertedKey blurredKey posterKey status',
+    )
+    .lean();
 
-  res.status(200).json(nude);
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+
+  res.status(200).json({
+    ...nude,
+    medias: nude.medias.map((media) => {
+      const isOwnerOrPaidMember =
+        req.user?.id &&
+        (nude.paidMembers.includes(req.user.id) ||
+          nude.user._id.toString() === req.user.id);
+
+      return {
+        _id: media._id,
+        user: media.user,
+        mediaType: media.mediaType,
+        blurredKey: media.blurredKey
+          ? `${cloudFrontUrl}${media.blurredKey}`
+          : null,
+        posterKey: media.posterKey
+          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+          : null,
+        status: media.status,
+        convertedKey:
+          (isOwnerOrPaidMember || nude.isFree) && media.convertedKey
+            ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
+            : null,
+      };
+    }),
+  });
 });
 
 const editNude = asyncHandler(async (req, res, next) => {
@@ -179,17 +244,14 @@ const editNude = asyncHandler(async (req, res, next) => {
   nude.isFree = isFree;
   nude.tags = tags;
 
-  const { basePrice, basePriceWithCommission, creditPrice, commission } =
-    getMediaPrice(price, user.isAmbassador ? 0 : user.salesFee);
+  const { fiatPrice, creditPrice } = getMediaPrice(price);
 
-  nude.priceDetails.basePrice = basePrice;
-  nude.priceDetails.basePriceWithCommission = basePriceWithCommission;
+  nude.priceDetails.fiatPrice = fiatPrice;
   nude.priceDetails.creditPrice = creditPrice;
-  nude.priceDetails.commission = commission;
 
   await nude.save();
 
-  res.status(201).json(nude);
+  res.status(200).json(nude);
 });
 
 const archivedNude = asyncHandler(async (req, res, next) => {
@@ -231,18 +293,8 @@ const buyNude = asyncHandler(async (req, res, next) => {
     return next(new CustomError(400, 'not_enough_credit'));
   }
 
-  const existingSoldNude = await nudeSoldModel.find({
-    nude: nude,
-    buyer: user,
-    status: 'succeeded',
-  });
-
-  if (existingSoldNude.length > 0) {
-    return next(new CustomError(400, 'already_buy'));
-  }
-
-  //add member to paidMembers of the nude
   await executeInTransaction(async (session) => {
+    //Add buyer to paidMembers of the nude
     await nudeModel.updateOne(
       { _id: nude?._id },
       {
@@ -251,7 +303,7 @@ const buyNude = asyncHandler(async (req, res, next) => {
       { session },
     );
 
-    //set new credit amount
+    //Remove credit from the buyer
     const newMemberCreditAmount =
       user.creditAmount - nude.priceDetails.creditPrice;
 
@@ -263,7 +315,7 @@ const buyNude = asyncHandler(async (req, res, next) => {
       { session },
     );
 
-    //create sale for the nude
+    //Create a sale
     await saleModel.create(
       [
         {
@@ -272,9 +324,7 @@ const buyNude = asyncHandler(async (req, res, next) => {
           saleType: 'nude',
           nude: nude,
           amount: {
-            baseValue: nude.priceDetails.basePrice,
-            commission: nude.priceDetails.commission,
-            baseValueWithCommission: nude.priceDetails.basePriceWithCommission,
+            fiatValue: nude.priceDetails.fiatPrice,
             creditValue: nude.priceDetails.creditPrice,
             currency: nude.priceDetails.currency,
           },
@@ -283,26 +333,132 @@ const buyNude = asyncHandler(async (req, res, next) => {
       { session },
     );
 
-    if (nude.user.referredBy) {
-      await saleModel.create(
-        [
-          {
-            owner: nude.user.referredBy,
-            fromUser: nude.user._id,
-            saleType: 'commission',
-            amount: {
-              baseValue: Math.round(nude.priceDetails.basePrice * 0.05),
-            },
-          },
-        ],
-        { session },
-      );
+    //Add userId in nudeBuyers array of the nude owner
+    const owner = await userModel.findById(nude.user);
+    const userId = user._id.toString();
+    if (!owner.nudeBuyers.includes(userId)) {
+      owner.nudeBuyers = [...owner.nudeBuyers, userId];
     }
+    await owner.save({ session });
   });
 
   await notifySlack('Une vente de nude');
 
-  res.status(200).json('Succeed');
+  const updatedNude = await nudeModel
+    .findById(nude._id)
+    .populate('user', 'pseudo image.profil')
+    .populate(
+      'medias',
+      'user mediaType convertedKey blurredKey posterKey status',
+    )
+    .lean();
+
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+  res.status(200).json({
+    ...updatedNude,
+    medias: updatedNude.medias.map((media) => {
+      return {
+        _id: media._id,
+        user: media.user,
+        mediaType: media.mediaType,
+        blurredKey: media.blurredKey
+          ? `${cloudFrontUrl}${media.blurredKey}`
+          : null,
+        posterKey: media.posterKey
+          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+          : null,
+        status: media.status,
+        convertedKey: media.convertedKey
+          ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
+          : null,
+      };
+    }),
+  });
+});
+
+const createPush = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.user.id);
+  const { selectedMedias, message, isFree, price, usersList } = req.body;
+
+  if (!message || selectedMedias.length === 0) {
+    return next(new CustomError(400, errorMessages.MISSING_FIELDS));
+  }
+
+  if (!isFree && !price) {
+    return next(new CustomError(400, errorMessages.MISSING_FIELDS));
+  }
+
+  // Récupérer les IDs des listes d'utilisateurs sélectionnées
+  let userIds = [];
+
+  if (usersList.includes('notificationSubscribers')) {
+    userIds = userIds.concat(user.notificationSubscribers);
+  }
+  if (usersList.includes('profileViewers')) {
+    userIds = userIds.concat(user.profileViewers);
+  }
+  if (usersList.includes('messageSenders')) {
+    userIds = userIds.concat(user.messageSenders);
+  }
+  if (usersList.includes('nudeBuyers')) {
+    userIds = userIds.concat(user.nudeBuyers);
+  }
+
+  // Éliminer les doublons
+  userIds = [...new Set(userIds)];
+
+  // Filtrer les utilisateurs de type 'member'
+  const members = await userModel.find({
+    _id: { $in: userIds },
+    userType: 'member',
+  });
+
+  const memberIds = members.map((member) => member._id);
+
+  const nudeObject = {
+    user: user._id,
+    medias: selectedMedias,
+    isFree: isFree,
+    visibility: 'private',
+    priceDetails: {},
+  };
+
+  const { fiatPrice, creditPrice } = getMediaPrice(price);
+
+  nudeObject.priceDetails.fiatPrice = fiatPrice;
+  nudeObject.priceDetails.creditPrice = creditPrice;
+
+  const createdNude = await nudeModel.create(nudeObject);
+
+  // Envoyer le "Nude" à chaque utilisateur
+  for (const memberId of memberIds) {
+    let conversation = await conversationModel.findOne({
+      participants: { $all: [user._id, memberId] },
+    });
+
+    if (!conversation) {
+      conversation = await conversationModel.create({
+        participants: [user._id, memberId],
+      });
+    }
+
+    // Envoyer le message avec le "Nude"
+    const messageValues = {
+      sender: user._id,
+      nude: createdNude._id,
+      text: message,
+      conversation: conversation,
+    };
+
+    const createdMessage = await messageModel.create(messageValues);
+
+    await conversationModel.updateOne(
+      { _id: conversation._id },
+      { $push: { messages: createdMessage._id } },
+    );
+  }
+
+  res.status(201).json(createdNude);
 });
 
 module.exports = {
@@ -312,4 +468,5 @@ module.exports = {
   editNude,
   archivedNude,
   buyNude,
+  createPush,
 };

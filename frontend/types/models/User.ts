@@ -39,6 +39,7 @@ export interface User {
   gender?: Gender;
   image?: Image;
   emailNotification: boolean;
+  userType: "creator" | "member";
   description?: string;
   socialMediaLink?: SocialMediaLink;
   nationality?: string;
@@ -58,6 +59,9 @@ export interface User {
   lastLogin?: Date;
   referredBy?: User;
   notificationSubscribers: string[];
+  profileViewers: string[];
+  messageSenders: string[];
+  nudeBuyers: string[];
   version: number;
   isAmbassador: boolean;
   createdAt?: Date;

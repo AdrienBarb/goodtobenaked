@@ -19,8 +19,6 @@ const {
 } = require('@aws-sdk/client-s3');
 const sharp = require('sharp');
 const creatorIdentityVerificationModel = require('../models/creatorIdentityVerificationModel');
-const { generateRandomCode } = require('../lib/utils');
-const verificationCodeModel = require('../models/verificationCodeModel');
 const nudeModel = require('../models/nudeModel');
 const conversationModel = require('../models/conversationModel');
 const { getPriceInFiatFromCredits } = require('../lib/utils/price');
@@ -28,7 +26,7 @@ const saleModel = require('../models/saleModel');
 const config = require('../config');
 
 const register = asyncHandler(async (req, res, next) => {
-  const { pseudo, email, password, referral } = req.body;
+  const { pseudo, email, password } = req.body;
 
   if (!pseudo || !email || !password) {
     return next(new CustomError(400, errorMessages.MISSING_FIELDS));
@@ -62,15 +60,6 @@ const register = asyncHandler(async (req, res, next) => {
       },
       { session },
     );
-
-    //Create referral
-    if (referral) {
-      const referralUser = await userModel.findById(referral);
-
-      if (referralUser) {
-        user.referredBy = referralUser;
-      }
-    }
 
     await user.save({ session });
   });
@@ -205,7 +194,7 @@ const getAccountOwner = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo email image version isAmbassador address salesFee country verified lastLogin description notificationSubscribers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
+      'pseudo email image version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
     )
     .populate('gender')
     .lean();
@@ -276,15 +265,13 @@ const profileVisit = asyncHandler(async (req, res, next) => {
   }
 
   await executeInTransaction(async (session) => {
-    await profileVisitModel.create(
-      [
-        {
-          visitor: visitor,
-          visitedUser: visitedUser,
-        },
-      ],
-      { session },
-    );
+    const visitorId = visitor._id.toString();
+
+    if (!visitedUser.profileViewers.includes(visitorId)) {
+      visitedUser.profileViewers = [...visitedUser.profileViewers, visitorId];
+    }
+
+    await visitedUser.save({ session });
 
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const existingNotification = await notificationModel.findOne({
@@ -461,7 +448,18 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
     },
   });
 
-  const users = await userModel.aggregate(aggregateQuery);
+  let users = await userModel.aggregate(aggregateQuery);
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+
+  users = users.map((user) => {
+    if (user.image.profil) {
+      user.image.profil = `${cloudFrontUrl}${user.image.profil}`;
+    }
+    if (user.image.banner) {
+      user.image.banner = `${cloudFrontUrl}${user.image.banner}`;
+    }
+    return user;
+  });
 
   const nextCursor =
     users.length > 0 ? users[users.length - 1].lastLogin.toISOString() : null;
@@ -479,7 +477,6 @@ const refreshCreditAmount = asyncHandler(async (req, res, next) => {
 });
 
 const notificationSubscribe = asyncHandler(async (req, res, next) => {
-  console.log('je passe laaa ');
   const user = await userModel.findById(req.user.id);
   const { userId } = req.body;
 
@@ -843,11 +840,7 @@ const sendTips = asyncHandler(async (req, res, next) => {
     return next(new CustomError(404, 'not_found'));
   }
 
-  const { basePrice, basePriceWithCommission, creditPrice, commission } =
-    getPriceInFiatFromCredits(
-      tipsAmount,
-      user.isAmbassador ? 0 : user.salesFee,
-    );
+  const { fiatPrice, creditPrice } = getPriceInFiatFromCredits(tipsAmount);
 
   if (user.creditAmount < creditPrice) {
     return next(new CustomError(400, errorMessages.NOT_ENOUGH_CREDIT));
@@ -871,9 +864,7 @@ const sendTips = asyncHandler(async (req, res, next) => {
           fromUser: user._id,
           saleType: 'tip',
           amount: {
-            baseValue: basePrice,
-            commission: commission,
-            baseValueWithCommission: basePriceWithCommission,
+            fiatValue: fiatPrice,
             creditValue: creditPrice,
             currency: 'EUR',
           },
@@ -881,22 +872,6 @@ const sendTips = asyncHandler(async (req, res, next) => {
       ],
       { session },
     );
-
-    if (userWhoReceiveTips.referredBy) {
-      await saleModel.create(
-        [
-          {
-            owner: userWhoReceiveTips.referredBy,
-            fromUser: userWhoReceiveTips._id,
-            saleType: 'commission',
-            amount: {
-              baseValue: Math.round(basePrice * 0.05),
-            },
-          },
-        ],
-        { session },
-      );
-    }
   });
 
   res.status(200).json(creditPrice);

@@ -15,10 +15,16 @@ const CurrentConversationPage = async ({
     conversationId
   );
 
+  const initialMessagesDatas =
+    await conversationService.getConversationMessages(conversationId);
+
   return (
     <ScrollableContainer>
       <BackButton prevPath={`/dashboard/account/messages`} />
-      <Conversation initialConversationDatas={initialConversationDatas} />
+      <Conversation
+        initialConversationDatas={initialConversationDatas}
+        initialMessagesDatas={initialMessagesDatas}
+      />
     </ScrollableContainer>
   );
 };

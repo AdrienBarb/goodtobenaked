@@ -8,7 +8,7 @@ const ProcessingModal = ({ open, onClose }) => {
       <div className={styles.container}>
         <div className={styles.wrapper}>
           <span className={styles.successLabel}>
-            Veuillez ne pas fermer cette fenêtre
+            Please do not close this window
           </span>
           <div className={styles.text}>
             <Oval

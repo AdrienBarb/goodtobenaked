@@ -4,8 +4,12 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import styles from "@/styles/CreatorAddMenu.module.scss";
 import { Popover } from "@mui/material";
 import { useRouter } from "@/navigation";
+import { useSession } from "next-auth/react";
 
 const UserAddMenu = () => {
+  //session
+  const { data: session } = useSession();
+
   //other
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -82,6 +86,14 @@ const UserAddMenu = () => {
         >
           Nudes
         </div>
+        {session?.user?.isAccountVerified && (
+          <div
+            className={styles.menuItems}
+            onClick={() => handleNav("/dashboard/account/add/push")}
+          >
+            Push
+          </div>
+        )}
       </Popover>
     </div>
   );

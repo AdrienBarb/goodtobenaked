@@ -32,6 +32,9 @@ const nextConfig = {
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_CLOUDFRONT_MEDIA: process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA,
   },
+  images: {
+    domains: ["d10arthua11ogq.cloudfront.net"],
+  },
   reactStrictMode: false,
   optimizeFonts: false,
   swcMinify: true,

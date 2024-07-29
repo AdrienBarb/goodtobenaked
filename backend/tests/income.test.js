@@ -1,93 +1,249 @@
 const mongoose = require('mongoose');
 const request = require('supertest');
 const app = require('../index');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-
-const Order = require('../models/orderModel');
-const Comission = require('../models/comissionModel');
+const createUser = require('./factory/userFactory');
+const { MongoMemoryReplSet } = require('mongodb-memory-server');
 const generateToken = require('../lib/utils/jwt');
+const createSale = require('./factory/saleFactory');
+const invoiceModel = require('../models/invoiceModel');
+const saleModel = require('../models/saleModel');
+const moment = require('moment');
 
-const getCreator = require('./factory/creatorFactory');
-const getMember = require('./factory/memberFactory');
-const getProduct = require('./factory/productFactory');
-const getOrder = require('./factory/orderFactory');
-const productModel = require('../models/productModel');
-const orderModel = require('../models/orderModel');
+let replSet;
 
-require('dotenv').config();
-
-let mongoServer;
-
-//Connecting to the database before each test.
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  await mongoose.connect(mongoServer.getUri());
-});
-
-//Closing database connection after each test.
-afterAll(async () => {
-  await mongoose.connection.close();
-  await mongoServer.stop();
-});
-
-describe('getIncomes', () => {
-  test('Get incomes with order packages and options', async () => {
-    const creator = await getCreator({});
-    const member = await getMember({});
-    const product = await getProduct({
-      creator,
-      withOptions: true,
-      permanent: false,
-      saleState: 'reserved',
-    });
-    const order = await getOrder({
-      seller: creator,
-      buyer: member,
-      product: product,
-      withOptions: product.withOptions,
-      selectedPackage: product.packages[0],
-      options: [product.packages[0].options[0], product.packages[0].options[1]],
-      state: 'completed',
-      status: 'succeeded',
-    });
-    const creatorToken = generateToken(creator?._id);
-
-    const res = await request(app)
-      .get('/api/incomes')
-      .auth(creatorToken, { type: 'bearer' });
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body[0].totalGain).toBe(32);
-    expect(res.body[0].totalCommissionWithoutTax).toBe(4.5);
-    expect(res.body[0].totalCommission).toBe(5.4);
+  replSet = await MongoMemoryReplSet.create({
+    replSet: { count: 1 },
   });
 
-  test('Get incomes with single physical product', async () => {
-    const creator = await getCreator({});
-    const member = await getMember({});
-    const product = await getProduct({
-      creator,
-      withOptions: false,
-      permanent: false,
-      saleState: 'reserved',
+  const uri = replSet.getUri();
+  await mongoose.connect(uri);
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
+  await replSet.stop();
+});
+
+afterEach(async () => {
+  const collections = mongoose.connection.collections;
+
+  for (const key in collections) {
+    const collection = collections[key];
+    await collection.deleteMany();
+  }
+});
+
+describe('Get Balances', () => {
+  test('A user can get his current balance with commission for users in promotion period', async () => {
+    const user = await createUser({});
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
+      amount: { fiatValue: 500, creditValue: 500 },
+      isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
     });
-    const order = await getOrder({
-      seller: creator,
-      buyer: member,
-      product: product,
-      withOptions: product.withOptions,
-      state: 'completed',
-      status: 'succeeded',
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
     });
-    const creatorToken = generateToken(creator?._id);
+
+    const sale3 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: true,
+    });
 
     const res = await request(app)
-      .get('/api/incomes')
-      .auth(creatorToken, { type: 'bearer' });
+      .get(`/api/incomes/balances`)
+      .auth(userToken, { type: 'bearer' });
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body[0].totalGain).toBe(12);
-    expect(res.body[0].totalCommissionWithoutTax).toBe(1.5);
-    expect(res.body[0].totalCommission).toBe(1.8);
+    expect(res.status).toEqual(200);
+    expect(res.body.available).toEqual(500);
+    expect(res.body.pending).toEqual(600);
+  });
+
+  test('A user can get his current balance with commission for users outside promotion period', async () => {
+    const user = await createUser({
+      promotionEndDate: moment().subtract(1, 'months').toDate(),
+    });
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
+      amount: { fiatValue: 500, creditValue: 500 },
+      isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
+    });
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
+    });
+
+    const sale3 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: true,
+    });
+
+    const res = await request(app)
+      .get(`/api/incomes/balances`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+    expect(res.body.available).toEqual(400);
+    expect(res.body.pending).toEqual(480);
+  });
+});
+
+describe('Get Sales', () => {
+  test('A user can get his current sales', async () => {
+    const user = await createUser({});
+    const user2 = await createUser({});
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
+      amount: { fiatValue: 500, creditValue: 500 },
+      isPaid: false,
+    });
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: false,
+    });
+
+    const sale3 = await createSale({
+      owner: user2,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: true,
+    });
+
+    const res = await request(app)
+      .get(`/api/incomes/sales`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+    expect(res.body.sales.length).toEqual(2);
+  });
+});
+
+describe('Create invoices', () => {
+  test('A user can get his invoice created with commission for users in promotion period', async () => {
+    const user = await createUser({});
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
+      amount: { fiatValue: 10000, creditValue: 10000 },
+      isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
+    });
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 6000, creditValue: 6000 },
+      isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
+    });
+
+    const sale3 = await createSale({
+      owner: user,
+      amount: { fiatValue: 6000, creditValue: 6000 },
+      isPaid: true,
+    });
+
+    const res = await request(app)
+      .post(`/api/incomes/create-invoice`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    const fetchedInvoice = await invoiceModel.findOne({ user: user._id });
+    expect(fetchedInvoice.toBePaid).toEqual(10000);
+
+    const fetchedSale1 = await saleModel.findById(sale._id);
+    expect(fetchedSale1.isPaid).toEqual(true);
+
+    const fetchedSale2 = await saleModel.findById(sale2._id);
+    expect(fetchedSale2.isPaid).toEqual(false);
+  });
+
+  test('A user can get his invoice created with commission for users outside promotion period', async () => {
+    const user = await createUser({
+      promotionEndDate: moment().subtract(1, 'months').toDate(),
+    });
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
+      amount: { fiatValue: 10000, creditValue: 10000 },
+      isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
+    });
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 6000, creditValue: 6000 },
+      isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
+    });
+
+    const sale3 = await createSale({
+      owner: user,
+      amount: { fiatValue: 6000, creditValue: 6000 },
+      isPaid: true,
+    });
+
+    const res = await request(app)
+      .post(`/api/incomes/create-invoice`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(200);
+
+    const fetchedInvoice = await invoiceModel.findOne({ user: user._id });
+    expect(fetchedInvoice.toBePaid).toEqual(8000);
+
+    const fetchedSale1 = await saleModel.findById(sale._id);
+    expect(fetchedSale1.isPaid).toEqual(true);
+
+    const fetchedSale2 = await saleModel.findById(sale2._id);
+    expect(fetchedSale2.isPaid).toEqual(false);
+  });
+
+  test('A user can get his invoice created if available balance is under 50 euros', async () => {
+    const user = await createUser({
+      promotionEndDate: moment().subtract(1, 'months').toDate(),
+    });
+    const userToken = generateToken(user._id);
+    const sale = await createSale({
+      owner: user,
+      amount: { fiatValue: 500, creditValue: 500 },
+      isPaid: false,
+      availableDate: moment().subtract(1, 'days').toDate(),
+    });
+
+    const sale2 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: false,
+      availableDate: moment().add(1, 'days').toDate(),
+    });
+
+    const sale3 = await createSale({
+      owner: user,
+      amount: { fiatValue: 600, creditValue: 600 },
+      isPaid: true,
+    });
+
+    const res = await request(app)
+      .post(`/api/incomes/create-invoice`)
+      .auth(userToken, { type: 'bearer' });
+
+    expect(res.status).toEqual(400);
   });
 });

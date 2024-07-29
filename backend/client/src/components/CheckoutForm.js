@@ -6,7 +6,6 @@ import {
 } from '@stripe/react-stripe-js';
 import useAuthToken from '../hooks/useAuthToken';
 import axios from 'axios';
-import { packages } from '../constants/packages';
 import SimpleButton from './SimpleButton';
 import styles from '../styles/CheckoutForm.module.scss';
 import ErrorModal from './ErrorModal';
@@ -68,7 +67,7 @@ const CheckoutForm = ({ selectedPackage, stripeTransactionId }) => {
     } catch (error) {
       setIsProcessing(false);
       setIsErrorModalOpen(true);
-      toast.error('Une erreur est survenue', {
+      toast.error('An error occurred', {
         duration: 8000,
         position: 'bottom-center',
       });
@@ -90,7 +89,7 @@ const CheckoutForm = ({ selectedPackage, stripeTransactionId }) => {
           customStyles={{ marginTop: '2rem', width: '100%' }}
           disabled={isProcessing}
         >
-          Payer
+          Pay
         </SimpleButton>
       </form>
       <ErrorModal open={isErrorModalOpen} onClose={setIsErrorModalOpen} />

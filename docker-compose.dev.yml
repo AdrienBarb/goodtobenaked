@@ -18,7 +18,7 @@ services:
       - NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001
       - NEXT_PUBLIC_API_URL=http://localhost:3001/
       - NEXT_PUBLIC_BASE_URL=http://localhost:3000
-      - NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://duz30n69vbwvd.cloudfront.net/
+      - NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://d10arthua11ogq.cloudfront.net/
     networks:
       - app-network
 
@@ -28,7 +28,10 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/app
+      - ./backend/keys:/app/keys
       - /app/node_modules
+      - ./backend/client:/app/client
+      - /app/client/node_modules
     ports:
       - "3001:3001"
     env_file:

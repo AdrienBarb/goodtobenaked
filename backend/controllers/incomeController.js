@@ -1,27 +1,29 @@
 const asyncHandler = require('express-async-handler');
-const Creator = require('../models/creatorModel');
 const Invoice = require('../models/invoiceModel');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const emailService = require('../lib/email');
-const { createUserInvoice } = require('../lib/income/createUserInvoice');
 const { notifySlack } = require('../lib/services/slack');
 const saleModel = require('../models/saleModel');
-const memberModel = require('../models/memberModel');
 const userModel = require('../models/userModel');
 const config = require('../config');
+const generateInvoice = require('../lib/pdf/generateInvoice');
+const calculateCurrentBalanceWithCommission = require('../lib/utils/calculateCurrentBalanceWithCommission');
+const moment = require('moment');
+const CustomError = require('../lib/error/CustomError');
+const { errorMessages } = require('../lib/constants');
 
 const getBalances = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
 
-  const sales = await saleModel.find({ owner: user, isPaid: false });
-
-  const currentBalance = sales.reduce(
-    (acc, currentValue) => acc + currentValue.amount.baseValue,
-    0,
+  const { available, pending } = await calculateCurrentBalanceWithCommission(
+    user,
   );
 
+  console.log(available, pending);
+
   res.status(200).json({
-    balances: currentBalance / 100,
+    available,
+    pending,
   });
 });
 
@@ -72,7 +74,33 @@ const getInvoices = asyncHandler(async (req, res, next) => {
 const createInvoice = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
 
-  await createUserInvoice(user);
+  const { available } = await calculateCurrentBalanceWithCommission(user);
+
+  if (available < 5000) {
+    return next(new CustomError(400, errorMessages.NOT_ENOUGH_BALANCE));
+  }
+
+  if (!user?.bankAccount?.name || !user?.bankAccount?.iban) {
+    emailService.notifyCreatorForMissingBankDetails(user.email);
+    return;
+  }
+
+  const { invoiceTitle, filePath } = await generateInvoice(user, available);
+
+  await Invoice.create({
+    user: user,
+    title: invoiceTitle,
+    path: filePath,
+    paid: false,
+    toBePaid: available,
+  });
+
+  await saleModel.updateMany(
+    { owner: user, isPaid: false, availableDate: { $lte: moment().toDate() } },
+    {
+      isPaid: true,
+    },
+  );
 
   if (user.emailNotification) {
     emailService.creatorAskPayment(user.email);

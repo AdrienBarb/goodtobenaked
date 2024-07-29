@@ -1,5 +1,3 @@
-const creatorModel = require('../models/creatorModel');
-
 module.exports = {
   async up(db, client) {
     const collection = await db.collection('nudes');

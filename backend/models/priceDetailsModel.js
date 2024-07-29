@@ -2,15 +2,7 @@ const mongoose = require('mongoose');
 
 const priceDetailsSchema = mongoose.Schema(
   {
-    basePrice: {
-      type: Number,
-      default: 0,
-    },
-    commission: {
-      type: Number,
-      default: 0,
-    },
-    basePriceWithCommission: {
+    fiatPrice: {
       type: Number,
       default: 0,
     },

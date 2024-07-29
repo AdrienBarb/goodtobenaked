@@ -161,7 +161,13 @@
     "uploadImage": "Upload image",
     "weUploadYourFile": "Your media is being prepared. Don't close this window",
     "weAreFormattingYourMedia": "We are formatting your media, it may takes 10 minutes",
-    "maxSizeImage": "The maximum size of the files is 10 MB for photos and 5 GO for videos."
+    "maxSizeImage": "The maximum size of the files is 10 MB for photos and 5 GO for videos.",
+    "notificationSubscribers": "Notification Subscribers",
+    "profileViewers": "Profile Viewers",
+    "messageSenders": "Message Senders",
+    "nudeBuyers": "Nude Buyers",
+    "pushExplanation": "By sending a “Push”, you can directly target specific types of users. The nude will be sent directly via message.",
+    "whichGroupOfUsers": "Please select the user groups to whom you want to send this nude:"
   },
   "home": {
     "title": "GOODTOBENAKED",
@@ -184,7 +190,7 @@
     "back_home": "Home Page",
     "report_bug": "Report a Bug",
     "should_enter_bank_details": "Please enter your bank information in the \"Settings\" tab",
-    "current_wallet_empty": "Your current balance is 0.",
+    "current_wallet_empty": "Your available balance must be greater than 50 euros.",
     "fileTooBig": "The file is too large. Please upload a file smaller than 3 GB.",
     "sureDeleteThisMedia": "Are you sure you want to delete this image/video?",
     "sureDeleteThisNude": "Are you sure you want to delete this nude?",
@@ -347,7 +353,7 @@
     "popover_edit_profile": "Edit My Profile",
     "popover_write_message": "Chat",
     "popover_share_profile": "Share Profile",
-    "sendTips": "Send",
+    "sendTips": "Send tips",
     "popover_active_notification": "Follow",
     "popover_desactive_notification": "Unfollow",
     "alert_activate_notification_title": "Follow",
@@ -630,6 +636,7 @@
   },
   "conversation": {
     "send": "Send",
+    "sendFor": "Send for {creditAmount} credits",
     "sendNude": "Send Nude",
     "writeMessage": "Write a message",
     "message": "Message"
@@ -693,10 +700,15 @@
     "nudeSaleLabel": "Nude Sale",
     "commissionLabel": "Commission",
     "tipsLabel": "Tips",
+    "messageLabel": "Message",
     "noSales": "No Sales",
     "noInvoices": "No Invoices",
     "invoice_number": "Invoice Number",
-    "invoice_status": "Status"
+    "invoice_status": "Status",
+    "available": "Available",
+    "pending": "Pending",
+    "availablePopoverDescription": "This is the balance that can be withdrawn. The balance must be over €50 to withdraw.",
+    "pendingPopoverDescription": "For security reasons, all sales have a 7-day delay before becoming available."
   },
   "referral": {
     "reffer_friends": "Refer Friends",
