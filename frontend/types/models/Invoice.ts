@@ -1,4 +1,3 @@
-import { Order } from "./Order";
 import { User } from "./User";
 
 export interface Invoice {
@@ -7,7 +6,6 @@ export interface Invoice {
   path: string;
   type?: "fee" | "creatorGain";
   paid: boolean;
-  orders: Order[];
   creator: User;
   toBePaid: number;
   createdAt?: Date;
