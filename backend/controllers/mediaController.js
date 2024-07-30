@@ -11,7 +11,6 @@ const {
 } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const config = require('../config');
-const signedUrl = require('../lib/utils/signedUrl');
 
 const generateUploadUrl = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
@@ -74,9 +73,7 @@ const generateUploadUrl = asyncHandler(async (req, res, next) => {
       isImage ? 'jpg' : 'mp4'
     }`,
     blurredKey: `blurred/${user._id.toString()}/${fileName}.jpg`,
-    posterKey: `poster/${user._id.toString()}/${fileName}${
-      isImage ? '' : '_thumbnail.0000000'
-    }.jpg`,
+    posterKey: `poster/${user._id.toString()}/${fileName}.jpg`,
     status: 'created',
   });
 
