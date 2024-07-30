@@ -27,6 +27,7 @@ frontend/.next/
 
 scripts/
 /keys/
+artillery/
 
 # misc
 .DS_Store
