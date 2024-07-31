@@ -10,7 +10,7 @@ class SocketManager {
   init(httpServer) {
     this.io = new Server(httpServer, {
       cors: {
-        origin: [config.clientUrl, config.internalClientUrl],
+        origin: ['*'],
       },
     });
     this.configureSocketEvents();
