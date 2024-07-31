@@ -32,7 +32,7 @@ services:
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.nastynipples.com`)"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.goodtobenaked.com`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.routers.traefik.middlewares=auth"
@@ -64,7 +64,7 @@ services:
           - node.role == worker
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.frontend.rule=Host(`nastynipples.com`)"
+        - "traefik.http.routers.frontend.rule=Host(`goodtobenaked.com`)"
         - "traefik.http.routers.frontend.entrypoints=websecure"
         - "traefik.http.services.frontend.loadbalancer.server.port=3000"
         - "traefik.http.routers.frontend.tls=true"
@@ -113,7 +113,7 @@ services:
           - node.role == worker
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.backend.rule=Host(`api.nastynipples.com`)"
+        - "traefik.http.routers.backend.rule=Host(`api.goodtobenaked.com`)"
         - "traefik.http.routers.backend.entrypoints=websecure"
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
