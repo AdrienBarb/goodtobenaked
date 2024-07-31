@@ -52,7 +52,13 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 1
+      replicas: 2  
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
       placement:
         constraints:
           - node.role == worker
@@ -80,7 +86,6 @@ services:
       - ADMIN_PRIVATE_KEY
       - STRIPE_API_KEY
       - NOTION_API_KEY
-      - CLOUDFRONT_URL
       - SLACK_TOKEN
       - MAILCHIMP_API_KEY
       - S3_BUCKET_MEDIA
@@ -90,10 +95,19 @@ services:
       - AWS_REGION
       - STRIPE_PUBLISHABLE_KEY
       - STRIPE_ENDPOINT_SECRET
+      - CLOUDFRONT_URL
+      - PRIVATE_KEY_PATH
+      - KEY_PAIR_ID
     networks:
       - app-network
     deploy:
-      replicas: 1
+      replicas: 2 
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
       placement:
         constraints:
           - node.role == worker
@@ -106,6 +120,8 @@ services:
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
         - "com.newrelic.logs.include=true"
         - "com.newrelic.logs.parser=auto"
+    volumes:
+      - "./keys:/keys"
 
   newrelic-infra:
     image: adrienbarb/gtbn-newrelic-infra:latest
@@ -165,6 +181,12 @@ secrets:
   STRIPE_PUBLISHABLE_KEY:
     external: true
   STRIPE_ENDPOINT_SECRET:
+    external: true
+  CLOUDFRONT_URL:
+    external: true
+  PRIVATE_KEY_PATH:
+    external: true
+  KEY_PAIR_ID:
     external: true
 
 networks:
