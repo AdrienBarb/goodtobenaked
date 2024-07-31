@@ -32,12 +32,17 @@ services:
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.nastynipples.com`)"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.goodtobenaked.com`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.routers.traefik.middlewares=auth"
         - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$r/k/4P2u$ymeak2FN1yJW9YQdyLCT21"
         - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+        - "traefik.http.routers.www-redirect.rule=Host(`www.goodtobenaked.com`)"
+        - "traefik.http.routers.www-redirect.entrypoints=web"
+        - "traefik.http.middlewares.redirect-to-non-www.redirectregex.regex=^https://www\\.(.*)"
+        - "traefik.http.middlewares.redirect-to-non-www.redirectregex.replacement=https://$1"
+        - "traefik.http.routers.www-redirect.middlewares=redirect-to-non-www"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./acme.json:/letsencrypt/acme.json"
@@ -64,7 +69,7 @@ services:
           - node.role == worker
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.frontend.rule=Host(`nastynipples.com`)"
+        - "traefik.http.routers.frontend.rule=Host(`goodtobenaked.com`)"
         - "traefik.http.routers.frontend.entrypoints=websecure"
         - "traefik.http.services.frontend.loadbalancer.server.port=3000"
         - "traefik.http.routers.frontend.tls=true"
@@ -113,7 +118,7 @@ services:
           - node.role == worker
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.backend.rule=Host(`api.nastynipples.com`)"
+        - "traefik.http.routers.backend.rule=Host(`api.goodtobenaked.com`)"
         - "traefik.http.routers.backend.entrypoints=websecure"
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
