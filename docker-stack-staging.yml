@@ -87,7 +87,7 @@ services:
       - app-network
     deploy:
       replicas: 1
-      labels:d
+      labels:
         - "traefik.enable=true"
         - "traefik.http.routers.backend.rule=Host(`api-staging.nastynipples.com`)"
         - "traefik.http.routers.backend.entrypoints=websecure"
