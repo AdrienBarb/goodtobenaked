@@ -14,7 +14,7 @@ import * as yup from "yup";
 import CustomTextField from "./Inputs/TextField";
 import { getMediaPrice } from "@/lib/utils/price";
 import { useSelector } from "react-redux";
-import { RootStateType } from "@/store/store";
+import { RootStateType, useAppDispatch } from "@/store/store";
 import useApi from "@/lib/hooks/useApi";
 import GalleryCard from "./GalleryCard";
 import socket from "@/lib/socket/socket";
@@ -24,6 +24,7 @@ import { Message } from "@/types/models/Message";
 import CustomSlider from "./CustomSlider";
 import { Conversation } from "@/types/models/Conversation";
 import { useSession } from "next-auth/react";
+import { getCreditAmount } from "@/features/user/userSlice";
 
 interface Props {
   setOpen: (e: boolean) => void;
@@ -49,6 +50,7 @@ const PrivateNudeModal: FC<Props> = ({
 
   //redux
   const socketState = useSelector((state: RootStateType) => state.socket);
+  const dispatch = useAppDispatch();
 
   //hooks
   const { usePost } = useApi();
@@ -110,6 +112,10 @@ const PrivateNudeModal: FC<Props> = ({
           });
         }
 
+        if (otherUser?.userType === "creator") {
+          dispatch(getCreditAmount());
+        }
+
         setSelectedMedias([]);
         formik.setFieldValue("message", "");
         formik.setFieldValue("price", 0);
@@ -131,10 +137,7 @@ const PrivateNudeModal: FC<Props> = ({
     setSelectedMedias((prev) => prev.filter((m: Media) => m._id !== mediaId));
   };
 
-  const totalPrice = getMediaPrice(
-    formik.values.price || 0,
-    session?.user?.isAmbassador ? 0 : session?.user?.salesFee
-  );
+  const totalPrice = getMediaPrice(formik.values.price || 0);
 
   return (
     <Modal open={open} onClose={setOpen}>
@@ -227,7 +230,9 @@ const PrivateNudeModal: FC<Props> = ({
                 customStyles={{ width: "100%" }}
                 isLoading={isLoading || isMessageCreateLoading}
               >
-                {t("common.send")}
+                {otherUser?.userType === "creator"
+                  ? t("conversation.sendFor", { creditAmount: 0.25 })
+                  : t("conversation.send")}
               </FullButton>
             </div>
           </div>

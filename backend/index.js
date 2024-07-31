@@ -17,10 +17,8 @@ const { notifyErrorSlack } = require('./lib/services/slack');
 
 // IMPORT ROUTER
 const userRouter = require('./routes/userRouter');
-const passwordRouter = require('./routes/passwordRouter');
 const categoryRouter = require('./routes/categoryRouter');
 const conversationRouter = require('./routes/conversationRouter');
-const messageRouter = require('./routes/messageRouter');
 const adminRouter = require('./routes/adminRouter');
 const notificationRouter = require('./routes/notificationRouter');
 const incomeRouter = require('./routes/incomeRouter');
@@ -58,10 +56,8 @@ app.use(bodyParser.json({ type: 'application/json;charset=UTF-8' }));
 
 //Router
 app.use('/api/users', userRouter);
-app.use('/api/password', passwordRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/conversations', conversationRouter);
-app.use('/api/messages', messageRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/notifications', notificationRouter);
 app.use('/api/incomes', incomeRouter);

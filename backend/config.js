@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 
-if (process.env.NODE_ENV === 'development') {
-  dotenv.config();
+if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env.development') });
 } else {
   const secretsPath = '/run/secrets/';
   const secrets = [
@@ -16,7 +16,6 @@ if (process.env.NODE_ENV === 'development') {
     'ADMIN_PRIVATE_KEY',
     'STRIPE_API_KEY',
     'NOTION_API_KEY',
-    'CLOUDFRONT_URL',
     'SLACK_TOKEN',
     'MAILCHIMP_API_KEY',
     'S3_BUCKET_MEDIA',
@@ -26,6 +25,9 @@ if (process.env.NODE_ENV === 'development') {
     'AWS_REGION',
     'STRIPE_PUBLISHABLE_KEY',
     'STRIPE_ENDPOINT_SECRET',
+    'CLOUDFRONT_URL',
+    'PRIVATE_KEY_PATH',
+    'KEY_PAIR_ID',
   ];
 
   secrets.forEach((secret) => {

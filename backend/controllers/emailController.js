@@ -1,5 +1,3 @@
-const Creator = require('../models/creatorModel');
-const Member = require('../models/memberModel');
 const VerificationCode = require('../models/verificationCodeModel');
 const emailService = require('../lib/email');
 const { generateRandomCode } = require('../lib/utils');

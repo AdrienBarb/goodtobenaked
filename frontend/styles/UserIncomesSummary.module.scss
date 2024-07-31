@@ -1,4 +1,4 @@
-@import 'library.scss';
+@import "library.scss";
 
 .container {
   display: flex;
@@ -10,10 +10,30 @@
     width: 100%;
   }
 
-  .line {
-    width: 100%;
+  .cardWrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    width: 100%;
+    gap: 1rem;
+
+    .balanceCard {
+      position: relative;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.2rem;
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 6px;
+
+      .popoverWrapper {
+        position: absolute;
+        top: 0.2rem;
+        right: 0.2rem;
+      }
+    }
   }
 }

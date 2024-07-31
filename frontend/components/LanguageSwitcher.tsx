@@ -9,8 +9,8 @@ import { useParams } from "next/navigation";
 import clsx from "clsx";
 
 const languages: { label: "FR" | "EN"; value: "fr" | "en" }[] = [
-  { label: "FR", value: "fr" },
   { label: "EN", value: "en" },
+  { label: "FR", value: "fr" },
 ];
 
 const LanguageSwitcher = () => {

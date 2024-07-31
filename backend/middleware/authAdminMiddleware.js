@@ -1,6 +1,4 @@
-const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
-const Creator = require('../models/creatorModel');
 const config = require('../config');
 
 const adminProtect = asyncHandler(async (req, res, next) => {

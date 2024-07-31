@@ -23,13 +23,13 @@ const TipsModal: FC<Props> = ({ open, setOpen, userId }) => {
   const { usePost } = useApi();
 
   const tipsValue = [
-    { value: 40, label: `💋 40` },
-    { value: 75, label: `💐 75` },
-    { value: 150, label: `🎁 150` },
-    { value: 225, label: `💝 225` },
+    { value: 2, label: `💋 2` },
+    { value: 5, label: `💐 5` },
+    { value: 10, label: `🎁 10` },
+    { value: 20, label: `💝 20` },
   ];
 
-  const [tipValue, setTipValue] = useState<number>(40);
+  const [tipValue, setTipValue] = useState<number>(2);
   const [openCreditModal, setOpenCreditModal] = useState(false);
   const navigateToPayment = useNavigateToPayment();
 
@@ -46,9 +46,12 @@ const TipsModal: FC<Props> = ({ open, setOpen, userId }) => {
   const { mutate: sendTips, isLoading } = usePost(`/api/users/send-tips`, {
     onSuccess: (creditAmount) => {
       dispatch(getCreditAmount());
-      toast(t("common.youSendCreditAmount", { creditAmount }), {
-        icon: "❤️",
-      });
+      toast(
+        t("common.youSendCreditAmount", { creditAmount: creditAmount / 100 }),
+        {
+          icon: "❤️",
+        }
+      );
       setOpen(false);
     },
   });

@@ -80,8 +80,6 @@ interface Props {
 const RootLayout: FC<Props> = ({ children, params: { locale } }) => {
   const messages = useMessages();
 
-  console.log("NEXTAUTH_SECRET : ", process.env.NEXTAUTH_SECRET);
-
   return (
     <>
       <Script id="hotjarAnalytics" strategy="afterInteractive">

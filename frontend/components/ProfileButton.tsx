@@ -25,7 +25,10 @@ const ProfileButton: FC<ProfileButtonProps> = ({
       onClick={onClick}
     >
       {isLoading ? (
-        <CircularProgress sx={{ color: "#1C131E" }} size={12} />
+        <CircularProgress
+          sx={{ color: isFull ? "white " : "#d9d7f6" }}
+          size={12}
+        />
       ) : (
         <div>{children}</div>
       )}

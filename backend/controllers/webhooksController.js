@@ -1,6 +1,5 @@
 const expressAsyncHandler = require('express-async-handler');
 const creditTransactionModel = require('../models/creditTransactionModel');
-const memberModel = require('../models/memberModel');
 const config = require('../config');
 const stripe = require('stripe')(config.stripeApiKey);
 const { executeInTransaction } = require('../db');

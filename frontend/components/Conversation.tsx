@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, FC } from "react";
+import React, { useState, useEffect, FC, useMemo, useRef } from "react";
 import styles from "@/styles/Conversation.module.scss";
 import { useChatScroll } from "@/lib/hooks/useChatScroll";
 import useConversationUsers from "@/lib/hooks/useConversationUsers";
@@ -15,13 +15,16 @@ import UserMessage from "./Message";
 
 interface Props {
   initialConversationDatas: Conversation;
+  initialMessagesDatas: Message[];
 }
 
-const CurrentConversation: FC<Props> = ({ initialConversationDatas }) => {
+const CurrentConversation: FC<Props> = ({
+  initialConversationDatas,
+  initialMessagesDatas,
+}) => {
   //localstate
-  const [messagesList, setMessagesList] = useState<Message[]>(
-    initialConversationDatas.messages
-  );
+  const [messagesList, setMessagesList] =
+    useState<Message[]>(initialMessagesDatas);
   const [conversation, setConversation] = useState(initialConversationDatas);
 
   const { otherUser } = useConversationUsers(
@@ -34,26 +37,47 @@ const CurrentConversation: FC<Props> = ({ initialConversationDatas }) => {
   //others
   const ref = useChatScroll(messagesList);
 
-  const { useGet } = useApi();
+  const { fetchData, useGet } = useApi();
 
-  const { data } = useGet(
-    `/api/conversations/${conversationId}`,
+  const getConversation = async () => {
+    try {
+      const fetchedConversation = await fetchData(
+        `/api/conversations/${conversationId}`
+      );
+      setConversation(fetchedConversation);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useGet(
+    `/api/conversations/${conversationId}/messages`,
     {},
     {
       initialData: initialConversationDatas,
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false,
       onSuccess: (data) => {
-        setConversation(data);
-        setMessagesList(data.messages);
+        setMessagesList(data);
       },
     }
   );
 
   useEffect(() => {
+    if (conversationId) {
+      getConversation();
+    }
+  }, [conversationId]);
+
+  useEffect(() => {
     if (!socket) return;
 
     socket?.off("getMessage")?.on("getMessage", (data) => {
-      if (data && data.message && data.message._id) {
+      if (
+        data &&
+        data.message &&
+        data.message._id &&
+        data.message.conversation._id === conversationId
+      ) {
         setMessagesList((prev) => [...prev, data.message]);
       }
     });

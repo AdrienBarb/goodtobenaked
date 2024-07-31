@@ -14,8 +14,6 @@ import { createSearchParams, useNavigate } from 'react-router-dom';
 import TopHeader from '../components/TopHeader';
 import ErrorModal from '../components/ErrorModal';
 import toast, { Toaster } from 'react-hot-toast';
-import { useMediaQuery } from '@mui/material';
-import { screenSizes } from '../constants/screenSizes';
 
 const PackagesPage = () => {
   //hooks
@@ -80,7 +78,7 @@ const PackagesPage = () => {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      toast.error('Une erreur est survenue', {
+      toast.error('An error occurred', {
         duration: 8000,
         position: 'bottom-center',
       });
@@ -97,9 +95,9 @@ const PackagesPage = () => {
         <TopHeader goBack={navigateToClient} />
         <span className={styles.divider}></span>
         <div className={styles.middleText}>
-          <div className={styles.label}>Achetez des crédits</div>
+          <div className={styles.label}>Buy credits</div>
           <div className={styles.sublabel}>
-            Achetez autant de nudes que vous voulez avec nos crédits.
+            Buy as many nudes as you want with our credits.
           </div>
         </div>
 
@@ -135,11 +133,11 @@ const PackagesPage = () => {
           customStyles={{ marginTop: '2rem' }}
           disabled={isLoading}
         >
-          Acheter des crédits
+          Buy credits
         </SimpleButton>
 
         <div className={styles.notice}>
-          *les crédits achetés ne sont pas remboursables.
+          *purchased credits are non-refundable.
         </div>
       </div>
       <ErrorModal open={isErrorModalOpen} onClose={setIsErrorModalOpen} />

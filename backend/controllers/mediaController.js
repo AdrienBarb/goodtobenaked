@@ -73,9 +73,7 @@ const generateUploadUrl = asyncHandler(async (req, res, next) => {
       isImage ? 'jpg' : 'mp4'
     }`,
     blurredKey: `blurred/${user._id.toString()}/${fileName}.jpg`,
-    posterKey: `poster/${user._id.toString()}/${fileName}${
-      isImage ? '' : '_thumbnail.0000000'
-    }.jpg`,
+    posterKey: `poster/${user._id.toString()}/${fileName}.jpg`,
     status: 'created',
   });
 
@@ -113,7 +111,21 @@ const getAllMedias = asyncHandler(async (req, res) => {
     })
     .sort({ createdAt: -1 });
 
-  res.status(200).json(medias);
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+
+  const updatedMedias = medias.map((media) => {
+    return {
+      _id: media._id,
+      user: media.user,
+      mediaType: media.mediaType,
+      posterKey: media.posterKey
+        ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+        : null,
+      status: media.status,
+    };
+  });
+
+  res.status(200).json(updatedMedias);
 });
 
 const deleteMedia = asyncHandler(async (req, res, next) => {

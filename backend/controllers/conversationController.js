@@ -3,6 +3,9 @@ const Conversation = require('../models/conversationModel');
 const Message = require('../models/messageModel');
 const userModel = require('../models/userModel');
 const { errorMessages } = require('../lib/constants');
+const CustomError = require('../lib/error/CustomError');
+const { executeInTransaction } = require('../db');
+const saleModel = require('../models/saleModel');
 
 const createConversation = asyncHandler(async (req, res, next) => {
   const { userId } = req.body;
@@ -14,29 +17,44 @@ const createConversation = asyncHandler(async (req, res, next) => {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
   }
 
+  //Find conversation if exist
   let conversation = await Conversation.findOne({
     participants: { $all: [firstParticipant._id, secondParticipant._id] },
   });
 
+  //If not exist, create one
   if (!conversation) {
     conversation = await Conversation.create({
       participants: [firstParticipant._id, secondParticipant._id],
     });
   }
 
+  //Add firstParticipant ID in messageSenders array of secondParticipant
+  const firstParticipantId = firstParticipant._id.toString();
+  if (!secondParticipant.messageSenders.includes(firstParticipantId)) {
+    secondParticipant.messageSenders = [
+      ...secondParticipant.messageSenders,
+      firstParticipantId,
+    ];
+  }
+  await secondParticipant.save();
+
   res.status(201).json(conversation);
 });
 
 const getAllConversations = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
+  const { cursor } = req.query;
 
-  const conversations = await Conversation.aggregate([
+  let matchConditions = {
+    participants: user._id,
+    isArchived: false,
+    messages: { $exists: true, $not: { $size: 0 } },
+  };
+
+  const pipeline = [
     {
-      $match: {
-        participants: user._id,
-        isArchived: false,
-        messages: { $exists: true, $not: { $size: 0 } },
-      },
+      $match: matchConditions,
     },
     {
       $lookup: {
@@ -60,6 +78,7 @@ const getAllConversations = asyncHandler(async (req, res, next) => {
           },
         },
         messages: 1,
+        updatedAt: 1,
       },
     },
     {
@@ -96,18 +115,47 @@ const getAllConversations = asyncHandler(async (req, res, next) => {
         lastMessage: { $arrayElemAt: ['$messages', -1] },
       },
     },
+  ];
+
+  if (cursor) {
+    pipeline.push({
+      $match: {
+        'lastMessage.createdAt': { $lt: new Date(cursor) },
+      },
+    });
+  }
+
+  pipeline.push(
     {
-      $sort: { lastMessage: -1 },
+      $sort: { 'lastMessage.createdAt': -1 },
+    },
+    {
+      $limit: 30,
     },
     {
       $project: {
         participantDetails: 1,
         unreadMessage: 1,
+        lastMessage: 1,
+        updatedAt: 1,
       },
     },
-  ]);
+  );
 
-  res.status(200).json(conversations);
+  const conversations = await Conversation.aggregate(pipeline);
+
+  const nextCursor =
+    conversations.length > 0 &&
+    conversations[conversations.length - 1].lastMessage
+      ? conversations[
+          conversations.length - 1
+        ].lastMessage.createdAt.toISOString()
+      : null;
+
+  res.status(200).json({
+    conversations,
+    nextCursor,
+  });
 });
 
 const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
@@ -195,11 +243,25 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
 });
 
 const getConversation = asyncHandler(async (req, res, next) => {
-  const conversation = await Conversation.findById(req.params.conversationId)
-    .populate('participants', '_id pseudo image.profil')
-    .populate('messages');
+  const conversation = await Conversation.findById(
+    req.params.conversationId,
+  ).populate('participants', '_id pseudo image.profil userType');
+
+  if (!conversation) {
+    return next(new CustomError(404, errorMessages.NOT_FOUND));
+  }
 
   res.status(200).json(conversation);
+});
+
+const getConversationMessages = asyncHandler(async (req, res, next) => {
+  const { conversationId } = req.params;
+
+  let filter = { conversation: conversationId };
+
+  const messages = await Message.find(filter).sort({ createdAt: 1 });
+
+  res.status(200).json(messages);
 });
 
 const sendMessage = asyncHandler(async (req, res, next) => {
@@ -211,7 +273,9 @@ const sendMessage = asyncHandler(async (req, res, next) => {
     return next(new CustomError(400, errorMessages.MISSING_FIELDS));
   }
 
-  const conversation = await Conversation.findById(conversationId);
+  const conversation = await Conversation.findById(conversationId).populate(
+    'participants',
+  );
 
   if (!conversation) {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
@@ -221,9 +285,19 @@ const sendMessage = asyncHandler(async (req, res, next) => {
     return next(new CustomError(400, errorMessages.YOURE_BLOCKED));
   }
 
+  const otherParticipant = conversation.participants.find(
+    (participant) => !participant._id.equals(user._id),
+  );
+  const isOtherParticipantCreator = otherParticipant.userType === 'creator';
+
+  if (isOtherParticipantCreator && user.creditAmount < 25) {
+    return next(new CustomError(400, errorMessages.NOT_ENOUGH_CREDIT));
+  }
+
   let messageValues = {
     sender: user._id,
     text: text,
+    conversation: conversation,
   };
 
   if (nudeId) {
@@ -232,12 +306,42 @@ const sendMessage = asyncHandler(async (req, res, next) => {
 
   const message = await Message.create(messageValues);
 
-  await Conversation.updateOne(
-    { _id: conversation },
-    {
-      $push: { messages: message },
-    },
-  );
+  await executeInTransaction(async (session) => {
+    await Conversation.updateOne(
+      { _id: conversation },
+      {
+        $push: { messages: message },
+      },
+      { session },
+    );
+
+    if (isOtherParticipantCreator) {
+      const newMemberCreditAmount = user.creditAmount - 25;
+
+      await userModel.updateOne(
+        { _id: user._id },
+        {
+          creditAmount: newMemberCreditAmount,
+        },
+        { session },
+      );
+
+      await saleModel.create(
+        [
+          {
+            owner: otherParticipant._id,
+            fromUser: user._id,
+            saleType: 'message',
+            amount: {
+              fiatValue: 25,
+              creditValue: 25,
+            },
+          },
+        ],
+        { session },
+      );
+    }
+  });
 
   res.status(201).json(message);
 });
@@ -291,4 +395,5 @@ module.exports = {
   manageBlockUser,
   sendMessage,
   checkIfUnreadMessages,
+  getConversationMessages,
 };

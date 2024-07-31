@@ -16,6 +16,7 @@ pnpm-lock.yaml
 /coverage
 
 # next.js
+frontend/.next/
 /.next/
 .next/
 /out/
@@ -23,6 +24,10 @@ pnpm-lock.yaml
 
 # production
 /client/build
+
+scripts/
+/keys/
+artillery/
 
 # misc
 .DS_Store

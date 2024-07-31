@@ -64,9 +64,9 @@ const CheckoutPage = () => {
 
         <span className={styles.divider}></span>
         <div className={styles.middleText}>
-          <div className={styles.label}>{`Achetez ${
+          <div className={styles.label}>{`Buy ${
             selectedPackage.coinsAmount
-          } crédits pour ${selectedPackage.price / 100}€`}</div>
+          } credits for ${selectedPackage.price / 100}€`}</div>
         </div>
 
         {clientSecret &&

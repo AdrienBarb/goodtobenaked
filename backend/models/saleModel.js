@@ -1,18 +1,11 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 const amountSchema = mongoose.Schema(
   {
-    baseValue: {
+    fiatValue: {
       type: Number,
       required: true,
-      default: 0,
-    },
-    commission: {
-      type: Number,
-      default: 0,
-    },
-    baseValueWithCommission: {
-      type: Number,
       default: 0,
     },
     creditValue: {
@@ -45,7 +38,7 @@ const saleSchema = mongoose.Schema(
     saleType: {
       type: String,
       required: true,
-      enum: ['nude', 'commission', 'tip'],
+      enum: ['nude', 'commission', 'tip', 'message'],
     },
     nude: {
       type: mongoose.Schema.Types.ObjectId,
@@ -54,6 +47,10 @@ const saleSchema = mongoose.Schema(
     isPaid: {
       type: Boolean,
       default: false,
+    },
+    availableDate: {
+      type: Date,
+      default: () => moment.utc().add(7, 'days').startOf('day').toDate(),
     },
   },
   {

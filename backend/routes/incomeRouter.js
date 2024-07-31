@@ -7,7 +7,6 @@ const {
   getBalances,
   getSales,
 } = require('../controllers/incomeController');
-const { creatorProtect } = require('../middleware/authCreatorMiddleware');
 const { userProtect } = require('../middleware/authUserMiddleware');
 
 const router = express.Router();

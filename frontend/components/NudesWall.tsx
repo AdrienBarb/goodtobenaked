@@ -7,6 +7,7 @@ import { Nude } from "@/types/models/Nude";
 import useApi from "@/lib/hooks/useApi";
 import Title from "./Title";
 import dynamic from "next/dynamic";
+import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
 interface Props {
   initialNudesDatas: {
@@ -20,8 +21,8 @@ const Loader = dynamic(() => import("@/components/Loader"), { ssr: false });
 
 const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
   //localstate
-  const [nudeList, setNudeList] = useState<Nude[]>([]);
-  const [globalLoading, setGlobalLoading] = useState(true);
+  const [nudeList, setNudeList] = useState<Nude[]>(initialNudesDatas.nudes);
+  const [globalLoading, setGlobalLoading] = useState(false);
 
   const queryKey = useMemo(() => ["feedList", { userId }], [userId]);
   const { useInfinite } = useApi();
@@ -42,7 +43,6 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
       },
       onSuccess: (data: any) => {
         setNudeList(data?.pages.flatMap((page: any) => page.nudes));
-        setGlobalLoading(false);
       },
       refetchOnWindowFocus: false,
     }
@@ -50,25 +50,13 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
 
   const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    if (nudeList.length === 0 || !hasNextPage || globalLoading) return;
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage && !isFetchingNextPage && !globalLoading,
+  });
 
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        fetchNextPage();
-      }
-    });
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasNextPage, fetchNextPage, nudeList.length, globalLoading]);
+  console.log("nudes ", nudeList);
 
   return (
     <div className={styles.container}>
@@ -78,26 +66,34 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
             Nudes
           </Title>
 
-          <div className={styles.nudeCardList}>
-            {nudeList.map((currentNude: Nude, index: number) => {
-              return (
-                <NudeCard
-                  nude={currentNude}
-                  key={index}
-                  display="card"
-                  showUserMenu={true}
-                  setNudeList={setNudeList}
-                />
-              );
-            })}
-          </div>
-
-          <div
-            style={{ height: "10rem", display: "block", width: "100%" }}
-            ref={loadMoreRef}
-          >
-            {isFetchingNextPage && <Loader />}
-          </div>
+          {globalLoading ? (
+            <Loader style={{ color: "#cecaff" }} />
+          ) : (
+            <>
+              <div className={styles.nudeCardList}>
+                {nudeList.map((currentNude: Nude, index: number) => {
+                  return (
+                    <NudeCard
+                      nude={currentNude}
+                      key={index}
+                      display="card"
+                      showUserMenu={true}
+                      setNudeList={setNudeList}
+                    />
+                  );
+                })}
+              </div>
+              <div
+                style={{
+                  height: "10rem",
+                  display: hasNextPage ? "flex" : "none",
+                }}
+                ref={loadMoreRef}
+              >
+                {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

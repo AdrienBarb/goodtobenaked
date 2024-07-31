@@ -3,6 +3,7 @@ const SNSMessageValidator = require('sns-validator');
 const mediaModel = require('../models/mediaModel');
 const { default: axios } = require('axios');
 const socketManager = require('../lib/socket/socketManager');
+const signedUrl = require('../lib/utils/signedUrl');
 const validator = new SNSMessageValidator();
 
 const confirmSubscription = (message) => {
@@ -38,7 +39,15 @@ const getSnsNotification = expressAsyncHandler(async (req, res) => {
         media.status = status;
         await media.save();
 
-        socketManager.emitToUser(userId, 'mediaStatusUpdated', media);
+        socketManager.emitToUser(userId, 'mediaStatusUpdated', {
+          _id: media._id,
+          user: media.user,
+          mediaType: media.mediaType,
+          posterKey: media.posterKey
+            ? signedUrl(`${process.env.CLOUDFRONT_URL}${media.posterKey}`)
+            : null,
+          status: media.status,
+        });
 
         res.status(200).json({ message: 'Media status updated successfully' });
       } catch (error) {

@@ -33,7 +33,7 @@ const CreditAmount = () => {
         onClick={() => setOpenCreditResumeModal(true)}
       >
         {t("common.numberOfCredit", {
-          creditCount: userState.creditAmount,
+          creditCount: userState.creditAmount / 100,
         })}
       </div>
 
@@ -43,7 +43,7 @@ const CreditAmount = () => {
         confirmAction={navigateToPayment}
         title={t("common.yourCredit")}
         text={t("common.youHaveNumberOfCredit", {
-          creditCount: userState.creditAmount,
+          creditCount: userState.creditAmount / 100,
         })}
         buttonText={t("common.buyCredits")}
       />

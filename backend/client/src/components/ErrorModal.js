@@ -19,11 +19,11 @@ const ErrorModal = ({ open, onClose }) => {
       <div className={styles.container}>
         <div className={styles.wrapper}>
           <span className={styles.label}>😞</span>
-          <span className={styles.label}>Oups !</span>
+          <span className={styles.label}>Oops!</span>
           <div className={styles.text}>
-            Une erreur est survenue. Vous pouvez réessayer, et si le problème
-            persiste, vous pouvez nous contacter{' '}
-            <a href={`mailto:help@goodtobenaked.com`}>ici</a>.
+            An error occurred. You can try again, and if the problem persists,
+            you can contact us{' '}
+            <a href={`mailto:help@goodtobenaked.com`}>here</a>.
           </div>
           <SimpleButton
             onClick={() => {
@@ -33,7 +33,7 @@ const ErrorModal = ({ open, onClose }) => {
               backgroundColor: '#780000',
             }}
           >
-            Réessayer
+            Try Again
           </SimpleButton>
         </div>
       </div>
