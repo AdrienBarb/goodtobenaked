@@ -54,6 +54,9 @@ jobs:
             $ARGS \
             -f frontend/Dockerfile.prod --push ./frontend
 
+      - name: Pause for rate limit
+        run: sleep 30s
+
       - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 \
@@ -68,7 +71,7 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker login
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker system prune -f
             docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml goodtobenaked
             docker service update --force goodtobenaked_backend
@@ -82,7 +85,7 @@ jobs:
           username: root
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
-            docker login
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker system prune -f
             docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack-staging.yml goodtobenaked-staging
             docker service update --force goodtobenaked-staging_backend
