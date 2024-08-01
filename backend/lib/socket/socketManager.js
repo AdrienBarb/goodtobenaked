@@ -97,6 +97,9 @@ class SocketManager {
   }
 
   emitToUser(userId, event, data) {
+    console.log('user : ', userId);
+    console.log('this.users : ', this.users);
+
     const user = this.getUser(userId);
 
     if (user) {

@@ -39,6 +39,8 @@ const getSnsNotification = expressAsyncHandler(async (req, res) => {
         media.status = status;
         await media.save();
 
+        console.log('SNS Message => ', media);
+
         socketManager.emitToUser(userId, 'mediaStatusUpdated', {
           _id: media._id,
           user: media.user,
