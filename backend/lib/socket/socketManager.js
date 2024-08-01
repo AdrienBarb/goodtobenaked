@@ -2,6 +2,7 @@ const { Server } = require('socket.io');
 const config = require('../../config');
 
 console.log('config.clientUrl ', config.clientUrl);
+console.log('config.internalClientUrl ', config.internalClientUrl);
 
 class SocketManager {
   constructor() {

@@ -38,11 +38,6 @@ services:
         - "traefik.http.routers.traefik.middlewares=auth"
         - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$r/k/4P2u$ymeak2FN1yJW9YQdyLCT21"
         - "traefik.http.routers.traefik.tls.certresolver=myresolver"
-        - "traefik.http.middlewares.cors.headers.accessControlAllowMethods=GET,OPTIONS,PUT,POST,DELETE"
-        - "traefik.http.middlewares.cors.headers.accessControlAllowHeaders=Origin,Content-Type,Authorization"
-        - "traefik.http.middlewares.cors.headers.accessControlAllowOriginList=https://goodtobenaked.com,https://www.goodtobenaked.com"
-        - "traefik.http.middlewares.cors.headers.accessControlAllowCredentials=true"
-        - "traefik.http.routers.backend.middlewares=cors@docker"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./acme.json:/letsencrypt/acme.json"
@@ -67,6 +62,8 @@ services:
       placement:
         constraints:
           - node.role == worker
+        preferences:
+          - spread: node.id
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.frontend.rule=Host(`goodtobenaked.com`, `www.goodtobenaked.com`)"
@@ -116,6 +113,8 @@ services:
       placement:
         constraints:
           - node.role == worker
+        preferences:
+          - spread: node.id
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.backend.rule=Host(`api.goodtobenaked.com`, `www.api.goodtobenaked.com`)"

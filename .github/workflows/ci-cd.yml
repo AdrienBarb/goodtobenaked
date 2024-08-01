@@ -37,7 +37,7 @@ jobs:
             echo "IMAGE_TAG=latest" >> $GITHUB_ENV
             echo "ARGS=--build-arg NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001 \
                   --build-arg NEXT_PUBLIC_API_URL=https://api.goodtobenaked.com/ \
-                  --build-arg NEXT_PUBLIC_BASE_URL=https://www.goodtobenaked.com \
+                  --build-arg NEXT_PUBLIC_BASE_URL=https://goodtobenaked.com \
                   --build-arg NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://duz30n69vbwvd.cloudfront.net/" >> $GITHUB_ENV
           else
             echo "IMAGE_TAG=staging" >> $GITHUB_ENV
