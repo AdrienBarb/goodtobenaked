@@ -3,18 +3,29 @@ const { createAdapter } = require('@socket.io/redis-adapter');
 const Redis = require('ioredis');
 const config = require('../../config');
 
+console.log('config.clientUrl ', config.clientUrl);
+console.log('config.internalClientUrl ', config.internalClientUrl);
+
 class SocketManager {
   constructor() {
     this.io = null;
     this.users = [];
+    this.pubClient = null;
+    this.subClient = null;
   }
 
-  async init(httpServer) {
-    const pubClient = new Redis(process.env.REDIS_URL);
-    const subClient = pubClient.duplicate();
+  async connectRedis() {
+    if (!this.pubClient || !this.subClient) {
+      this.pubClient = new Redis(process.env.REDIS_URL);
+      this.subClient = this.pubClient.duplicate();
 
-    await Promise.all([pubClient.connect(), subClient.connect()]);
+      await Promise.all([this.pubClient.connect(), this.subClient.connect()]);
+    }
 
+    return { pubClient: this.pubClient, subClient: this.subClient };
+  }
+
+  init(httpServer, pubClient, subClient) {
     this.io = new Server(httpServer, {
       cors: {
         origin: '*',
