@@ -127,6 +127,7 @@ services:
         - "traefik.http.services.backend.loadbalancer.sticky.cookie=true"
         - "traefik.http.services.backend.loadbalancer.sticky.cookie.name=backend-sticky"
         - "traefik.http.services.backend.loadbalancer.sticky.cookie.secure=true"
+        - "traefik.http.services.backend.loadbalancer.sticky.cookie.httpOnly=true"
     volumes:
       - "./keys:/keys"
 
