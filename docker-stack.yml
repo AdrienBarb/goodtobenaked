@@ -124,6 +124,9 @@ services:
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
         - "com.newrelic.logs.include=true"
         - "com.newrelic.logs.parser=auto"
+        - "traefik.http.services.backend.loadbalancer.sticky.cookie=true"
+        - "traefik.http.services.backend.loadbalancer.sticky.cookie.name=backend-sticky"
+        - "traefik.http.services.backend.loadbalancer.sticky.cookie.secure=true"
     volumes:
       - "./keys:/keys"
 
