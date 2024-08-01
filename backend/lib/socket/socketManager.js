@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
 const Redis = require('ioredis');
+const config = require('../../config');
 
 class SocketManager {
   constructor() {
@@ -12,13 +13,15 @@ class SocketManager {
     const pubClient = new Redis(process.env.REDIS_URL);
     const subClient = pubClient.duplicate();
 
+    await Promise.all([pubClient.connect(), subClient.connect()]);
+
     this.io = new Server(httpServer, {
       cors: {
         origin: '*',
         methods: ['GET', 'POST'],
         credentials: true,
-        transports: ['websocket'],
       },
+      transports: ['websocket'],
       adapter: createAdapter(pubClient, subClient),
     });
     this.configureSocketEvents();
