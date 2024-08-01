@@ -78,6 +78,7 @@ services:
     image: adrienbarb/goodtobenaked-backend:latest
     environment:
       - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
     secrets:
       - JWT_SECRET
       - MONGODB_URI
@@ -130,6 +131,16 @@ services:
         - "traefik.http.services.backend.loadbalancer.sticky.cookie.httpOnly=true"
     volumes:
       - "./keys:/keys"
+
+  redis:
+    image: redis:latest
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
   newrelic-infra:
     image: adrienbarb/gtbn-newrelic-infra:latest

@@ -1,4 +1,6 @@
 const { Server } = require('socket.io');
+const { createAdapter } = require('@socket.io/redis-adapter');
+const { createClient } = require('redis');
 const config = require('../../config');
 
 console.log('config.clientUrl ', config.clientUrl);
@@ -10,7 +12,7 @@ class SocketManager {
     this.users = [];
   }
 
-  init(httpServer) {
+  async init(httpServer) {
     this.io = new Server(httpServer, {
       cors: {
         origin: '*',
@@ -18,6 +20,17 @@ class SocketManager {
         credentials: true,
       },
     });
+
+    console.log('process.env.REDIS_URL ', process.env.REDIS_URL);
+
+    if (process.env.NODE_ENV === 'production') {
+      const pubClient = createClient({ url: process.env.REDIS_URL });
+      const subClient = pubClient.duplicate();
+      await pubClient.connect();
+      await subClient.connect();
+      this.io.adapter(createAdapter(pubClient, subClient));
+    }
+
     this.configureSocketEvents();
   }
 
