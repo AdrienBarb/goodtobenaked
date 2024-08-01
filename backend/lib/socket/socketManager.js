@@ -17,6 +17,7 @@ class SocketManager {
         origin: '*',
         methods: ['GET', 'POST'],
         credentials: true,
+        transports: ['websocket'],
       },
       adapter: createAdapter(pubClient, subClient),
     });
