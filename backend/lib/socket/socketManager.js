@@ -13,7 +13,9 @@ class SocketManager {
   init(httpServer) {
     this.io = new Server(httpServer, {
       cors: {
-        origin: [config.clientUrl, config.internalClientUrl],
+        origin: '*',
+        methods: ['GET', 'POST'],
+        credentials: true,
       },
     });
     this.configureSocketEvents();
