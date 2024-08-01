@@ -9,8 +9,23 @@ class SocketManager {
   }
 
   init(httpServer) {
-    const pubClient = new Redis();
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'; // Utilisez l'URL de Redis depuis l'environnement
+    const pubClient = new Redis(redisUrl, {
+      retryStrategy(times) {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
+      maxRetriesPerRequest: 20,
+    });
     const subClient = pubClient.duplicate();
+
+    pubClient.on('error', (err) => {
+      console.error('Redis pubClient error:', err);
+    });
+
+    subClient.on('error', (err) => {
+      console.error('Redis subClient error:', err);
+    });
 
     this.io = new Server(httpServer, {
       cors: {
@@ -36,7 +51,7 @@ class SocketManager {
         this.io.emit('getUsers', this.users);
       });
 
-      //Send and get message
+      // Send and get message
       socket.on('sendMessage', ({ senderId, receiverId, message }) => {
         const user = this.getUser(receiverId);
         if (user) {
@@ -47,7 +62,7 @@ class SocketManager {
         }
       });
 
-      //Send and get message
+      // Send and get notification
       socket.on('sendNotification', ({ receiverId, conversationId }) => {
         const user = this.getUser(receiverId);
         if (user) {
