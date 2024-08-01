@@ -1,39 +1,18 @@
 const { Server } = require('socket.io');
-const { createAdapter } = require('@socket.io/redis-adapter');
-const Redis = require('ioredis');
-const config = require('../../config');
-
-console.log('config.clientUrl ', config.clientUrl);
-console.log('config.internalClientUrl ', config.internalClientUrl);
 
 class SocketManager {
   constructor() {
     this.io = null;
     this.users = [];
-    this.pubClient = null;
-    this.subClient = null;
   }
 
-  async connectRedis() {
-    if (!this.pubClient || !this.subClient) {
-      this.pubClient = new Redis(process.env.REDIS_URL);
-      this.subClient = this.pubClient.duplicate();
-
-      await Promise.all([this.pubClient.connect(), this.subClient.connect()]);
-    }
-
-    return { pubClient: this.pubClient, subClient: this.subClient };
-  }
-
-  init(httpServer, pubClient, subClient) {
+  init(httpServer) {
     this.io = new Server(httpServer, {
       cors: {
         origin: '*',
         methods: ['GET', 'POST'],
         credentials: true,
       },
-      transports: ['websocket'],
-      adapter: createAdapter(pubClient, subClient),
     });
     this.configureSocketEvents();
   }
@@ -50,7 +29,7 @@ class SocketManager {
         this.io.emit('getUsers', this.users);
       });
 
-      // Send and get message
+      //Send and get message
       socket.on('sendMessage', ({ senderId, receiverId, message }) => {
         const user = this.getUser(receiverId);
         if (user) {
@@ -61,7 +40,7 @@ class SocketManager {
         }
       });
 
-      // Send and get message
+      //Send and get message
       socket.on('sendNotification', ({ receiverId, conversationId }) => {
         const user = this.getUser(receiverId);
         if (user) {

@@ -1,3 +1,4 @@
+//IMPORT LIB
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -7,8 +8,14 @@ const { createServer } = require('http');
 const { getStripeUpdates } = require('./controllers/webhooksController');
 const socketManager = require('./lib/socket/socketManager');
 const config = require('./config');
+
+//IMPORT DB
 const { db } = require('./db');
+
+//other import
 const { notifyErrorSlack } = require('./lib/services/slack');
+
+// IMPORT ROUTER
 const userRouter = require('./routes/userRouter');
 const categoryRouter = require('./routes/categoryRouter');
 const conversationRouter = require('./routes/conversationRouter');
@@ -24,9 +31,13 @@ const { getSnsNotification } = require('./controllers/snsController');
 
 const app = express();
 const apiPort = process.env.PORT || 3001;
+
 const httpServer = createServer(app);
 
-// Start MongoDB
+//init socket
+socketManager.init(httpServer);
+
+//Start MongoDB
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.post(
@@ -43,7 +54,7 @@ app.use(bodyParser.json());
 app.set('trust proxy', true);
 app.use(bodyParser.json({ type: 'application/json;charset=UTF-8' }));
 
-// Router
+//Router
 app.use('/api/users', userRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/conversations', conversationRouter);
@@ -80,19 +91,11 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).send(err.message);
 });
 
-(async () => {
-  try {
-    const { pubClient, subClient } = await socketManager.connectRedis();
-    socketManager.init(httpServer, pubClient, subClient);
+//Run the server
+if (process.env.NODE_ENV !== 'test') {
+  httpServer.listen(apiPort, () =>
+    console.log(`Server running on port ${apiPort}`),
+  );
+}
 
-    // Run the server
-    if (process.env.NODE_ENV !== 'test') {
-      httpServer.listen(apiPort, () =>
-        console.log(`Server running on port ${apiPort}`),
-      );
-    }
-  } catch (error) {
-    console.error('Failed to initialize Redis clients', error);
-    process.exit(1); // Exit with a failure code
-  }
-})();
+module.exports = httpServer;
