@@ -1,4 +1,4 @@
-//IMPORT LIB
+// IMPORT LIB
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -9,10 +9,10 @@ const { getStripeUpdates } = require('./controllers/webhooksController');
 const socketManager = require('./lib/socket/socketManager');
 const config = require('./config');
 
-//IMPORT DB
+// IMPORT DB
 const { db } = require('./db');
 
-//other import
+// other import
 const { notifyErrorSlack } = require('./lib/services/slack');
 
 // IMPORT ROUTER
@@ -34,10 +34,10 @@ const apiPort = process.env.PORT || 3001;
 
 const httpServer = createServer(app);
 
-//init socket
+// init socket
 socketManager.init(httpServer);
 
-//Start MongoDB
+// Start MongoDB
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.post(
@@ -54,7 +54,7 @@ app.use(bodyParser.json());
 app.set('trust proxy', true);
 app.use(bodyParser.json({ type: 'application/json;charset=UTF-8' }));
 
-//Router
+// Router
 app.use('/api/users', userRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/conversations', conversationRouter);
@@ -91,7 +91,7 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).send(err.message);
 });
 
-//Run the server
+// Run the server
 if (process.env.NODE_ENV !== 'test') {
   httpServer.listen(apiPort, () =>
     console.log(`Server running on port ${apiPort}`),
