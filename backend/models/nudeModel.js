@@ -45,4 +45,14 @@ const nudeSchema = mongoose.Schema(
   },
 );
 
+nudeSchema.index({ isArchived: 1 });
+nudeSchema.index({ visibility: 1 });
+nudeSchema.index({ user: 1 });
+nudeSchema.index({ isFree: 1 });
+nudeSchema.index({ paidMembers: 1 });
+nudeSchema.index({ tags: 1 });
+
+nudeSchema.index({ isArchived: 1, visibility: 1 });
+nudeSchema.index({ user: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Nude', nudeSchema);
