@@ -47,7 +47,7 @@ socketManager.init(httpServer);
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Middleware
-app.use(timeout('5s')); // Timeout de 5 secondes pour toutes les requêtes
+app.use(timeout('10s')); // Timeout de 5 secondes pour toutes les requêtes
 app.use(cors());
 app.options('*', cors());
 app.use(bodyParser.json({ type: 'application/json;charset=UTF-8' }));
