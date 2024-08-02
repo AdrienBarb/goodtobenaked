@@ -61,6 +61,7 @@ services:
     image: adrienbarb/goodtobenaked-backend:staging
     environment:
       - NODE_ENV=staging
+      - REDIS_URL=redis://redis:6379
     secrets:
       - JWT_SECRET
       - MONGODB_URI
@@ -96,6 +97,13 @@ services:
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
     volumes:
       - "./keys:/keys"
+
+  redis:
+    image: redis:latest
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
 
 secrets:
   NEXTAUTH_SECRET:
