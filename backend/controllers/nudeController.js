@@ -67,26 +67,20 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     visibility: 'public',
   };
 
-  const verifiedUsers = await userModel.find({
-    isAccountVerified: true,
-  });
+  let usersList = [];
 
-  let usersList = verifiedUsers.map((user) => user._id);
+  // Combiner les conditions pour les utilisateurs vérifiés et suivis dans une seule requête
+  const userConditions = { isAccountVerified: true };
 
-  if (
-    showOnlyFollowedUser &&
-    showOnlyFollowedUser === 'true' &&
-    req?.user?._id
-  ) {
-    const peoplesUserFollow = await userModel.find({
-      notificationSubscribers: { $in: req.user._id.toString() },
-      isAccountVerified: true,
-    });
-
-    const peoplesUserFollowIds = peoplesUserFollow.map((user) => user._id);
-
-    usersList = peoplesUserFollowIds;
+  if (showOnlyFollowedUser === 'true' && req?.user?._id) {
+    userConditions.notificationSubscribers = { $in: req.user._id.toString() };
   }
+
+  const verifiedUsers = await userModel
+    .find(userConditions)
+    .select('_id')
+    .lean();
+  usersList = verifiedUsers.map((user) => user._id);
 
   filter.user = { $in: usersList };
 
@@ -94,7 +88,7 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     filter.isFree = isFree === 'free';
   }
 
-  if (state && state === 'bought' && req?.user?._id) {
+  if (state === 'bought' && req?.user?._id) {
     filter.paidMembers = { $in: req.user._id.toString() };
   }
 
