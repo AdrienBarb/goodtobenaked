@@ -29,7 +29,7 @@ services:
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-        - "traefik.http.routers.traefik.rule=Host(`traefik-staging.nastynipples.com`)"
+        - "traefik.http.routers.traefik.rule=Host(`traefik-staging.goodtobenaked.com`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.routers.traefik.middlewares=auth"
@@ -51,7 +51,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.frontend.rule=Host(`staging.nastynipples.com`)"
+        - "traefik.http.routers.frontend.rule=Host(`staging.goodtobenaked.com`, `www.staging.goodtobenaked.com`)"
         - "traefik.http.routers.frontend.entrypoints=websecure"
         - "traefik.http.services.frontend.loadbalancer.server.port=3000"
         - "traefik.http.routers.frontend.tls=true"
@@ -61,6 +61,7 @@ services:
     image: adrienbarb/goodtobenaked-backend:staging
     environment:
       - NODE_ENV=staging
+      - REDIS_URL=redis://redis:6379
     secrets:
       - JWT_SECRET
       - MONGODB_URI
@@ -89,13 +90,20 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.backend.rule=Host(`api-staging.nastynipples.com`)"
+        - "traefik.http.routers.backend.rule=Host(`api-staging.goodtobenaked.com`, `www.api-staging.goodtobenaked.com`)"
         - "traefik.http.routers.backend.entrypoints=websecure"
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
     volumes:
       - "./keys:/keys"
+
+  redis:
+    image: redis:latest
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
 
 secrets:
   NEXTAUTH_SECRET:

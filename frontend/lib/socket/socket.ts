@@ -6,7 +6,10 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const socket =
   typeof window !== "undefined" && apiUrl && typeof apiUrl === "string"
-    ? io(apiUrl)
+    ? io(apiUrl, {
+        withCredentials: true,
+        transports: ["websocket", "polling"],
+      })
     : null;
 
 console.log("socket ", socket);
