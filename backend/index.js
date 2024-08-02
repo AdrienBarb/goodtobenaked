@@ -8,6 +8,7 @@ const { createServer } = require('http');
 const { getStripeUpdates } = require('./controllers/webhooksController');
 const socketManager = require('./lib/socket/socketManager');
 const config = require('./config');
+const timeout = require('connect-timeout');
 
 //IMPORT DB
 const { db } = require('./db');
@@ -34,11 +35,23 @@ const apiPort = process.env.PORT || 3001;
 
 const httpServer = createServer(app);
 
+// Set HTTP server timeouts
+httpServer.timeout = 120000; // 2 minutes
+httpServer.keepAliveTimeout = 60000; // 1 minute
+httpServer.headersTimeout = 65000; // 65 seconds
+
 //init socket
 socketManager.init(httpServer);
 
 //Start MongoDB
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+// Middleware
+app.use(timeout('5s')); // Timeout de 5 secondes pour toutes les requêtes
+app.use(cors());
+app.options('*', cors());
+app.use(bodyParser.json({ type: 'application/json;charset=UTF-8' }));
+app.use(haltOnTimedout);
 
 app.post(
   '/webhook',
@@ -48,13 +61,7 @@ app.post(
 
 app.post('/sns-notification', bodyParser.text(), getSnsNotification);
 
-app.use(cors());
-app.options('*', cors());
-app.use(bodyParser.json());
-app.set('trust proxy', true);
-app.use(bodyParser.json({ type: 'application/json;charset=UTF-8' }));
-
-//Router
+// Router
 app.use('/api/users', userRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/conversations', conversationRouter);
@@ -91,7 +98,12 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).send(err.message);
 });
 
-//Run the server
+// Halt on timeout middleware
+function haltOnTimedout(req, res, next) {
+  if (!req.timedout) next();
+}
+
+// Run the server
 if (process.env.NODE_ENV !== 'test') {
   httpServer.listen(apiPort, () =>
     console.log(`Server running on port ${apiPort}`),
