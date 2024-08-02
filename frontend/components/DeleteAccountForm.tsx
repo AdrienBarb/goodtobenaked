@@ -29,7 +29,7 @@ const DeleteAccountForm = () => {
       onSuccess: () => {
         signOut({
           redirect: true,
-          callbackUrl: `${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/`,
+          callbackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
         });
       },
     }
