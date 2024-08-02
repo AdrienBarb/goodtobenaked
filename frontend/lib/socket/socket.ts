@@ -12,6 +12,4 @@ const socket =
       })
     : null;
 
-console.log("socket ", socket);
-
 export default socket;

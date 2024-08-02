@@ -12,8 +12,6 @@ interface BlogMenuProps {
 const BlogMenu: FC<BlogMenuProps> = ({ categories, locale }) => {
   const t = useTranslations("blog");
 
-  console.log("categories ", categories);
-
   return (
     <div className={styles.container}>
       <div className={styles.linksWrapper}>

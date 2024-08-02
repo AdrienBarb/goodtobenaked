@@ -59,8 +59,6 @@ module.exports = {
     for (const member of members) {
       const exist = creators.some((el) => el.email === member.email);
 
-      console.log('exist ', exist);
-
       if (!exist) {
         await db.collection('users').insertOne({
           _id: member._id,
