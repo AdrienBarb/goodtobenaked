@@ -55,8 +55,6 @@ const NudesFeed: FC<Props> = ({ initialNudesDatas }) => {
           pageParams: [null],
         },
         onSuccess: (data: any) => {
-          console.log("data ", data);
-
           setNudeList(data?.pages.flatMap((page: any) => page.nudes));
           setGlobalLoading(false);
         },

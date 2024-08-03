@@ -558,8 +558,6 @@ const getVerificationStep = asyncHandler(async (req, res, next) => {
   );
   const nudes = await nudeModel.find({ user: user, isArchived: false });
 
-  console.log('nudes ', nudes.length);
-
   res.status(200).json({
     isEmailVerified,
     isIdentityVerified,

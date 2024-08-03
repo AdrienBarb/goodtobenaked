@@ -18,13 +18,9 @@ export const useIntersectionObserver = ({
   rootMargin = "0px",
 }: IntersectionObserverProps) => {
   useEffect(() => {
-    console.log("enable ", enabled);
-
     if (!enabled) {
       return;
     }
-
-    console.log("jepasse");
 
     const observer = new IntersectionObserver(
       (entries) => {

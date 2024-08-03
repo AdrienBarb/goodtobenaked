@@ -160,7 +160,7 @@
     "dropzoneSentence": "Glissez-déposez des fichiers ici, ou cliquez pour sélectionner des fichiers.",
     "uploadImage": "Uploader l'image",
     "weUploadYourFile": "Votre média est en cours de préparation. Veuillez ne pas fermer cette fenêtre.",
-    "weAreFormattingYourMedia": "Nous formatons ton média, cela peut prendre jusqu'à 10 minutes",
+    "weAreFormattingYourMedia": "Nous formatons ton média, cela peut prendre jusqu'à 30 minutes pour les gros média.",
     "maxSizeImage": "La taille maximum des fichiers est de 10 MB pour les images, et 5 GO pour les vidéos.",
     "notificationSubscribers": "Abonnés aux Notifications",
     "profileViewers": "Visiteurs du Profil",

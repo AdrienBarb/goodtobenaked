@@ -10,7 +10,6 @@ class SocketManager {
   }
 
   init(httpServer) {
-    console.log('process.env.REDIS_URL', process.env.REDIS_URL);
     const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
     this.pubClient = new Redis(redisUrl, {
       retryStrategy(times) {
@@ -39,22 +38,17 @@ class SocketManager {
     });
 
     this.configureSocketEvents();
-    console.log('Socket.IO initialized');
   }
 
   configureSocketEvents() {
     this.io.on('connection', (socket) => {
-      console.log('New client connected', socket.id);
-
       socket.on('addUser', async (userId) => {
-        console.log('User added:', userId);
         await this.addUser(userId, socket.id);
         const users = await this.getUsers();
         this.io.emit('getUsers', users);
       });
 
       socket.on('disconnect', async () => {
-        console.log('Client disconnected', socket.id);
         await this.removeUser(socket.id);
         const users = await this.getUsers();
         this.io.emit('getUsers', users);
@@ -64,7 +58,6 @@ class SocketManager {
       socket.on('sendMessage', async ({ senderId, receiverId, message }) => {
         const user = await this.getUser(receiverId);
         if (user) {
-          console.log('Message sent from', senderId, 'to', receiverId);
           this.io.to(user.socketId).emit('getMessage', {
             senderId,
             message,
@@ -76,7 +69,6 @@ class SocketManager {
       socket.on('sendNotification', async ({ receiverId, conversationId }) => {
         const user = await this.getUser(receiverId);
         if (user) {
-          console.log('Notification sent to', receiverId);
           this.io.to(user.socketId).emit('getNotification', {
             conversationId,
           });
@@ -112,12 +104,8 @@ class SocketManager {
   }
 
   async emitToUser(userId, event, data) {
-    const users = await this.getUsers();
-    console.log('users ', users);
-    console.log('user : ', userId);
     const user = await this.getUser(userId);
     if (user) {
-      console.log('Emitting event', event, 'to user', userId);
       this.io.to(user.socketId).emit(event, data);
     }
   }

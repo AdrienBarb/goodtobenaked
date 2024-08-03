@@ -24,8 +24,6 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const errorStatus = error?.response?.status;
 
-    console.log("fuckingerror ", error);
-
     if (errorStatus === 404) {
       if (isServer) {
         redirect("/404");

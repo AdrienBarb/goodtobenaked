@@ -5,8 +5,6 @@ import moment from "moment";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const blogPosts = await getAllBlogPosts();
 
-  console.log("blogPosts ", blogPosts);
-
   const formattedBlogPosts = blogPosts.map((post: any) => {
     let publishedDate = moment(post.publishedAt).format("YYYY-MM-DD");
 
