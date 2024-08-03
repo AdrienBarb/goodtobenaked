@@ -20,19 +20,19 @@ const UserUncompletedProfileBand: FC<
     session &&
     session?.user?.id === userId &&
     session?.user?.userType === "creator" &&
-    session?.user?.isAccountVerified
+    !session?.user?.isAccountVerified
   ) {
-    return <></>;
+    return (
+      <div className={styles.container}>
+        {t("common.youHaveToCompleteYourProfile")}
+        <Link href={`/dashboard/account/become-creator`} prefetch>
+          {t("common.completeYourProfile")}
+        </Link>
+      </div>
+    );
   }
 
-  return (
-    <div className={styles.container}>
-      {t("common.youHaveToCompleteYourProfile")}
-      <Link href={`/dashboard/account/become-creator`} prefetch>
-        {t("common.completeYourProfile")}
-      </Link>
-    </div>
-  );
+  return <></>;
 };
 
 export default UserUncompletedProfileBand;
