@@ -160,7 +160,7 @@
     "dropzoneSentence": "Drag 'n' drop some files here, or click to select files",
     "uploadImage": "Upload image",
     "weUploadYourFile": "Your media is being prepared. Don't close this window",
-    "weAreFormattingYourMedia": "We are formatting your media, it may takes 10 minutes",
+    "weAreFormattingYourMedia": "We are formatting your media, it may takes 30 minutes for large media.",
     "maxSizeImage": "The maximum size of the files is 10 MB for photos and 5 GO for videos.",
     "notificationSubscribers": "Notification Subscribers",
     "profileViewers": "Profile Viewers",

@@ -61,6 +61,7 @@ services:
     image: adrienbarb/goodtobenaked-backend:staging
     environment:
       - NODE_ENV=staging
+      - REDIS_URL=redis://redis:6379
     secrets:
       - JWT_SECRET
       - MONGODB_URI
@@ -94,8 +95,22 @@ services:
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
         - "traefik.http.routers.backend.tls.certresolver=myresolver"
+        - "traefik.http.services.backend.loadbalancer.sticky.cookie=true"
+        - "traefik.http.services.backend.loadbalancer.sticky.cookie.name=backend-sticky"
+        - "traefik.http.services.backend.loadbalancer.sticky.cookie.secure=true"
+        - "traefik.http.services.backend.loadbalancer.sticky.cookie.httpOnly=true"
+        - "traefik.http.middlewares.backend-retry.retry.attempts=3"
+        - "traefik.http.middlewares.backend-retry.retry.initialInterval=500ms"
+        - "traefik.http.routers.backend.middlewares=backend-retry"
     volumes:
       - "./keys:/keys"
+
+  redis:
+    image: redis:latest
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
 
 secrets:
   NEXTAUTH_SECRET:

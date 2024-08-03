@@ -16,8 +16,6 @@ const useCheckIfUserVerified = () => {
       return;
     }
 
-    console.log("Check if user verified");
-
     try {
       const { isAccountVerified } = await fetchData("/api/users/is-verified");
 
@@ -31,8 +29,6 @@ const useCheckIfUserVerified = () => {
             isAccountVerified,
           },
         };
-
-        console.log("Update session ", updatedSession);
 
         update(updatedSession);
       }

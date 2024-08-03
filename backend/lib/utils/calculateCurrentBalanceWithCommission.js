@@ -4,8 +4,6 @@ const saleModel = require('../../models/saleModel');
 const calculateCurrentBalanceWithCommission = async (user) => {
   const sales = await saleModel.find({ owner: user, isPaid: false });
 
-  console.log('sales ', sales);
-
   const isUserInPromotionPeriod = moment().isBefore(
     moment(user.promotionEndDate),
   );

@@ -9,14 +9,16 @@ import { redirect } from "@/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../utils/authOptions";
 
+const isServer = typeof window === "undefined";
+
 const axiosInstanceMultipartForm = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL,
+  baseURL: isServer
+    ? process.env.NEXT_PUBLIC_INTERNAL_API_URL
+    : process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "multipart/form-data",
   },
 });
-
-const isServer = typeof window === "undefined";
 
 axiosInstanceMultipartForm.interceptors.response.use(
   (response) => {

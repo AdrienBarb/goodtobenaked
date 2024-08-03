@@ -18,8 +18,6 @@ const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
   const firstMedia = nude.medias[0];
   const currentMedia: Media = nude.medias[currentMediaIndex];
 
-  console.log("firstMedia ", currentMedia.convertedKey);
-
   if (!canView && !isOwner && firstMedia.blurredKey) {
     return (
       <S3Image

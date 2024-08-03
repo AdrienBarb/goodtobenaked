@@ -19,8 +19,6 @@ const getBalances = asyncHandler(async (req, res, next) => {
     user,
   );
 
-  console.log(available, pending);
-
   res.status(200).json({
     available,
     pending,

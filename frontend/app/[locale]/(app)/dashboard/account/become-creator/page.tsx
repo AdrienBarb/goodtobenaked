@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import AccountVerification from "@/components/AccountVerification";
 import CenterHeader from "@/components/CenterHeader";
 import { useTranslations } from "next-intl";
@@ -12,14 +12,20 @@ import ClassicButton from "@/components/Buttons/ClassicButton";
 import toast from "react-hot-toast";
 import { useParams } from "next/navigation";
 import useApi from "@/lib/hooks/useApi";
+import useCheckIfUserVerified from "@/lib/hooks/useCheckIfUserVerified";
 
 const VerificationPage = () => {
   const t = useTranslations();
   const { data: session, update } = useSession();
   const { locale } = useParams();
+  const checkIfUserVerified = useCheckIfUserVerified();
 
   const URL = `${process.env.NEXT_PUBLIC_BASE_URL}/${locale}/dashboard/community/${session?.user?.id}`;
   const { usePut } = useApi();
+
+  useEffect(() => {
+    checkIfUserVerified();
+  }, []);
 
   const copyToClipboard = async () => {
     try {

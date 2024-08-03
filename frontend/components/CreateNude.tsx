@@ -69,8 +69,6 @@ const CreateNude: FC<CreateNudeProps> = () => {
     try {
       const currentNude = await fetchData(`/api/nudes/${nudeId}`);
 
-      console.log("currentNude ", currentNude);
-
       formik.setFieldValue("description", currentNude?.description);
       formik.setFieldValue("price", currentNude.priceDetails.fiatPrice / 100);
       formik.setFieldValue("tags", [

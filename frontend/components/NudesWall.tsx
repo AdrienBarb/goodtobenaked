@@ -56,8 +56,6 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
     enabled: hasNextPage && !isFetchingNextPage && !globalLoading,
   });
 
-  console.log("nudes ", nudeList);
-
   return (
     <div className={styles.container}>
       {nudeList.length > 0 && (

@@ -65,7 +65,7 @@ const GalleryCard: FC<GalleryCardProps> = ({
             weight="bolder"
             textAlign="center"
             customStyles={{ color: "white" }}
-            fontSize={12}
+            fontSize={10}
           >
             {t("common.weAreFormattingYourMedia")}
           </Text>
