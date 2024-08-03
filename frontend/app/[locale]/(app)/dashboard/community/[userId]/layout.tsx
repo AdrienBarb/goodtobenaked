@@ -50,10 +50,7 @@ const ProfileLayout = async ({
           <UserProfileTopButtons />
         </BackButton>
       )}
-      {session &&
-        session?.user?.id === userId &&
-        session?.user?.userType === "creator" &&
-        !session?.user?.isAccountVerified && <UserUncompletedProfileBand />}
+      <UserUncompletedProfileBand />
       <UserProfileHeader initialUserDatas={initialUserDatas} />
       {(initialUserDatas?.isAccountVerified ||
         session?.user?.id === userId) && (
