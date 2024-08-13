@@ -112,7 +112,7 @@ const AppMenu: FC<Props> = ({ setOpenDrawer }) => {
             path === appRouter.explore && styles.isSelected
           )}
           onClick={() => {
-            handleNavigation(appRouter.explore);
+            handleNavigation(appRouter.community);
             if (setOpenDrawer) {
               setOpenDrawer(false);
             }
@@ -121,23 +121,6 @@ const AppMenu: FC<Props> = ({ setOpenDrawer }) => {
           <div className={styles.leftWrapper}>
             <UilCompass />
             {t("navigation.explore")}
-          </div>
-        </button>
-        <button
-          className={clsx(
-            styles.card,
-            path === appRouter.community && styles.isSelected
-          )}
-          onClick={() => {
-            handleNavigation(appRouter.community);
-            if (setOpenDrawer) {
-              setOpenDrawer(false);
-            }
-          }}
-        >
-          <div className={styles.leftWrapper}>
-            <UilUsersAlt />
-            {t("navigation.community")}
           </div>
         </button>
         <button

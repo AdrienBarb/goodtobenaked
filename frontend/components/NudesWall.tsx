@@ -60,10 +60,6 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
     <div className={styles.container}>
       {nudeList.length > 0 && (
         <>
-          <Title Tag="h4" customStyles={{ marginBottom: "1rem" }}>
-            Nudes
-          </Title>
-
           {globalLoading ? (
             <Loader style={{ color: "#cecaff" }} />
           ) : (
