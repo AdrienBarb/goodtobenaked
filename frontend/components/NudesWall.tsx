@@ -70,7 +70,6 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
                     <NudeCard
                       nude={currentNude}
                       key={index}
-                      display="card"
                       showUserMenu={true}
                       setNudeList={setNudeList}
                     />

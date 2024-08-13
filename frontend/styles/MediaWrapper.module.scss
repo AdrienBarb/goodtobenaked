@@ -9,15 +9,4 @@
   align-items: center;
   justify-content: center;
   aspect-ratio: 4/5;
-
-  .payIcon {
-    position: absolute;
-    background-color: $primary;
-    width: 46px;
-    height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-  }
 }

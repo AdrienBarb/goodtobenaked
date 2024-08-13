@@ -69,7 +69,6 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
 
   let usersList = [];
 
-  // Combiner les conditions pour les utilisateurs vérifiés et suivis dans une seule requête
   const userConditions = { isAccountVerified: true };
 
   if (showOnlyFollowedUser === 'true' && req?.user?._id) {

@@ -16,9 +16,10 @@ import useRedirectToLoginPage from "@/lib/hooks/useRedirectToLoginPage";
 
 interface Props {
   nude: Nude;
+  showNavigation: boolean;
 }
 
-const MediaWrapper: FC<Props> = ({ nude }) => {
+const MediaWrapper: FC<Props> = ({ nude, showNavigation }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [currentNude, setCurrentNude] = useState<Nude>(nude);
   const [openFullScreenModal, setOpenFullScreenModal] = useState(false);
@@ -52,17 +53,8 @@ const MediaWrapper: FC<Props> = ({ nude }) => {
           currentMediaIndex={currentMediaIndex}
           type="card"
         />
-        {!canView && (
-          <div className={styles.payIcon}>
-            <FontAwesomeIcon
-              icon={faSackDollar}
-              fixedWidth
-              color="white"
-              size="lg"
-            />
-          </div>
-        )}
-        {canView && currentNude.medias.length > 1 && (
+
+        {showNavigation && canView && currentNude.medias.length > 1 && (
           <Navigation
             medias={currentNude.medias}
             setCurrentMediaIndex={setCurrentMediaIndex}

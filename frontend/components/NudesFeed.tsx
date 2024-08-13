@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 import NoResults from "./Common/NoResults";
 import dynamic from "next/dynamic";
 import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
+import NudesFeedList from "./NudesFeedList";
 
 interface Props {
   initialNudesDatas: {
@@ -115,23 +116,7 @@ const NudesFeed: FC<Props> = ({ initialNudesDatas }) => {
         />
       ) : (
         <>
-          <div className={styles.feedList}>
-            {nudeList.length ? (
-              nudeList.map((currentNude: Nude, index: number) => {
-                const cardClass =
-                  index < totalNudes - 1 ? styles.cardWithBorder : "";
-
-                return (
-                  <div className={cardClass} key={index}>
-                    <NudeCard nude={currentNude} key={index} display="post" />
-                  </div>
-                );
-              })
-            ) : (
-              <NoResults text={t("common.noPosts")} />
-            )}
-          </div>
-
+          <NudesFeedList nudeList={nudeList} />
           <div
             style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}
             ref={loadMoreRef}
