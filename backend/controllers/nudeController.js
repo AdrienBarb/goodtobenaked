@@ -60,6 +60,7 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     state,
     isFree,
     tag,
+    enablePagination = 'true',
   } = req.query;
 
   let filter = {
@@ -69,20 +70,11 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
 
   let usersList = [];
 
-  // Combiner les conditions pour les utilisateurs vérifiés et suivis dans une seule requête
   const userConditions = { isAccountVerified: true };
 
   if (showOnlyFollowedUser === 'true' && req?.user?._id) {
     userConditions.notificationSubscribers = { $in: req.user._id.toString() };
   }
-
-  const verifiedUsers = await userModel
-    .find(userConditions)
-    .select('_id')
-    .lean();
-  usersList = verifiedUsers.map((user) => user._id);
-
-  filter.user = { $in: usersList };
 
   if (isFree) {
     filter.isFree = isFree === 'free';
@@ -98,6 +90,14 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
 
   if (userId) {
     filter.user = mongoose.Types.ObjectId(userId);
+  } else {
+    const verifiedUsers = await userModel
+      .find(userConditions)
+      .select('_id')
+      .lean();
+    usersList = verifiedUsers.map((user) => user._id);
+
+    filter.user = { $in: usersList };
   }
 
   if (memberId) {
@@ -106,14 +106,17 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     delete filter.visibility;
   }
 
-  if (cursor) {
+  if (cursor && enablePagination === 'true') {
     filter._id = { $lt: mongoose.Types.ObjectId(cursor) };
   }
 
-  const nudes = await nudeModel
-    .find(filter)
-    .sort({ createdAt: -1 })
-    .limit(limit)
+  let query = nudeModel.find(filter).sort({ createdAt: -1 });
+
+  if (enablePagination === 'true') {
+    query = query.limit(limit);
+  }
+
+  const nudes = await query
     .populate('user', 'pseudo image.profil')
     .populate(
       'medias',
@@ -154,13 +157,13 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
   });
 
   const nextCursor =
-    updatedNudes.length === limit
+    enablePagination === 'true' && updatedNudes.length === limit
       ? updatedNudes[updatedNudes.length - 1]._id
       : null;
 
   res.status(200).json({
     nudes: updatedNudes,
-    nextCursor,
+    nextCursor: enablePagination === 'true' ? nextCursor : null,
   });
 });
 

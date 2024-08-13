@@ -1,19 +1,16 @@
-import React, { FC, ReactNode, useState } from "react";
+import React, { FC, useState } from "react";
 import styles from "@/styles/ProfileIcon.module.scss";
 import { Popover } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faCertificate } from "@fortawesome/free-solid-svg-icons";
 
 interface ProfileIconProps {
   icon: IconProp;
   popoverDescription: string;
 }
 
-const ProfileIcon: FC<ProfileIconProps> = ({
-  icon,
-
-  popoverDescription,
-}) => {
+const ProfileIcon: FC<ProfileIconProps> = ({ icon, popoverDescription }) => {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -40,7 +37,7 @@ const ProfileIcon: FC<ProfileIconProps> = ({
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-        <FontAwesomeIcon size="xs" color={"#1c131e"} icon={icon} />
+        <FontAwesomeIcon icon={faCertificate} color="#fff0eb" size="sm" />
       </div>
       <Popover
         id="mouse-over-popover"

@@ -15,13 +15,12 @@ interface Props {
 const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
   const canView = useCanView(nude);
   const isOwner = useIsOwner(nude.user._id);
-  const firstMedia = nude.medias[0];
   const currentMedia: Media = nude.medias[currentMediaIndex];
 
-  if (!canView && !isOwner && firstMedia.blurredKey) {
+  if (!canView && !isOwner && currentMedia.blurredKey) {
     return (
       <S3Image
-        imageKey={firstMedia.blurredKey}
+        imageKey={currentMedia.blurredKey}
         imageAlt={`media`}
         fill={true}
         styles={{
@@ -57,7 +56,7 @@ const DisplayedMedia: FC<Props> = ({ nude, currentMediaIndex, type }) => {
     );
   }
 
-  if (currentMedia.mediaType === "video") {
+  if (currentMedia.mediaType === "video" && currentMedia.convertedKey) {
     return (
       <ReactPlayer
         url={currentMedia.convertedKey}

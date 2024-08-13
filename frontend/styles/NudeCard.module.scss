@@ -7,24 +7,21 @@
   width: 100%;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.1);
-}
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.postContainer {
-  padding: 2rem;
-
-  @media (max-width: $md) {
-    padding: 1rem;
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-}
 
-.userDetailsWrapper {
-  margin-bottom: 0.6rem;
-}
-
-.userMenuWrapper {
-  z-index: 10;
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0.6rem;
+  .userMenuWrapper {
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.6rem;
+  }
 }
