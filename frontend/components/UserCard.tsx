@@ -12,6 +12,7 @@ import { RootStateType } from "@/store/store";
 import { SocketUser } from "@/types";
 import { User } from "@/types/models/User";
 import { Link } from "@/navigation";
+import Text from "./Text";
 
 interface Props {
   user: User;
@@ -27,7 +28,7 @@ const UserCard: FC<Props> = ({ user }) => {
         <div className={styles.imageWrapper}>
           {user.image?.profil && (
             <S3Image
-              imageKey={user.image?.profil}
+              imageKey={user?.image?.profil}
               imageAlt={`${user.pseudo} - profile picture`}
               fill={true}
               styles={{
@@ -60,7 +61,7 @@ const UserCard: FC<Props> = ({ user }) => {
             </div>
           )}
         </div>
-        <div className={styles.name}>{user.pseudo}</div>
+        <Text customStyles={{ marginTop: "0.2rem" }}>{user.pseudo}</Text>
       </div>
     </Link>
   );

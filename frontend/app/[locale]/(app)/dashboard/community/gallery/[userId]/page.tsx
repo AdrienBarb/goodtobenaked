@@ -1,6 +1,8 @@
 import nudeService from "@/features/nude/nudeService";
 import React from "react";
-import NudesWall from "@/components/NudesWall";
+import NudesGallery from "@/components/NudesGallery";
+import ScrollableContainer from "@/components/ScrollableContainer";
+import BackButton from "@/components/Common/BackButton";
 
 const UserPage = async ({ params }: { params: { userId: string } }) => {
   const { userId } = params;
@@ -9,9 +11,17 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
     return;
   }
 
-  const initialNudesDatas = await nudeService.getAllNudes({ userId });
+  const initialNudesDatas = await nudeService.getAllNudes({
+    userId,
+    enablePagination: false,
+  });
 
-  return <NudesWall initialNudesDatas={initialNudesDatas} userId={userId} />;
+  return (
+    <ScrollableContainer>
+      <BackButton prevPath={`/dashboard/community/${userId}`} />
+      <NudesGallery initialNudesDatas={initialNudesDatas} />
+    </ScrollableContainer>
+  );
 };
 
 export default UserPage;

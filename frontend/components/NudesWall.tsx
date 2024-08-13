@@ -1,11 +1,10 @@
 "use client";
 
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useMemo, useRef, useState } from "react";
 import styles from "@/styles/CardsList.module.scss";
 import NudeCard from "@/components/NudeCard";
 import { Nude } from "@/types/models/Nude";
 import useApi from "@/lib/hooks/useApi";
-import Title from "./Title";
 import dynamic from "next/dynamic";
 import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
 
@@ -26,7 +25,7 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
 
   const queryKey = useMemo(() => ["feedList", { userId }], [userId]);
   const { useInfinite } = useApi();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinite(
+  const { fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinite(
     queryKey,
     "/api/nudes",
     { userId },
@@ -72,6 +71,7 @@ const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
                       key={index}
                       showUserMenu={true}
                       setNudeList={setNudeList}
+                      itemNumber={index}
                     />
                   );
                 })}

@@ -7,7 +7,6 @@ import DisplayedMedia from "./DisplayedMedia";
 import Navigation from "./Navigation";
 import { Nude } from "@/types/models/Nude";
 import MediaDetails from "./MediaDetails";
-import NudeUserDetails from "./NudeUserDetails";
 import useCanView from "@/lib/hooks/useCanView";
 import BuyMediaButton from "./Buttons/BuyMediaButton";
 import useIsOwner from "@/lib/hooks/useIsOwner";
@@ -50,7 +49,7 @@ const FullScreenMedia: React.FC<FullScreenMediaProps> = ({
                 currentMediaIndex={currentMediaIndex}
                 type="fullScreen"
               />
-              {canView && nude.medias.length > 1 && (
+              {(canView || isOwner) && nude.medias.length > 1 && (
                 <Navigation
                   medias={nude.medias}
                   setCurrentMediaIndex={setCurrentMediaIndex}
@@ -58,13 +57,14 @@ const FullScreenMedia: React.FC<FullScreenMediaProps> = ({
               )}
 
               {!canView && !isOwner && (
-                <BuyMediaButton nude={nude} setCurrentNude={setCurrentNude} />
+                <BuyMediaButton
+                  nude={nude}
+                  callback={(updatedNude) => {
+                    setCurrentNude(updatedNude);
+                  }}
+                />
               )}
             </div>
-          </div>
-
-          <div className={styles.top}>
-            <NudeUserDetails nude={nude} showAvatar />
           </div>
         </div>
       </div>

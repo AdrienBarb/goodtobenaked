@@ -16,9 +16,7 @@ import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { User } from "@/types/models/User";
 import useApi from "@/lib/hooks/useApi";
-
 import UserProfileButtons from "./UserProfileButtons";
-import TabsProfileMenu from "./TabsProfileMenu";
 import Title from "./Title";
 import Text from "./Text";
 
@@ -96,16 +94,15 @@ const UserProfileHeader: FC<Props> = ({ initialUserDatas }) => {
                 popoverDescription={t("profile.verifiedProfile")}
               />
             )}
-            {currentUser && currentUser.isAmbassador && (
-              <ProfileIcon
-                icon={faStar}
-                popoverDescription={t("profile.ambassador")}
-              />
-            )}
-            <Title Tag="h2">{currentUser.pseudo}</Title>
+            <Title Tag="h2" titleStyle={{ margin: "0" }}>
+              {currentUser.pseudo}
+            </Title>
           </div>
         </div>
-        <Text customStyles={{ whiteSpace: "pre-line" }} textAlign="center">
+        <Text
+          customStyles={{ whiteSpace: "pre-line", marginTop: "0.6rem" }}
+          textAlign="center"
+        >
           {currentUser.version === 1
             ? parser(currentUser.description ?? "")
             : currentUser.description}
