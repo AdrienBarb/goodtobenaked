@@ -11,12 +11,12 @@ const config = require('../config');
 // @route GET /api/admin/creators/:creatorId
 // @access Private
 const getCurrentCreatorIdentityCheck = asyncHandler(async (req, res, next) => {
-  const { creatorId } = req.params;
+  const { userId } = req.params;
 
-  const creator = await userModel.findById(creatorId);
+  const user = await userModel.findById(userId);
 
   const identityVerication = await CreatorIdentityVerification.findOne({
-    userId: creator?._id,
+    userId: user?._id,
   });
 
   const s3 = new S3Client({
@@ -58,11 +58,11 @@ const getCurrentCreatorIdentityCheck = asyncHandler(async (req, res, next) => {
     });
   }
 
-  if (creator && identityVerication) {
+  if (user && identityVerication) {
     res.status(200).json({
-      _id: creator?._id,
-      pseudo: creator?.pseudo,
-      verified: creator?.verified,
+      _id: user?._id,
+      pseudo: user?.pseudo,
+      verified: user?.verified,
       frontIdentityImageUrl: frontIdentityImageUrl,
       backIdentityImageUrl: backIdentityImageUrl,
       frontAndFaceIdentityImageUrl: frontAndFaceIdentityImageUrl,
@@ -77,14 +77,14 @@ const getCurrentCreatorIdentityCheck = asyncHandler(async (req, res, next) => {
 // @route GET /api/admin/creators/:creatorId
 // @access Private
 const changeVerificationState = asyncHandler(async (req, res, next) => {
-  const { creatorId } = req.params;
+  const { userId } = req.params;
   const { state } = req.body;
 
-  const creator = await userModel.findById(creatorId);
+  const user = await userModel.findById(userId);
 
   try {
     await userModel.updateOne(
-      { _id: creator?._id },
+      { _id: user?._id },
       {
         verified: state,
       },
@@ -92,11 +92,7 @@ const changeVerificationState = asyncHandler(async (req, res, next) => {
 
     const link = `${config.clientUrl}/`;
 
-    emailService.sendCreatorAccountVerificationUpdate(
-      creator?.email,
-      state,
-      link,
-    );
+    emailService.sendCreatorAccountVerificationUpdate(user?.email, state, link);
 
     res.status(200).json('State updated');
   } catch (error) {
