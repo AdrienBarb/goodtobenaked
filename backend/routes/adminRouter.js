@@ -8,13 +8,9 @@ const {
 const { adminProtect } = require('../middleware/authAdminMiddleware');
 
 const router = express.Router();
-router.get(
-  '/creators/:creatorId',
-  adminProtect,
-  getCurrentCreatorIdentityCheck,
-);
+router.get('/users/:userId', adminProtect, getCurrentCreatorIdentityCheck);
 router.put(
-  '/creators/:creatorId/change-verification-state',
+  '/users/:userId/change-verification-state',
   adminProtect,
   changeVerificationState,
 );
