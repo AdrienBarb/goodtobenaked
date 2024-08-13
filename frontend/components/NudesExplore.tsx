@@ -142,9 +142,7 @@ const NudesExplore: FC<Props> = ({ initialNudesDatas }) => {
           {nudeList.length ? (
             <div className={styles.cardsList}>
               {nudeList.map((currentNude: Nude, index: number) => {
-                return (
-                  <NudeCard nude={currentNude} key={index} display="card" />
-                );
+                return <NudeCard nude={currentNude} key={index} />;
               })}
             </div>
           ) : (
