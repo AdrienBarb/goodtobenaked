@@ -41,7 +41,7 @@ const getCurrentCreatorIdentityCheck = asyncHandler(async (req, res, next) => {
   let backIdentityImageUrl = null;
   if (identityVerication?.backIdentityImageName) {
     const command = new GetObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
+      Bucket: config.s3BucketProcessedMedia,
       Key: identityVerication?.backIdentityImageName,
     });
     backIdentityImageUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
@@ -50,7 +50,7 @@ const getCurrentCreatorIdentityCheck = asyncHandler(async (req, res, next) => {
   let frontAndFaceIdentityImageUrl = null;
   if (identityVerication?.frontAndFaceIdentityImageName) {
     const command = new GetObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
+      Bucket: config.s3BucketProcessedMedia,
       Key: identityVerication?.frontAndFaceIdentityImageName,
     });
     frontAndFaceIdentityImageUrl = await getSignedUrl(s3, command, {
