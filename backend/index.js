@@ -8,7 +8,6 @@ const { createServer } = require('http');
 const { getStripeUpdates } = require('./controllers/webhooksController');
 const socketManager = require('./lib/socket/socketManager');
 const config = require('./config');
-const timeout = require('connect-timeout');
 
 //IMPORT DB
 const { db } = require('./db');
@@ -35,10 +34,6 @@ const apiPort = process.env.PORT || 3001;
 
 const httpServer = createServer(app);
 
-httpServer.timeout = 120000;
-httpServer.keepAliveTimeout = 60000;
-httpServer.headersTimeout = 65000;
-
 //init socket
 socketManager.init(httpServer);
 
@@ -53,7 +48,6 @@ app.post(
 
 app.post('/sns-notification', bodyParser.text(), getSnsNotification);
 
-app.use(timeout('10s'));
 app.use(cors());
 app.options('*', cors());
 app.use(bodyParser.json());
