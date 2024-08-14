@@ -1,30 +1,6 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 
-const socialMediaLinkSchema = new mongoose.Schema({
-  twitter: {
-    type: String,
-  },
-  instagram: {
-    type: String,
-  },
-  mym: {
-    type: String,
-  },
-  onlyfans: {
-    type: String,
-  },
-});
-
-const imageSchema = new mongoose.Schema({
-  profil: {
-    type: String,
-  },
-  banner: {
-    type: String,
-  },
-});
-
 const revenueSchema = new mongoose.Schema({
   isBankTransferAutomatic: {
     type: Boolean,
@@ -90,7 +66,14 @@ const userSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'GenderCategory',
     },
-    image: imageSchema,
+    profileImage: {
+      type: String,
+      default: '',
+    },
+    secondaryProfileImages: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Media' }],
+      default: [],
+    },
     emailNotification: {
       type: Boolean,
       default: true,
@@ -99,7 +82,6 @@ const userSchema = mongoose.Schema(
       type: String,
       default: '',
     },
-    socialMediaLink: socialMediaLinkSchema,
     nationality: {
       type: String,
     },

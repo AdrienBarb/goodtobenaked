@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import IconButton from "@/components/Buttons/IconButton";
 import UserProfileTopButtons from "@/components/UserProfileTopButtons";
+import UserSecondaryProfileImageGallery from "@/components/UserSecondaryProfileImagesGallery";
 
 const ProfileLayout = async ({
   params,
@@ -52,6 +53,12 @@ const ProfileLayout = async ({
       )}
       <UserUncompletedProfileBand />
       <UserProfileHeader initialUserDatas={initialUserDatas} />
+      {initialUserDatas.secondaryProfileImages &&
+        initialUserDatas.secondaryProfileImages.length > 0 && (
+          <UserSecondaryProfileImageGallery
+            images={initialUserDatas.secondaryProfileImages}
+          />
+        )}
       {(initialUserDatas?.isAccountVerified ||
         session?.user?.id === userId) && (
         <div className={styles.contentContainer}>{children}</div>

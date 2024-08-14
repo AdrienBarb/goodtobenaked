@@ -16,7 +16,7 @@ export async function generateMetadata({
     title: initialUserDatas?.pseudo,
     description: initialUserDatas?.description,
     image:
-      process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA + initialUserDatas.image?.profil,
+      process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA + initialUserDatas.profileImage,
   });
 }
 

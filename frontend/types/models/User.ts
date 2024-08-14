@@ -1,18 +1,6 @@
 import { Gender } from "./genderModel";
 import { Invoice } from "./Invoice";
 
-interface SocialMediaLink {
-  twitter?: string;
-  instagram?: string;
-  mym?: string;
-  onlyfans?: string;
-}
-
-interface Image {
-  profil?: string;
-  banner?: string;
-}
-
 interface Revenue {
   isBankTransferAutomatic: boolean;
   invoices: Invoice[];
@@ -37,11 +25,11 @@ export interface User {
   email: string;
   password: string;
   gender?: Gender;
-  image?: Image;
+  profileImage: string;
+  secondaryProfileImages: string;
   emailNotification: boolean;
   userType: "creator" | "member";
   description?: string;
-  socialMediaLink?: SocialMediaLink;
   nationality?: string;
   breastSize?: "tiny" | "normal" | "big" | "huge";
   buttSize?: "small" | "normal" | "big" | "huge";

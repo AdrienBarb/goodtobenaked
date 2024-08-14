@@ -26,9 +26,9 @@ const UserCard: FC<Props> = ({ user }) => {
     <Link href={`/dashboard/community/${user._id}`} prefetch>
       <div className={styles.container}>
         <div className={styles.imageWrapper}>
-          {user.image?.profil && (
+          {user.profileImage && (
             <S3Image
-              imageKey={user?.image?.profil}
+              imageKey={user?.profileImage}
               imageAlt={`${user.pseudo} - profile picture`}
               fill={true}
               styles={{

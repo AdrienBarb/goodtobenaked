@@ -25,6 +25,7 @@ const { getPriceInFiatFromCredits } = require('../lib/utils/price');
 const saleModel = require('../models/saleModel');
 const config = require('../config');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const signUrl = require('../lib/utils/signedUrl');
 
 const register = asyncHandler(async (req, res, next) => {
   const { pseudo, email, password } = req.body;
@@ -177,16 +178,31 @@ const getUser = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo image verified version isAmbassador lastLogin description notificationSubscribers socialMediaLink country nationality isAccountVerified isArchived',
+      'pseudo profileImage secondaryProfileImages verified version isAmbassador lastLogin description notificationSubscribers socialMediaLink country nationality isAccountVerified isArchived',
     )
     .populate('gender')
+    .populate('secondaryProfileImages')
     .lean();
 
   if (!user) {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
   }
 
-  res.status(200).json(user);
+  res.status(200).json({
+    ...user,
+    secondaryProfileImages:
+      user.secondaryProfileImages.map((currentMedia) => {
+        return {
+          ...currentMedia,
+          posterKey: signUrl(
+            `${process.env.CLOUDFRONT_URL}${currentMedia.posterKey}`,
+          ),
+          convertedKey: signUrl(
+            `${process.env.CLOUDFRONT_URL}${currentMedia.convertedKey}`,
+          ),
+        };
+      }) || [],
+  });
 });
 
 const getAccountOwner = asyncHandler(async (req, res, next) => {
@@ -195,20 +211,32 @@ const getAccountOwner = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo email image version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
+      'pseudo email profileImage secondaryProfileImages version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
     )
     .populate('gender')
+    .populate('secondaryProfileImages')
     .lean();
 
   if (!user) {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
   }
 
-  res.status(200).json(user);
+  res.status(200).json({
+    ...user,
+    secondaryProfileImages:
+      user.secondaryProfileImages.map((currentMedia) => {
+        return {
+          ...currentMedia,
+          posterKey: signUrl(
+            `${process.env.CLOUDFRONT_URL}${currentMedia.posterKey}`,
+          ),
+        };
+      }) || [],
+  });
 });
 
 const userProfile = asyncHandler(async (req, res, next) => {
-  const user = await userModel.findById(req.user.id);
+  let user = await userModel.findById(req.user.id);
   const values = req.body;
 
   if (!user) {
@@ -225,28 +253,46 @@ const userProfile = asyncHandler(async (req, res, next) => {
     return next(new CustomError(400, 'Pseudo already exist'));
   }
 
-  await userModel.updateOne(
-    { _id: user._id },
-    {
-      $set: {
-        pseudo: values.pseudo ? values.pseudo : user.pseudo,
-        description: values.description,
-        socialMediaLink: {
-          twitter: values.twitterLink,
-          instagram: values.instagramLink,
-          mym: values.mymLink,
-          onlyfans: values.onlyfansLink,
-        },
-        ...(values.age && { age: parseInt(values.age, 10) }),
-        ...(values.gender && { gender: values.gender }),
-        ...(values.breastSize && { breastSize: values.breastSize }),
-        ...(values.buttSize && { buttSize: values.buttSize }),
-        ...(values.bodyType && { bodyType: values.bodyType }),
-        ...(values.hairColor && { hairColor: values.hairColor }),
-        ...(values.country && { country: values.country }),
-      },
-    },
-  );
+  console.log('values.secondaryProfileImages ', values.secondaryProfileImages);
+
+  user.pseudo = values.pseudo ? values.pseudo : user.pseudo;
+  user.description = values.description;
+
+  if (values.secondaryProfileImages) {
+    console.log('je passe la ');
+
+    user.secondaryProfileImages = values.secondaryProfileImages;
+  }
+
+  if (values.age) {
+    user.age = parseInt(values.age, 10);
+  }
+
+  if (values.gender) {
+    user.gender = values.gender;
+  }
+
+  if (values.breastSize) {
+    user.breastSize = values.breastSize;
+  }
+
+  if (values.buttSize) {
+    user.buttSize = values.buttSize;
+  }
+
+  if (values.bodyType) {
+    user.bodyType = values.bodyType;
+  }
+
+  if (values.hairColor) {
+    user.hairColor = values.hairColor;
+  }
+
+  if (values.country) {
+    user.country = values.country;
+  }
+
+  await user.save();
 
   res.status(200).json('ok');
 });
@@ -334,8 +380,7 @@ const addProfilPicture = asyncHandler(async (req, res, next) => {
 
   let imageToken = crypto.randomBytes(32).toString('hex');
   const imageKey = `profile/${user._id}/${imageToken}.${fileExtension}`;
-  const updatedImageData = { ...user.image, profil: imageKey };
-  await userModel.updateOne({ _id: user._id }, { image: updatedImageData });
+  await userModel.updateOne({ _id: user._id }, { profileImage: imageKey });
 
   let command = new PutObjectCommand({
     Bucket: config.s3BucketProcessedMedia,
@@ -358,7 +403,7 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
   const matchQuery = {
     isAccountVerified: true,
     isArchived: false,
-    'image.profil': { $ne: '' },
+    profileImage: { $ne: '' },
   };
 
   const ageMap = {
@@ -397,7 +442,7 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
   aggregateQuery.push({
     $project: {
       pseudo: 1,
-      'image.profil': 1,
+      profileImage: 1,
       verified: 1,
       isHighlighted: 1,
       lastLogin: 1,
@@ -408,12 +453,10 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
   const cloudFrontUrl = process.env.CLOUDFRONT_URL;
 
   users = users.map((user) => {
-    if (user.image.profil) {
-      user.image.profil = `${cloudFrontUrl}${user.image.profil}`;
+    if (user.profileImage) {
+      user.profileImage = `${cloudFrontUrl}${user.profileImage}`;
     }
-    if (user.image.banner) {
-      user.image.banner = `${cloudFrontUrl}${user.image.banner}`;
-    }
+
     return user;
   });
 
@@ -473,7 +516,7 @@ const checkIfUserVerified = asyncHandler(async (req, res, next) => {
 
   const isEmailVerified = user.emailVerified;
   const isIdentityVerified = user.verified === 'verified';
-  const isProfileCompleted = Boolean(user.image?.profil);
+  const isProfileCompleted = Boolean(user.profileImage);
   const isBankAccountCompleted = Boolean(
     user.bankAccount?.iban &&
       user.bankAccount?.name &&
@@ -506,7 +549,7 @@ const getVerificationStep = asyncHandler(async (req, res, next) => {
 
   const isEmailVerified = user.emailVerified;
   const isIdentityVerified = user.verified === 'verified';
-  const isProfileCompleted = Boolean(user.image?.profil);
+  const isProfileCompleted = Boolean(user.profileImage);
   const isBankAccountCompleted = Boolean(
     user.bankAccount?.iban &&
       user.bankAccount?.name &&

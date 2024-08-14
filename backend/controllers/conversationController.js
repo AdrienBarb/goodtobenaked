@@ -73,7 +73,7 @@ const getAllConversations = asyncHandler(async (req, res, next) => {
             in: {
               _id: '$$participant._id',
               pseudo: '$$participant.pseudo',
-              image: { profil: '$$participant.image.profil' },
+              image: { profil: '$$participant.profileImage' },
             },
           },
         },
@@ -194,7 +194,7 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
             in: {
               _id: '$$participant._id',
               pseudo: '$$participant.pseudo',
-              image: { profil: '$$participant.image.profil' },
+              image: { profil: '$$participant.profileImage' },
             },
           },
         },
@@ -245,7 +245,7 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
 const getConversation = asyncHandler(async (req, res, next) => {
   const conversation = await Conversation.findById(
     req.params.conversationId,
-  ).populate('participants', '_id pseudo image.profil userType');
+  ).populate('participants', '_id pseudo profileImage userType');
 
   if (!conversation) {
     return next(new CustomError(404, errorMessages.NOT_FOUND));

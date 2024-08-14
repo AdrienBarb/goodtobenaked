@@ -64,10 +64,10 @@ const UserProfileHeader: FC<Props> = ({ initialUserDatas }) => {
       <div
         className={styles.imageWrapper}
         style={{
-          ...(currentUser.image?.profil && {
+          ...(currentUser.profileImage && {
             backgroundImage: `url(${
               process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA +
-              currentUser.image?.profil
+              currentUser.profileImage
             })`,
           }),
         }}
