@@ -73,7 +73,7 @@ const getAllConversations = asyncHandler(async (req, res, next) => {
             in: {
               _id: '$$participant._id',
               pseudo: '$$participant.pseudo',
-              image: { profil: '$$participant.profileImage' },
+              profileImage: '$$participant.profileImage',
             },
           },
         },
@@ -194,7 +194,7 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
             in: {
               _id: '$$participant._id',
               pseudo: '$$participant.pseudo',
-              image: { profil: '$$participant.profileImage' },
+              profileImage: '$$participant.profileImage',
             },
           },
         },
