@@ -13,6 +13,8 @@ import { useRouter } from "@/navigation";
 import CenterHeader from "./CenterHeader";
 import useApi from "@/lib/hooks/useApi";
 import { User } from "@/types/models/User";
+import axios from "axios";
+import Pica from "pica";
 
 interface Props {}
 
@@ -29,7 +31,16 @@ const IdentityVerificationForm: FC<Props> = () => {
 
   const { usePost, fetchData } = useApi();
 
-  const { mutate: identityVerification, isLoading } = usePost(
+  const { mutate: getSignedUrls, isLoading } = usePost(
+    `/api/users/identity-verification-url`,
+    {
+      onSuccess: async ({ signedUrls, keys }) => {
+        await uploadIdentities(signedUrls, keys);
+      },
+    }
+  );
+
+  const { mutate: identityVerification } = usePost(
     `/api/users/identity-verification`,
     {
       onSuccess: ({ verified }) => {
@@ -41,7 +52,6 @@ const IdentityVerificationForm: FC<Props> = () => {
               verified: verified,
             },
           };
-
           update(updatedSession);
           router.push("/dashboard/account/become-creator");
         }
@@ -52,7 +62,6 @@ const IdentityVerificationForm: FC<Props> = () => {
   const getCurrentOwner = async () => {
     try {
       const r = await fetchData(`/api/users/owner`);
-
       setCurrentUser(r);
     } catch (error) {
       console.log(error);
@@ -79,12 +88,71 @@ const IdentityVerificationForm: FC<Props> = () => {
       return;
     }
 
-    let formData = new FormData();
-    formData.append("frontIdentity", frontIdentity);
-    formData.append("backIdentity", backIdentity);
-    formData.append("frontAndFaceIdentity", frontAndFaceIdentity);
+    getSignedUrls({
+      fileTypes: {
+        frontIdentity: frontIdentity.type,
+        backIdentity: backIdentity.type,
+        frontAndFaceIdentity: frontAndFaceIdentity.type,
+      },
+    });
+  };
 
-    identityVerification(formData);
+  const uploadIdentities = async (
+    signedUrls: {
+      frontIdentityUrl: string;
+      backIdentityUrl: string;
+      frontAndFaceIdentityUrl: string;
+    },
+    keys: {
+      frontIdentity: string;
+      backIdentity: string;
+      frontAndFaceIdentity: string;
+    }
+  ) => {
+    try {
+      const pica = Pica();
+
+      const uploadImage = async (imageFile: File | null, signedUrl: string) => {
+        const img = document.createElement("img");
+        const reader = new FileReader();
+
+        if (!imageFile) {
+          return;
+        }
+
+        reader.readAsDataURL(imageFile);
+        reader.onload = async (e) => {
+          img.src = e.target?.result as string;
+          img.onload = async () => {
+            const canvas = document.createElement("canvas");
+            const scaleFactor = 600 / Math.max(img.width, img.height);
+            canvas.width = img.width * scaleFactor;
+            canvas.height = img.height * scaleFactor;
+
+            await pica.resize(img, canvas);
+            const jpegBlob = await pica.toBlob(canvas, "image/jpeg", 1);
+
+            await axios.put(signedUrl, jpegBlob, {
+              headers: {
+                "Content-Type": "image/jpeg",
+              },
+            });
+          };
+        };
+      };
+
+      await uploadImage(frontIdentity, signedUrls.frontIdentityUrl);
+      await uploadImage(backIdentity, signedUrls.backIdentityUrl);
+      await uploadImage(
+        frontAndFaceIdentity,
+        signedUrls.frontAndFaceIdentityUrl
+      );
+
+      identityVerification(keys);
+    } catch (error) {
+      toast.error(t("error.uploadFailed"));
+      console.error("Error uploading identity images: ", error);
+    }
   };
 
   const baseStyle = {
@@ -336,7 +404,6 @@ const IdentityVerificationForm: FC<Props> = () => {
           </LoadingButton>
         </>
       )}
-      {/* <LoadingBackdrop open={isLoading} /> */}
     </div>
   );
 };

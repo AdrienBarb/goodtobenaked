@@ -524,56 +524,14 @@ const getVerificationStep = asyncHandler(async (req, res, next) => {
 });
 
 const identityVerification = asyncHandler(async (req, res, next) => {
-  const user = await userModel.findById(req.user.id);
-
-  const frontIdentity = req.files['frontIdentity'];
-  const backIdentity = req.files['backIdentity'];
-  const frontAndFaceIdentity = req.files['frontAndFaceIdentity'];
+  const user = req.user;
+  const { frontIdentity, backIdentity, frontAndFaceIdentity } = req.body;
 
   if (!frontIdentity || !backIdentity || !frontAndFaceIdentity) {
     return next(new CustomError(400, errorMessages.MISSING_FIELDS));
   }
 
-  if (!user) {
-    return next(new CustomError(404, errorMessages.NOT_FOUND));
-  }
-
   try {
-    const s3 = new S3Client({
-      credentials: {
-        accessKeyId: config.awsAccessKeyId,
-        secretAccessKey: config.awsSecretAccessKey,
-      },
-      region: config.awsRegion,
-    });
-
-    const frontIdentity = `identity/${user._id.toString()}/frontIdentity`;
-    const backIdentity = `identity/${user._id.toString()}/backIdentity`;
-    const frontAndFaceIdentity = `identity/${user._id.toString()}/frontAndFaceIdentity`;
-
-    const frontIdentityCommand = new PutObjectCommand({
-      Bucket: config.s3BucketProcessedMedia,
-      Key: frontIdentity,
-      Body: frontIdentity[0].buffer,
-      ContentType: frontIdentity[0].mimetype,
-    });
-    const backIdentityCommand = new PutObjectCommand({
-      Bucket: config.s3BucketProcessedMedia,
-      Key: backIdentity,
-      Body: backIdentity[0].buffer,
-      ContentType: backIdentity[0].mimetype,
-    });
-    const frontAndFaceIdentityCommand = new PutObjectCommand({
-      Bucket: config.s3BucketProcessedMedia,
-      Key: frontAndFaceIdentity,
-      Body: frontAndFaceIdentity[0].buffer,
-      ContentType: frontAndFaceIdentity[0].mimetype,
-    });
-
-    await s3.send(frontIdentityCommand);
-    await s3.send(backIdentityCommand);
-    await s3.send(frontAndFaceIdentityCommand);
-
     await executeInTransaction(async (session) => {
       await creatorIdentityVerificationModel.create(
         [
@@ -599,6 +557,50 @@ const identityVerification = asyncHandler(async (req, res, next) => {
       new CustomError(500, 'An error occured during image upload', error.stack),
     );
   }
+});
+
+const getIdentityVerificationUrl = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+
+  const s3 = new S3Client({
+    credentials: {
+      accessKeyId: config.awsAccessKeyId,
+      secretAccessKey: config.awsSecretAccessKey,
+    },
+    region: config.awsRegion,
+  });
+
+  const generateSignedUrl = async (path) => {
+    const command = new PutObjectCommand({
+      Bucket: config.s3BucketProcessedMedia,
+      Key: path,
+      ContentType: 'image/jpeg',
+    });
+    return await getSignedUrl(s3, command, { expiresIn: 3600 });
+  };
+
+  const frontIdentityPath = `identity/${user._id.toString()}/frontIdentity.jpg`;
+  const backIdentityPath = `identity/${user._id.toString()}/backIdentity.jpg`;
+  const frontAndFaceIdentityPath = `identity/${user._id.toString()}/frontAndFaceIdentity.jpg`;
+
+  const frontIdentityUrl = await generateSignedUrl(frontIdentityPath);
+  const backIdentityUrl = await generateSignedUrl(backIdentityPath);
+  const frontAndFaceIdentityUrl = await generateSignedUrl(
+    frontAndFaceIdentityPath,
+  );
+
+  res.status(200).json({
+    signedUrls: {
+      frontIdentityUrl,
+      backIdentityUrl,
+      frontAndFaceIdentityUrl,
+    },
+    keys: {
+      frontIdentity: frontIdentityPath,
+      backIdentity: backIdentityPath,
+      frontAndFaceIdentity: frontAndFaceIdentityPath,
+    },
+  });
 });
 
 const editEmail = asyncHandler(async (req, res, next) => {
@@ -860,4 +862,5 @@ module.exports = {
   sendTips,
   editUserType,
   getVerificationStep,
+  getIdentityVerificationUrl,
 };
