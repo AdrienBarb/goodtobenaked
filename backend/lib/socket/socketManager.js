@@ -21,10 +21,16 @@ class SocketManager {
     this.subClient = this.pubClient.duplicate();
 
     this.pubClient.on('error', (err) => {
+      if (process.env.NODE_ENV === 'test') {
+        return;
+      }
       console.error('Redis pubClient error:', err);
     });
 
     this.subClient.on('error', (err) => {
+      if (process.env.NODE_ENV === 'test') {
+        return;
+      }
       console.error('Redis subClient error:', err);
     });
 

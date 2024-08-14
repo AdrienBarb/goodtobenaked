@@ -74,7 +74,7 @@ const BuyMediaButton: FC<Props> = ({ nude, callback }) => {
           padding: "0.4rem 0.8rem",
           position: "absolute",
           width: "100%",
-          maxWidth: "320px",
+          maxWidth: "260px",
           minHeight: "40px",
         }}
       >
