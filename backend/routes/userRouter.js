@@ -11,7 +11,6 @@ const {
   getAccountOwner,
   userProfile,
   addProfilPicture,
-  addBannerPicture,
   refreshCreditAmount,
   notificationSubscribe,
   checkIfUserVerified,
@@ -62,12 +61,6 @@ router.post(
   userProtect,
   upload.single('profilePicture'),
   addProfilPicture,
-);
-router.post(
-  '/profil-banner',
-  userProtect,
-  upload.single('bannerPicture'),
-  addBannerPicture,
 );
 router.get('/:userId', getUser);
 router.post(

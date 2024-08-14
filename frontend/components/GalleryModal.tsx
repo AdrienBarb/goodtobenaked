@@ -3,18 +3,18 @@ import React, { FC } from "react";
 import MediasGallery from "@/components/MediasGallery";
 import { Media } from "@/types/models/Media";
 import { useTranslations } from "next-intl";
-import CustomModal from "./Modal";
 import { Modal } from "@mui/material";
 import ModalHeader from "./ModalHeader";
 import styles from "@/styles/GalleryModal.module.scss";
 import FullButton from "./Buttons/FullButton";
-import UploadModal from "./UploadModal";
 
 interface GalleryModalProps {
   setOpen: (e: boolean) => void;
   open: boolean;
   setSelectedMedias: (medias: Media[]) => void;
   selectedMedias: Media[];
+  multiple: boolean;
+  mediaType: string[];
 }
 
 const GalleryModal: FC<GalleryModalProps> = ({
@@ -22,6 +22,8 @@ const GalleryModal: FC<GalleryModalProps> = ({
   open,
   setSelectedMedias,
   selectedMedias,
+  multiple,
+  mediaType,
 }) => {
   //traduction
   const t = useTranslations();
@@ -43,6 +45,8 @@ const GalleryModal: FC<GalleryModalProps> = ({
             setSelectedMedias={setSelectedMedias}
             selectedMedias={selectedMedias}
             setOpen={setOpen}
+            multiple={multiple}
+            mediaType={mediaType}
           />
           <div className={styles.buttonWrapper}>
             <FullButton

@@ -62,28 +62,16 @@ const UserProfileHeader: FC<Props> = ({ initialUserDatas }) => {
   return (
     <div className={styles.container}>
       <div
-        className={styles.imageSection}
+        className={styles.imageWrapper}
         style={{
-          ...(currentUser.image?.banner && {
+          ...(currentUser.image?.profil && {
             backgroundImage: `url(${
               process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA +
-              currentUser.image?.banner
+              currentUser.image?.profil
             })`,
           }),
         }}
-      >
-        <div
-          className={styles.imageWrapper}
-          style={{
-            ...(currentUser.image?.profil && {
-              backgroundImage: `url(${
-                process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA +
-                currentUser.image?.profil
-              })`,
-            }),
-          }}
-        ></div>
-      </div>
+      ></div>
 
       <div className={styles.detailsWrapper}>
         <div className={styles.pseudoContainer}>

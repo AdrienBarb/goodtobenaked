@@ -24,6 +24,7 @@ const conversationModel = require('../models/conversationModel');
 const { getPriceInFiatFromCredits } = require('../lib/utils/price');
 const saleModel = require('../models/saleModel');
 const config = require('../config');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const register = asyncHandler(async (req, res, next) => {
   const { pseudo, email, password } = req.body;
@@ -300,11 +301,8 @@ const profileVisit = asyncHandler(async (req, res, next) => {
 
 const addProfilPicture = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id).lean();
-  const profilPicture = req.file;
 
-  if (!profilPicture) {
-    return next(new CustomError(400, 'Missing files'));
-  }
+  const { filetype } = req.body;
 
   if (!user) {
     return next(new CustomError(404, 'Not found'));
@@ -318,81 +316,39 @@ const addProfilPicture = asyncHandler(async (req, res, next) => {
     region: config.awsRegion,
   });
 
-  const image = sharp(profilPicture.buffer);
-  const optimizedBuffer = await image
-    .rotate()
-    .resize(400, 500)
-    .jpeg({ quality: 80 })
-    .toBuffer();
+  let fileExtension;
+
+  switch (filetype) {
+    case 'image/jpeg':
+      fileExtension = 'jpg';
+      break;
+    case 'image/png':
+      fileExtension = 'png';
+      break;
+    case 'image/webp':
+      fileExtension = 'webp';
+      break;
+    default:
+      return next(new CustomError(400, errorMessages.INVALID_FILE));
+  }
 
   let imageToken = crypto.randomBytes(32).toString('hex');
-  const imageKey = `profile/${user._id}/${imageToken}.jpg`;
-
-  const profilPictureCommand = new PutObjectCommand({
-    Bucket: config.s3BucketProcessedMedia,
-    Key: imageKey,
-    Body: optimizedBuffer,
-    ContentType: 'image/jpeg',
-  });
-
-  await s3.send(profilPictureCommand);
-
+  const imageKey = `profile/${user._id}/${imageToken}.${fileExtension}`;
   const updatedImageData = { ...user.image, profil: imageKey };
-
   await userModel.updateOne({ _id: user._id }, { image: updatedImageData });
 
-  res.status(200).json(imageKey);
-});
-
-const addBannerPicture = asyncHandler(async (req, res, next) => {
-  const user = await userModel.findById(req.user.id).lean();
-  const banner = req.file;
-
-  if (!banner) {
-    return next(new CustomError(400, 'Missing files'));
-  }
-
-  if (!user) {
-    return next(new CustomError(404, 'Not found'));
-  }
-
-  const s3 = new S3Client({
-    credentials: {
-      accessKeyId: config.awsAccessKeyId,
-      secretAccessKey: config.awsSecretAccessKey,
-    },
-    region: config.awsRegion,
-  });
-
-  const image = sharp(banner.buffer);
-  const optimizedBuffer = await image
-    .rotate()
-    .resize(844, 300)
-    .jpeg({ quality: 80 })
-    .toBuffer();
-
-  let imageToken = crypto.randomBytes(32).toString('hex');
-  const bannerKey = `banner/${user._id}/${imageToken}.jpg`;
-
-  const profilPictureCommand = new PutObjectCommand({
+  let command = new PutObjectCommand({
     Bucket: config.s3BucketProcessedMedia,
-    Key: bannerKey,
-    Body: optimizedBuffer,
-    ContentType: 'image/jpeg',
+    Key: imageKey,
+    ContentType: filetype,
   });
 
-  await s3.send(profilPictureCommand);
+  const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
-  const updatedImageData = { ...user.image, banner: bannerKey };
-
-  await userModel.updateOne(
-    { _id: user._id },
-    {
-      image: updatedImageData,
-    },
-  );
-
-  res.status(200).json(bannerKey);
+  res.status(200).json({
+    signedUrl,
+    profileImageUrl: imageKey,
+  });
 });
 
 const getAllUsers = asyncHandler(async (req, res, next) => {
@@ -890,7 +846,6 @@ module.exports = {
   getAccountOwner,
   userProfile,
   addProfilPicture,
-  addBannerPicture,
   refreshCreditAmount,
   notificationSubscribe,
   checkIfUserVerified,

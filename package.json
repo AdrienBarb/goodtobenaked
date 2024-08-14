@@ -8,5 +8,8 @@
   },
   "devDependencies": {
     "pnpm": "^6.0.0"
+  },
+  "dependencies": {
+    "pica": "^9.0.1"
   }
 }

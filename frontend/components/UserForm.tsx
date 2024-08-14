@@ -23,6 +23,8 @@ import userService from "@/features/user/userService";
 import { Gender } from "@/types/models/genderModel";
 import { User } from "@/types/models/User";
 import useApi from "@/lib/hooks/useApi";
+import axios from "axios";
+import Pica from "pica";
 
 interface Props {
   initialUserDatas: User;
@@ -47,13 +49,10 @@ const UserForm: FC<Props> = ({
   const [imageProfil, setImageProfil] = useState(
     initialUserDatas.image?.profil
   );
-  const [imageBanner, setImageBanner] = useState(
-    initialUserDatas.image?.banner
-  );
+
   const [currentUser, setCurrentUser] = useState(initialUserDatas);
 
   const profilInput = useRef<HTMLInputElement>(null);
-  const bannerInput = useRef<HTMLInputElement>(null);
 
   const { usePut, useGet, fetchData } = useApi();
 
@@ -113,82 +112,55 @@ const UserForm: FC<Props> = ({
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (!event.target.files) {
-      return;
-    }
+    if (!event.target.files) return;
 
-    const formPicture = new FormData();
-    formPicture.append("profilePicture", event.target.files[0]);
+    const file = event.target.files[0];
+    const img = document.createElement("img");
 
-    try {
-      const newImageKey = await userService.addProfilPicture(formPicture);
-      setImageProfil(newImageKey);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async (e) => {
+      img.src = e.target?.result as string;
+      img.onload = async () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const pica = Pica();
 
-  const handleBannerFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (!event.target.files) {
-      return;
-    }
+        const scaleFactor = 600 / Math.max(img.width, img.height);
+        canvas.width = img.width * scaleFactor;
+        canvas.height = img.height * scaleFactor;
 
-    const formPicture = new FormData();
-    formPicture.append("bannerPicture", event.target.files[0]);
+        await pica.resize(img, canvas);
 
-    try {
-      const newBannerKey = await userService.addBannerPicture(formPicture);
+        const jpegBlob = await pica.toBlob(canvas, "image/jpeg", 1);
 
-      setImageBanner(newBannerKey);
-    } catch (error) {
-      console.log(error);
-    }
+        const { signedUrl, profileImageUrl } =
+          await userService.addProfilPicture({
+            filetype: "image/jpeg",
+          });
+
+        await axios.put(signedUrl, jpegBlob, {
+          headers: {
+            "Content-Type": "image/jpeg",
+          },
+        });
+
+        setImageProfil(profileImageUrl);
+      };
+    };
   };
 
   return (
-    <div
-      className={styles.formWrapper}
-      style={{ backgroundColor: "transparent" }}
-    >
-      <form
-        onSubmit={formik.handleSubmit}
-        className={styles.form}
-        style={{ marginTop: "2rem" }}
+    <>
+      <div
+        className={styles.formWrapper}
+        style={{ backgroundColor: "transparent" }}
       >
-        <div
-          className={styles.imageSection}
-          style={{
-            ...(imageBanner && {
-              backgroundImage: `url(${
-                process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA + imageBanner
-              })`,
-            }),
-          }}
+        <form
+          onSubmit={formik.handleSubmit}
+          className={styles.form}
+          style={{ marginTop: "2rem" }}
         >
-          <input
-            ref={bannerInput}
-            onChange={(e) => handleBannerFileUpload(e)}
-            type="file"
-            style={{ display: "none" }}
-            multiple={false}
-            accept="image/png, image/jpeg"
-          />
-
-          <div
-            className={clsx(styles.photoIcon, styles.banner)}
-            onClick={() => {
-              if (!bannerInput.current) {
-                return;
-              }
-
-              bannerInput.current.click();
-            }}
-          >
-            <EditIcon sx={{ color: "#FFF0EB" }} fontSize="small" />
-          </div>
-
           <div
             className={styles.imageWrapper}
             style={{
@@ -215,187 +187,199 @@ const UserForm: FC<Props> = ({
               <EditIcon sx={{ color: "#FFF0EB" }} fontSize="small" />
             </div>
           </div>
-        </div>
 
-        <CustomTextField
-          variant="outlined"
-          fullWidth
-          id="pseudo"
-          name="pseudo"
-          label={t("db.pseudo")}
-          value={formik.values.pseudo}
-          onChange={formik.handleChange}
-          error={formik.touched.pseudo && Boolean(formik.errors.pseudo)}
-          helperText={
-            typeof formik.errors.pseudo === "string" && formik.errors.pseudo
-          }
-        />
-
-        <CustomTextField
-          variant="outlined"
-          fullWidth
-          id="description"
-          name="description"
-          label={t("db.description")}
-          multiline
-          rows={4}
-          value={formik.values.description}
-          onChange={formik.handleChange}
-          error={
-            formik.touched.description && Boolean(formik.errors.description)
-          }
-          helperText={
-            typeof formik.errors.description === "string" &&
-            formik.errors.description
-          }
-        />
-        <FormControl variant="outlined" sx={{ minWidth: 200 }}>
           <CustomTextField
-            label={t("db.country")}
-            select
-            id="country"
-            name="country"
-            value={formik.values.country}
+            variant="outlined"
+            fullWidth
+            id="pseudo"
+            name="pseudo"
+            label={t("db.pseudo")}
+            value={formik.values.pseudo}
             onChange={formik.handleChange}
-          >
-            <MenuItem value="">
-              <em>{t("db.nothing")}</em>
-            </MenuItem>
-            {countries.map((el) => {
-              return (
-                <MenuItem key={el.value} value={el.value}>
-                  {t(`db.${el.label}`)}
-                </MenuItem>
-              );
-            })}
-          </CustomTextField>
-          {typeof formik.errors.country === "string" &&
-            formik.errors.country && (
-              <FormHelperText sx={{ color: "red" }}>
-                {formik.errors.country}
-              </FormHelperText>
-            )}
-        </FormControl>
+            error={formik.touched.pseudo && Boolean(formik.errors.pseudo)}
+            helperText={
+              typeof formik.errors.pseudo === "string" && formik.errors.pseudo
+            }
+          />
 
-        <div className={styles.selectWrapper}>
-          <FormControl variant="outlined" sx={{ minWidth: 200, width: "100%" }}>
+          <CustomTextField
+            variant="outlined"
+            fullWidth
+            id="description"
+            name="description"
+            label={t("db.description")}
+            multiline
+            rows={4}
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.description && Boolean(formik.errors.description)
+            }
+            helperText={
+              typeof formik.errors.description === "string" &&
+              formik.errors.description
+            }
+          />
+          <FormControl variant="outlined" sx={{ minWidth: 200 }}>
             <CustomTextField
-              label={t("db.gender")}
+              label={t("db.country")}
               select
-              id="gender"
-              name="gender"
-              value={formik.values.gender}
+              id="country"
+              name="country"
+              value={formik.values.country}
               onChange={formik.handleChange}
             >
               <MenuItem value="">
                 <em>{t("db.nothing")}</em>
               </MenuItem>
-              {genderCategories.map(
-                (currentCategory: Gender, index: number) => {
+              {countries.map((el) => {
+                return (
+                  <MenuItem key={el.value} value={el.value}>
+                    {t(`db.${el.label}`)}
+                  </MenuItem>
+                );
+              })}
+            </CustomTextField>
+            {typeof formik.errors.country === "string" &&
+              formik.errors.country && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {formik.errors.country}
+                </FormHelperText>
+              )}
+          </FormControl>
+
+          <div className={styles.selectWrapper}>
+            <FormControl
+              variant="outlined"
+              sx={{ minWidth: 200, width: "100%" }}
+            >
+              <CustomTextField
+                label={t("db.gender")}
+                select
+                id="gender"
+                name="gender"
+                value={formik.values.gender}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="">
+                  <em>{t("db.nothing")}</em>
+                </MenuItem>
+                {genderCategories.map(
+                  (currentCategory: Gender, index: number) => {
+                    return (
+                      <MenuItem key={index} value={currentCategory._id}>
+                        {t(`db.${currentCategory.name}`)}
+                      </MenuItem>
+                    );
+                  }
+                )}
+              </CustomTextField>
+              {typeof formik.errors.gender === "string" &&
+                formik.errors.gender && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {formik.errors.gender}
+                  </FormHelperText>
+                )}
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ minWidth: 200, width: "100%" }}
+            >
+              <CustomTextField
+                label={t("db.age")}
+                select
+                id="age"
+                name="age"
+                value={formik.values.age}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="">
+                  <em>{t("db.nothing")}</em>
+                </MenuItem>
+                {ageValues.map((el) => {
+                  return <MenuItem key={el} value={el}>{`${el} ans`}</MenuItem>;
+                })}
+              </CustomTextField>
+              {typeof formik.errors.age === "string" && formik.errors.age && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {formik.errors.age}
+                </FormHelperText>
+              )}
+            </FormControl>
+          </div>
+          <div className={styles.selectWrapper}>
+            <FormControl
+              variant="outlined"
+              sx={{ minWidth: 200, width: "100%" }}
+            >
+              <CustomTextField
+                label={t("db.body_type")}
+                select
+                id="bodyType"
+                name="bodyType"
+                value={formik.values.bodyType}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="">
+                  <em>{t("db.nothing")}</em>
+                </MenuItem>
+                {BODY_TYPE.map((el) => {
                   return (
-                    <MenuItem key={index} value={currentCategory._id}>
-                      {t(`db.${currentCategory.name}`)}
+                    <MenuItem key={el} value={el}>
+                      {t(`db.${el}`)}
                     </MenuItem>
                   );
-                }
-              )}
-            </CustomTextField>
-            {typeof formik.errors.gender === "string" &&
-              formik.errors.gender && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {formik.errors.gender}
-                </FormHelperText>
-              )}
-          </FormControl>
-          <FormControl variant="outlined" sx={{ minWidth: 200, width: "100%" }}>
-            <CustomTextField
-              label={t("db.age")}
-              select
-              id="age"
-              name="age"
-              value={formik.values.age}
-              onChange={formik.handleChange}
+                })}
+              </CustomTextField>
+              {typeof formik.errors.bodyType === "string" &&
+                formik.errors.bodyType && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {formik.errors.bodyType}
+                  </FormHelperText>
+                )}
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ minWidth: 200, width: "100%" }}
             >
-              <MenuItem value="">
-                <em>{t("db.nothing")}</em>
-              </MenuItem>
-              {ageValues.map((el) => {
-                return <MenuItem key={el} value={el}>{`${el} ans`}</MenuItem>;
-              })}
-            </CustomTextField>
-            {typeof formik.errors.age === "string" && formik.errors.age && (
-              <FormHelperText sx={{ color: "red" }}>
-                {formik.errors.age}
-              </FormHelperText>
-            )}
-          </FormControl>
-        </div>
-        <div className={styles.selectWrapper}>
-          <FormControl variant="outlined" sx={{ minWidth: 200, width: "100%" }}>
-            <CustomTextField
-              label={t("db.body_type")}
-              select
-              id="bodyType"
-              name="bodyType"
-              value={formik.values.bodyType}
-              onChange={formik.handleChange}
-            >
-              <MenuItem value="">
-                <em>{t("db.nothing")}</em>
-              </MenuItem>
-              {BODY_TYPE.map((el) => {
-                return (
-                  <MenuItem key={el} value={el}>
-                    {t(`db.${el}`)}
-                  </MenuItem>
-                );
-              })}
-            </CustomTextField>
-            {typeof formik.errors.bodyType === "string" &&
-              formik.errors.bodyType && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {formik.errors.bodyType}
-                </FormHelperText>
-              )}
-          </FormControl>
-          <FormControl variant="outlined" sx={{ minWidth: 200, width: "100%" }}>
-            <CustomTextField
-              label={t("db.hair_color")}
-              select
-              id="hairColor"
-              name="hairColor"
-              value={formik.values.hairColor}
-              onChange={formik.handleChange}
-            >
-              <MenuItem value="">
-                <em>{t("db.nothing")}</em>
-              </MenuItem>
-              {HAIR_COLOR.map((el) => {
-                return (
-                  <MenuItem key={el} value={el}>
-                    {t(`db.${el}`)}
-                  </MenuItem>
-                );
-              })}
-            </CustomTextField>
-            {typeof formik.errors.hairColor === "string" &&
-              formik.errors.hairColor && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {formik.errors.hairColor}
-                </FormHelperText>
-              )}
-          </FormControl>
-        </div>
+              <CustomTextField
+                label={t("db.hair_color")}
+                select
+                id="hairColor"
+                name="hairColor"
+                value={formik.values.hairColor}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="">
+                  <em>{t("db.nothing")}</em>
+                </MenuItem>
+                {HAIR_COLOR.map((el) => {
+                  return (
+                    <MenuItem key={el} value={el}>
+                      {t(`db.${el}`)}
+                    </MenuItem>
+                  );
+                })}
+              </CustomTextField>
+              {typeof formik.errors.hairColor === "string" &&
+                formik.errors.hairColor && (
+                  <FormHelperText sx={{ color: "red" }}>
+                    {formik.errors.hairColor}
+                  </FormHelperText>
+                )}
+            </FormControl>
+          </div>
 
-        <LoadingButton
-          fullWidth
-          loading={isLoading}
-          onClick={() => formik.handleSubmit()}
-        >
-          {t("common.validate")}
-        </LoadingButton>
-      </form>
-    </div>
+          <LoadingButton
+            fullWidth
+            loading={isLoading}
+            onClick={() => formik.handleSubmit()}
+          >
+            {t("common.validate")}
+          </LoadingButton>
+        </form>
+      </div>
+    </>
   );
 };
 
