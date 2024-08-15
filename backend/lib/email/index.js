@@ -5,6 +5,8 @@ const DOMAIN = config.mailGunBaseUrl;
 const API_KEY = config.mailGunApiKey;
 const FROM = 'Goodtobenaked@goodtobenaked.com';
 
+console.log('process.env.NODE_ENV ', process.env.NODE_ENV);
+
 const mg = mailgun({
   apiKey: API_KEY,
   domain: DOMAIN,
