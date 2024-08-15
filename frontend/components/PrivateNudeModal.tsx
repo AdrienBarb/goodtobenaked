@@ -242,6 +242,8 @@ const PrivateNudeModal: FC<Props> = ({
           setOpen={setOpenGalleryModal}
           setSelectedMedias={setSelectedMedias}
           selectedMedias={selectedMedias}
+          multiple={true}
+          mediaType={["image", "video"]}
         />
       </>
     </Modal>

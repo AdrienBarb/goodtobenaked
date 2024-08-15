@@ -1,93 +1,56 @@
 "use client";
 
-import React, { FC, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import styles from "@/styles/CardsList.module.scss";
 import NudeCard from "@/components/NudeCard";
 import { Nude } from "@/types/models/Nude";
 import useApi from "@/lib/hooks/useApi";
-import dynamic from "next/dynamic";
-import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
+import { useParams } from "next/navigation";
 
 interface Props {
-  initialNudesDatas: {
-    nudes: Nude[];
-    nextCursor: string;
-  };
+  nudes: Nude[];
   userId?: string;
 }
 
-const Loader = dynamic(() => import("@/components/Loader"), { ssr: false });
-
-const NudesWall: FC<Props> = ({ initialNudesDatas, userId }) => {
+const NudesWall: FC<Props> = ({ nudes }) => {
   //localstate
-  const [nudeList, setNudeList] = useState<Nude[]>(initialNudesDatas.nudes);
-  const [globalLoading, setGlobalLoading] = useState(false);
+  const [nudeList, setNudeList] = useState<Nude[]>(nudes);
+  const { userId } = useParams();
 
-  const queryKey = useMemo(() => ["feedList", { userId }], [userId]);
-  const { useInfinite } = useApi();
-  const { fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinite(
-    queryKey,
-    "/api/nudes",
-    { userId },
-    {
-      getNextPageParam: (lastPage: any) => lastPage.nextCursor || undefined,
-      initialData: {
-        pages: [
-          {
-            nudes: initialNudesDatas.nudes,
-            nextCursor: initialNudesDatas.nextCursor,
-          },
-        ],
-        pageParams: [null],
-      },
-      onSuccess: (data: any) => {
-        setNudeList(data?.pages.flatMap((page: any) => page.nudes));
-      },
-      refetchOnWindowFocus: false,
+  const { fetchData } = useApi();
+
+  const getNudes = async () => {
+    try {
+      const r = await fetchData(`/api/nudes/user/${userId}`);
+
+      setNudeList(r);
+    } catch (error) {
+      console.log(error);
     }
-  );
+  };
 
-  const loadMoreRef = useRef(null);
-
-  useIntersectionObserver({
-    target: loadMoreRef,
-    onIntersect: fetchNextPage,
-    enabled: hasNextPage && !isFetchingNextPage && !globalLoading,
-  });
+  useEffect(() => {
+    if (userId) {
+      getNudes();
+    }
+  }, [userId]);
 
   return (
     <div className={styles.container}>
       {nudeList.length > 0 && (
-        <>
-          {globalLoading ? (
-            <Loader style={{ color: "#cecaff" }} />
-          ) : (
-            <>
-              <div className={styles.nudeCardList}>
-                {nudeList.map((currentNude: Nude, index: number) => {
-                  return (
-                    <NudeCard
-                      nude={currentNude}
-                      key={index}
-                      showUserMenu={true}
-                      setNudeList={setNudeList}
-                      itemNumber={index}
-                    />
-                  );
-                })}
-              </div>
-              <div
-                style={{
-                  height: "10rem",
-                  display: hasNextPage ? "flex" : "none",
-                }}
-                ref={loadMoreRef}
-              >
-                {isFetchingNextPage && <Loader style={{ color: "#cecaff" }} />}
-              </div>
-            </>
-          )}
-        </>
+        <div className={styles.nudeCardList}>
+          {nudeList.map((currentNude: Nude, index: number) => {
+            return (
+              <NudeCard
+                nude={currentNude}
+                key={index}
+                showUserMenu={true}
+                setNudeList={setNudeList}
+                itemNumber={index}
+              />
+            );
+          })}
+        </div>
       )}
     </div>
   );

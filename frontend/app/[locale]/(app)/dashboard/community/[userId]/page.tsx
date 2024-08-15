@@ -16,7 +16,7 @@ export async function generateMetadata({
     title: initialUserDatas?.pseudo,
     description: initialUserDatas?.description,
     image:
-      process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA + initialUserDatas.image?.profil,
+      process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA + initialUserDatas.profileImage,
   });
 }
 
@@ -27,9 +27,9 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
     return;
   }
 
-  const initialNudesDatas = await nudeService.getAllNudes({ userId });
+  const nudes = await nudeService.getUserNudes(userId);
 
-  return <NudesWall initialNudesDatas={initialNudesDatas} userId={userId} />;
+  return <NudesWall nudes={nudes} userId={userId} />;
 };
 
 export default UserPage;

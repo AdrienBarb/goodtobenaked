@@ -169,7 +169,8 @@
     "pushExplanation": "By sending a “Push”, you can directly target specific types of users. The nude will be sent directly via message.",
     "whichGroupOfUsers": "Please select the user groups to whom you want to send this nude:",
     "wantToSeeMore": "Want to see more?",
-    "nudeCardCreditAmount": "{creditAmount} credits"
+    "nudeCardCreditAmount": "{creditAmount} credits",
+    "secondaryPictureProfile": "Secondary profile images"
   },
   "home": {
     "title": "GOODTOBENAKED",

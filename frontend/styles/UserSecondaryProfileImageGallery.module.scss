@@ -1,0 +1,20 @@
+@import "library.scss";
+
+.container {
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.4rem;
+  width: 100%;
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: scroll;
+  margin-top: 1.5rem;
+}
+
+.container::-webkit-scrollbar {
+  height: 0px;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}

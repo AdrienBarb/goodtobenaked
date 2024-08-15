@@ -8,6 +8,7 @@ const {
   archivedNude,
   buyNude,
   createPush,
+  getUserNudes,
 } = require('../controllers/nudeController');
 const { userProtect } = require('../middleware/authUserMiddleware');
 const {
@@ -20,6 +21,7 @@ router.post('/', userProtect, createNude);
 router.post('/push', userProtect, createPush);
 router.get('/', identifyUserIfConnected, getAllNudes);
 router.get('/:nudeId', userProtect, getCurrentNude);
+router.get('/user/:userId', userProtect, getUserNudes);
 router.put('/:nudeId/archived', userProtect, archivedNude);
 router.put('/:nudeId', userProtect, editNude);
 router.post('/buy', userProtect, buyNude);

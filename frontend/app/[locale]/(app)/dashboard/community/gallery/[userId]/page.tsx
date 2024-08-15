@@ -11,15 +11,12 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
     return;
   }
 
-  const initialNudesDatas = await nudeService.getAllNudes({
-    userId,
-    enablePagination: false,
-  });
+  const nudes = await nudeService.getUserNudes(userId);
 
   return (
     <ScrollableContainer>
       <BackButton prevPath={`/dashboard/community/${userId}`} />
-      <NudesGallery initialNudesDatas={initialNudesDatas} />
+      <NudesGallery nudes={nudes} />
     </ScrollableContainer>
   );
 };

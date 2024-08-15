@@ -7,7 +7,7 @@ on:
       - staging
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
 
     env:
@@ -63,22 +63,23 @@ jobs:
             -t $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }} \
             -f backend/Dockerfile.prod --push ./backend
 
-      - name: Deploy to server
-        if: github.ref == 'refs/heads/main'
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ env.SSH_PRIVATE_KEY }}
-          script: |
-            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
-            docker system prune -f
-            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml goodtobenaked
-            docker service update --force goodtobenaked_backend
-            docker service update --force goodtobenaked_frontend
+      - name: Run tests before deployment
+        run: |
+          cd backend
+          npm install
+          npm run test
+
+  deploy-to-staging:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    if: github.ref == 'refs/heads/staging'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Deploy to staging server
-        if: github.ref == 'refs/heads/staging'
         uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ env.STAGING_SERVER_IP }}
@@ -90,3 +91,26 @@ jobs:
             docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack-staging.yml goodtobenaked-staging
             docker service update --force goodtobenaked-staging_backend
             docker service update --force goodtobenaked-staging_frontend
+
+  deploy-to-production:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: root
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          script: |
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
+            docker system prune -f
+            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml goodtobenaked
+            docker service update --force goodtobenaked_backend
+            docker service update --force goodtobenaked_frontend

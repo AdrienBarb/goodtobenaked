@@ -2,10 +2,10 @@
 
 .card {
   aspect-ratio: 1;
-  width: 100%;
   position: relative;
   border-radius: 6px;
   overflow: hidden;
+  flex-shrink: 0;
 
   img {
     width: 100%;

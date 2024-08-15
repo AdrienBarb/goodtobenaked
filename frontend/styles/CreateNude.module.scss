@@ -9,9 +9,6 @@
   display: flex;
   flex-direction: column;
 
-  .multiSelect {
-  }
-
   .sliderWrapper {
     padding: 3rem 1rem 0 1rem;
   }
@@ -54,6 +51,7 @@
       flex-direction: column;
       cursor: pointer;
       height: 90px;
+      flex-shrink: 0;
     }
 
     .media {
@@ -62,6 +60,7 @@
       height: 90px;
       position: relative;
       border-radius: 6px;
+      flex-shrink: 0;
 
       img {
         width: 100%;

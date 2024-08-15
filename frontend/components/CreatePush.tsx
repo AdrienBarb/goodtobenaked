@@ -246,6 +246,8 @@ const CreatePush: FC<CreatePushProps> = () => {
         setOpen={setOpenGalleryModal}
         setSelectedMedias={setSelectedMedias}
         selectedMedias={selectedMedias}
+        multiple={true}
+        mediaType={["image", "video"]}
       />
     </form>
   );

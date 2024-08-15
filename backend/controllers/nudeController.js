@@ -52,7 +52,6 @@ const createNude = asyncHandler(async (req, res, next) => {
 
 const getAllNudes = asyncHandler(async (req, res, next) => {
   const {
-    userId,
     memberId,
     cursor,
     limit = 16,
@@ -88,17 +87,13 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     filter.tags = { $in: tag };
   }
 
-  if (userId) {
-    filter.user = mongoose.Types.ObjectId(userId);
-  } else {
-    const verifiedUsers = await userModel
-      .find(userConditions)
-      .select('_id')
-      .lean();
-    usersList = verifiedUsers.map((user) => user._id);
+  const verifiedUsers = await userModel
+    .find(userConditions)
+    .select('_id')
+    .lean();
+  usersList = verifiedUsers.map((user) => user._id);
 
-    filter.user = { $in: usersList };
-  }
+  filter.user = { $in: usersList };
 
   if (memberId) {
     filter.paidMembers = memberId;
@@ -165,6 +160,60 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     nudes: updatedNudes,
     nextCursor: enablePagination === 'true' ? nextCursor : null,
   });
+});
+
+const getUserNudes = asyncHandler(async (req, res, next) => {
+  const { userId } = req.params;
+
+  let filter = {
+    isArchived: false,
+    visibility: 'public',
+    user: mongoose.Types.ObjectId(userId),
+  };
+
+  const nudes = await nudeModel
+    .find(filter)
+    .sort({ createdAt: -1 })
+    .populate('user', 'pseudo image.profil')
+    .populate(
+      'medias',
+      'user mediaType convertedKey blurredKey posterKey status',
+    )
+    .lean();
+
+  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+  const updatedNudes = nudes.map((nude) => {
+    const updatedMedias = nude.medias.map((media) => {
+      const isOwnerOrPaidMember =
+        req.user?.id &&
+        (nude.paidMembers.includes(req.user.id) ||
+          nude.user._id.toString() === req.user.id);
+
+      return {
+        _id: media._id,
+        user: media.user,
+        mediaType: media.mediaType,
+        blurredKey: media.blurredKey
+          ? `${cloudFrontUrl}${media.blurredKey}`
+          : null,
+        posterKey: media.posterKey
+          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
+          : null,
+        status: media.status,
+        convertedKey:
+          (isOwnerOrPaidMember || nude.isFree) && media.convertedKey
+            ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
+            : null,
+      };
+    });
+
+    return {
+      ...nude,
+      medias: updatedMedias,
+    };
+  });
+
+  res.status(200).json(updatedNudes);
 });
 
 const getCurrentNude = asyncHandler(async (req, res, next) => {
@@ -466,4 +515,5 @@ module.exports = {
   archivedNude,
   buyNude,
   createPush,
+  getUserNudes,
 };

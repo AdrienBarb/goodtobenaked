@@ -6,15 +6,12 @@ import { Nude } from "@/types/models/Nude";
 import NudesFeedList from "./NudesFeedList";
 
 interface Props {
-  initialNudesDatas: {
-    nudes: Nude[];
-    nextCursor: string;
-  };
+  nudes: Nude[];
 }
 
-const NudesGallery: FC<Props> = ({ initialNudesDatas }) => {
+const NudesGallery: FC<Props> = ({ nudes }) => {
   //localstate
-  const [nudeList, setNudeList] = useState<Nude[]>(initialNudesDatas.nudes);
+  const [nudeList, setNudeList] = useState<Nude[]>(nudes);
 
   return (
     <div className={styles.container}>

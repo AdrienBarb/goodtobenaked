@@ -3,7 +3,7 @@ import Image from "next/image";
 import { ImageLoader } from "next/image";
 
 interface CustomImageProps {
-  imageKey: string;
+  imageKey?: string;
   imageAlt: string;
   styles?: CSSProperties;
   fill?: boolean;

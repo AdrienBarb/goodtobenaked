@@ -26,10 +26,10 @@ const ConversationCard: FC<Props> = ({ conversation }) => {
         <div
           className={styles.image}
           style={{
-            ...(otherUser?.image?.profil && {
+            ...(otherUser?.profileImage && {
               backgroundImage: `url(${
                 process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA +
-                otherUser.image.profil
+                otherUser.profileImage
               })`,
             }),
           }}
