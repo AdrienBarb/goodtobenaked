@@ -1,5 +1,6 @@
 import { Gender } from "./genderModel";
 import { Invoice } from "./Invoice";
+import { Media } from "./Media";
 
 interface Revenue {
   isBankTransferAutomatic: boolean;
@@ -26,7 +27,7 @@ export interface User {
   password: string;
   gender?: Gender;
   profileImage: string;
-  secondaryProfileImages: string;
+  secondaryProfileImages: Media[];
   emailNotification: boolean;
   userType: "creator" | "member";
   description?: string;

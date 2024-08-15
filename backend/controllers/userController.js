@@ -417,7 +417,6 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
     matchQuery.age = ageMap[query.age];
   }
 
-  // Autres filtres en fonction du contenu de query
   const filtersMap = {
     bodyType: () => ({ bodyType: query.bodyType }),
     hairColor: () => ({ hairColor: query.hairColor }),
@@ -440,25 +439,52 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
   aggregateQuery.push({ $limit: 12 });
 
   aggregateQuery.push({
+    $lookup: {
+      from: 'media', // La collection de référence (nom exact dans la DB)
+      localField: 'secondaryProfileImages', // Champ dans le document User
+      foreignField: '_id', // Champ dans la collection Media
+      as: 'secondaryProfileImages', // Nom du champ dans le résultat
+    },
+  });
+
+  aggregateQuery.push({
     $project: {
       pseudo: 1,
       profileImage: 1,
       verified: 1,
       isHighlighted: 1,
       lastLogin: 1,
+      secondaryProfileImages: {
+        $map: {
+          input: '$secondaryProfileImages',
+          as: 'image',
+          in: {
+            _id: '$$image._id',
+            convertedKey: '$$image.convertedKey',
+          },
+        },
+      },
     },
   });
 
   let users = await userModel.aggregate(aggregateQuery);
-  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
 
-  users = users.map((user) => {
-    if (user.profileImage) {
-      user.profileImage = `${cloudFrontUrl}${user.profileImage}`;
-    }
-
-    return user;
-  });
+  // Transformation pour signer les URLs
+  users = users.map((user) => ({
+    ...user,
+    profileImage: user.profileImage
+      ? `${process.env.CLOUDFRONT_URL}${user.profileImage}`
+      : '',
+    secondaryProfileImages:
+      user.secondaryProfileImages.map((currentMedia) => {
+        return {
+          ...currentMedia,
+          convertedKey: signUrl(
+            `${process.env.CLOUDFRONT_URL}${currentMedia.convertedKey}`,
+          ),
+        };
+      }) || [],
+  }));
 
   const nextCursor =
     users.length > 0 ? users[users.length - 1].lastLogin.toISOString() : null;
