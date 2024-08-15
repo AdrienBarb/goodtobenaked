@@ -28,6 +28,9 @@ jobs:
           export MAIL_GUN_API_KEY=${{ secrets.MAIL_GUN_API_KEY }}
           export MAIL_GUN_BASE_URL=${{ secrets.MAIL_GUN_BASE_URL }}
 
+      - name: Create keys directory
+        run: mkdir -p ./keys
+
       - name: Create CloudFront private key file
         run: |
           echo "${{ secrets.CLOUDFRONT_PRIVATE_KEY_DEV }}" > ./keys/gtbn-cloudfront-dev-private_key.pem
