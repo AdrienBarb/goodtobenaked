@@ -18,6 +18,8 @@ jobs:
       STAGING_SERVER_IP: ${{ secrets.STAGING_SERVER_IP }}
       MAIL_GUN_API_KEY: ${{ secrets.MAIL_GUN_API_KEY }}
       MAIL_GUN_BASE_URL: ${{ secrets.MAIL_GUN_BASE_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      STRIPE_ENDPOINT_SECRET: ${{ secrets.STRIPE_ENDPOINT_SECRET }}
 
     steps:
       - name: Checkout code
@@ -27,6 +29,8 @@ jobs:
         run: |
           export MAIL_GUN_API_KEY=${{ secrets.MAIL_GUN_API_KEY }}
           export MAIL_GUN_BASE_URL=${{ secrets.MAIL_GUN_BASE_URL }}
+          export JWT_SECRET=${{ secrets.JWT_SECRET }}
+          export STRIPE_ENDPOINT_SECRET=${{ secrets.STRIPE_ENDPOINT_SECRET }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
