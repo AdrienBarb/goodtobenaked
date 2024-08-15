@@ -20,6 +20,8 @@ jobs:
       MAIL_GUN_BASE_URL: ${{ secrets.MAIL_GUN_BASE_URL }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       STRIPE_ENDPOINT_SECRET: ${{ secrets.STRIPE_ENDPOINT_SECRET }}
+      STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+      STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
 
     steps:
       - name: Checkout code
@@ -31,6 +33,8 @@ jobs:
           export MAIL_GUN_BASE_URL=${{ secrets.MAIL_GUN_BASE_URL }}
           export JWT_SECRET=${{ secrets.JWT_SECRET }}
           export STRIPE_ENDPOINT_SECRET=${{ secrets.STRIPE_ENDPOINT_SECRET }}
+          export STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+          export STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
