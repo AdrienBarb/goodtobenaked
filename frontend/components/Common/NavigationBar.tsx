@@ -25,6 +25,9 @@ const NavigationBar = () => {
   const matches = useMediaQuery(`(max-width:${screenSizes.md}px)`);
   const { status, data: session } = useSession();
 
+  console.log("session ", session);
+  console.log("status ", status);
+
   return (
     <>
       <div className={styles.navContainer}>
@@ -57,7 +60,9 @@ const NavigationBar = () => {
 
           <div className={styles.flexWrapper}>
             {status === "unauthenticated" && (
-              <SimpleButton href="/login">{t("common.signIn")}</SimpleButton>
+              <SimpleButton href="/login" dataId="sign-in-button">
+                {t("common.signIn")}
+              </SimpleButton>
             )}
             {status === "authenticated" &&
               session?.user?.userType === "creator" && <UserAddMenu />}

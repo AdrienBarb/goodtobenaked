@@ -1,0 +1,17 @@
+{
+  "member": {
+    "_id": "66bf0563f355454d82a7086f",
+    "email": "member@gmail.com",
+    "password": "jesaispas"
+  },
+  "verifiedCreator": {
+    "_id": "66bf0563f355454d82a70872",
+    "email": "verifiedcreator@gmail.com",
+    "password": "jesaispas"
+  },
+  "unverifiedCreator": {
+    "_id": "66bf0564f355454d82a70887",
+    "email": "unverifiedcreator@gmail.com",
+    "password": "jesaispas"
+  }
+}

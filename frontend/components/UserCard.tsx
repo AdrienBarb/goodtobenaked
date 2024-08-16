@@ -15,9 +15,10 @@ import Text from "./Text";
 
 interface Props {
   user: User;
+  index: number;
 }
 
-const UserCard: FC<Props> = ({ user }) => {
+const UserCard: FC<Props> = ({ user, index = 0 }) => {
   const t = useTranslations();
   const socketState = useSelector((state: RootStateType) => state.socket);
 
@@ -49,7 +50,11 @@ const UserCard: FC<Props> = ({ user }) => {
   }, [isHovered, images.length]);
 
   return (
-    <Link href={`/dashboard/community/${user._id}`} prefetch>
+    <Link
+      href={`/dashboard/community/${user._id}`}
+      prefetch
+      data-id={`user-card-${index}`}
+    >
       <div
         className={styles.container}
         onMouseEnter={() => setIsHovered(true)}

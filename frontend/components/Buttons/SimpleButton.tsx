@@ -10,6 +10,7 @@ interface SimpleButtonProps {
   children?: ReactNode;
   isLoading?: boolean;
   disabled?: boolean;
+  dataId?: string;
 }
 
 const SimpleButton: FC<SimpleButtonProps> = ({
@@ -19,6 +20,7 @@ const SimpleButton: FC<SimpleButtonProps> = ({
   isLoading,
   disabled,
   href,
+  dataId,
 }) => {
   const style = {
     backgroundColor: disabled ? "rgba(0, 0, 0, 0.1)" : "#Cecaff",
@@ -32,6 +34,7 @@ const SimpleButton: FC<SimpleButtonProps> = ({
         className={`${styles.button} ${styles.simpleButton}`}
         style={style}
         prefetch
+        data-id={dataId}
       >
         {isLoading ? (
           <CircularProgress sx={{ color: "#1C131E" }} size={20} />

@@ -1,4 +1,7 @@
-const { Redis } = require('ioredis');
+const Redis =
+  process.env.NODE_ENV === 'test'
+    ? require('ioredis-mock')
+    : require('ioredis');
 const { Server } = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
 

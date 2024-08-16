@@ -97,11 +97,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/",
-        destination: "/fr",
-        permanent: true,
-      },
-      {
         source: "/creators/:id",
         destination: "/fr/dashboard/community/:id",
         permanent: true,

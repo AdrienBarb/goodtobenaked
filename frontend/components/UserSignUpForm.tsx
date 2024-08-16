@@ -17,6 +17,7 @@ import { useTranslations } from "next-intl";
 import toast from "react-hot-toast";
 import { Link, useRouter } from "@/navigation";
 import { appRouter } from "@/appRouter";
+import { sendEvent } from "@/lib/analytics/fathom/trackHelper";
 
 const UserSignUpForm = () => {
   //router
@@ -91,6 +92,7 @@ const UserSignUpForm = () => {
           });
 
           if (login?.ok) {
+            sendEvent("new user");
             router.push(appRouter.feed);
           }
         }

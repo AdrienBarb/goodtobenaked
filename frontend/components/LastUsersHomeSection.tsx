@@ -17,10 +17,12 @@ const LastUsersHomeSection: FC<Props> = ({ users }) => {
       <div className={styles.list}>
         {users.length > 0 &&
           users.map((currentUser, index) => {
-            return <UserCard key={index} user={currentUser} />;
+            return <UserCard key={index} index={index} user={currentUser} />;
           })}
       </div>
-      <FullButton href={"/login"}>{t("common.seeMore")}</FullButton>
+      <FullButton href={"/login"} dataId="see-more-users-btn">
+        {t("common.seeMore")}
+      </FullButton>
     </section>
   );
 };
