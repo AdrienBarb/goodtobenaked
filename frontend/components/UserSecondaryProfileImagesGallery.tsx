@@ -35,6 +35,10 @@ const UserSecondaryProfileImageGallery: FC<Props> = ({ images }) => {
     }
   }, [userId]);
 
+  if (images.length === 0) {
+    return <></>;
+  }
+
   return (
     <div className={styles.container}>
       {userImages.map((image: Media, index: number) => {

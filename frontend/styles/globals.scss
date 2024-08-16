@@ -11,8 +11,18 @@ body {
   color: $custom-black;
 
   @media (prefers-color-scheme: dark) {
+    background-color: $background !important;
+    color: $custom-black !important;
+  }
+}
+
+.main {
+  background-color: $background;
+  color: $custom-black;
+
+  @media (prefers-color-scheme: dark) {
     background-color: $background;
-    color: red;
+    color: $custom-black;
   }
 }
 
@@ -78,7 +88,7 @@ h5 {
   font-family: var(--font-rubik);
   margin: 0;
   @media (prefers-color-scheme: dark) {
-    color: $custom-black;
+    color: inherit;
   }
 }
 
@@ -86,7 +96,7 @@ p {
   font-family: var(--font-karla);
   margin: 0;
   @media (prefers-color-scheme: dark) {
-    color: $custom-black;
+    color: inherit;
   }
 }
 

@@ -11,6 +11,7 @@ interface Props {
   customStyles?: CSSProperties;
   isLoading?: boolean;
   children: ReactNode;
+  dataId?: string;
 }
 
 const FullButton: FC<Props> = ({
@@ -20,6 +21,7 @@ const FullButton: FC<Props> = ({
   href,
   isLoading,
   children,
+  dataId,
 }) => {
   const style = {
     width: "fit-content",
@@ -40,6 +42,7 @@ const FullButton: FC<Props> = ({
         )}
         style={style}
         prefetch
+        data-id={dataId}
       >
         {children}
       </Link>
@@ -56,6 +59,7 @@ const FullButton: FC<Props> = ({
       onClick={onClick}
       disabled={disabled}
       style={style}
+      data-id={dataId}
     >
       {isLoading ? (
         <CircularProgress sx={{ color: "#1C131E" }} size={20} />

@@ -114,8 +114,8 @@ const RootLayout: FC<Props> = ({ children, params: { locale } }) => {
                   sizes="16x16"
                   href="/images/favicon-16x16.png"
                 />
-                <Toaster position="bottom-center" />
                 <body>
+                  <Toaster position="bottom-center" />
                   <MuiThemeProvider
                     fonts={[
                       karlaFont.style.fontFamily,
@@ -126,10 +126,10 @@ const RootLayout: FC<Props> = ({ children, params: { locale } }) => {
                     <GlobalConfig>{children}</GlobalConfig>
                   </MuiThemeProvider>
                   <Fathom />
+                  <SocketIO />
+                  <GlobalErrorHandler />
                 </body>
               </html>
-              <SocketIO />
-              <GlobalErrorHandler />
             </NextIntlClientProvider>
           </ReduxStoreProvider>
         </CustomSessionProvider>
