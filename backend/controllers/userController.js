@@ -178,7 +178,7 @@ const getUser = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo profileImage secondaryProfileImages verified version isAmbassador lastLogin description notificationSubscribers socialMediaLink country nationality isAccountVerified isArchived',
+      'pseudo profileImage userType secondaryProfileImages verified version isAmbassador lastLogin description notificationSubscribers socialMediaLink country nationality isAccountVerified isArchived',
     )
     .populate('gender')
     .populate('secondaryProfileImages')

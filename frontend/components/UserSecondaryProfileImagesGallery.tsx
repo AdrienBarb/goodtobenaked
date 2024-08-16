@@ -46,7 +46,9 @@ const UserSecondaryProfileImageGallery: FC<Props> = ({ images }) => {
           return;
         }
 
-        return <UserSecondaryProfileImage key={index} image={image} />;
+        return (
+          <UserSecondaryProfileImage key={index} index={index} image={image} />
+        );
       })}
     </div>
   );

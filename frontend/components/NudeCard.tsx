@@ -32,7 +32,7 @@ const NudeCard: FC<Props> = ({
   const { userId } = useParams();
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-id={`user-nude-${itemNumber}`}>
       {showUserMenu && isOwner && (
         <div className={styles.userMenuWrapper}>
           <NudeCardUserMenu nude={nude} setNudeList={setNudeList} />

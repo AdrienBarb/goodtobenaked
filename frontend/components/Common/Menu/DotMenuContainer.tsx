@@ -53,7 +53,7 @@ const DotMenuContainer: FC<MenuButtonProps> = ({ children }) => {
   }, [open]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-id="user-card-menu-list">
       <button
         ref={anchorRef}
         id="composition-button"

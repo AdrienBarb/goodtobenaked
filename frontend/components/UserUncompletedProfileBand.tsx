@@ -23,7 +23,7 @@ const UserUncompletedProfileBand: FC<
     !session?.user?.isAccountVerified
   ) {
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-id="uncompleted-profile-banner">
         {t("common.youHaveToCompleteYourProfile")}
         <Link href={`/dashboard/account/become-creator`} prefetch>
           {t("common.completeYourProfile")}

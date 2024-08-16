@@ -6,12 +6,21 @@ interface Props {
   children: ReactNode;
   customStyles?: CSSProperties;
   titleStyle?: CSSProperties;
+  dataId?: string;
 }
 
-const Title: FC<Props> = ({ Tag, children, customStyles, titleStyle }) => {
+const Title: FC<Props> = ({
+  Tag,
+  children,
+  customStyles,
+  titleStyle,
+  dataId,
+}) => {
   return (
     <span className={styles.container} style={customStyles}>
-      <Tag style={titleStyle}>{children}</Tag>
+      <Tag data-id={dataId} style={titleStyle}>
+        {children}
+      </Tag>
     </span>
   );
 };
