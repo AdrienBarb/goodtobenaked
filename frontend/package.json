@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cypress:open": "CYPRESS_ENV=development npx cypress open",
+    "cypress:run": "CYPRESS_ENV=development npx cypress run",
+    "cypress:open:staging": "CYPRESS_ENV=staging npx cypress open",
+    "cypress:run:staging": "CYPRESS_ENV=staging npx cypress run"
   },
   "dependencies": {
     "@cloudinary/react": "^1.13.0",

@@ -1,4 +1,12 @@
 describe("Homepage", () => {
+  before(() => {
+    cy.createTestSeed();
+  });
+
+  after(() => {
+    cy.deleteTestSeed();
+  });
+
   beforeEach(() => {
     cy.visit("/");
   });

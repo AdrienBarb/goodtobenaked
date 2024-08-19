@@ -1,4 +1,12 @@
 describe("Users profile", () => {
+  before(() => {
+    cy.createTestSeed();
+  });
+
+  after(() => {
+    cy.deleteTestSeed();
+  });
+
   describe("Not logged", () => {
     beforeEach(() => {
       cy.fixture("users").then((users) => {

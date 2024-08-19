@@ -13,6 +13,8 @@ declare global {
        * @example cy.loginAs('member')
        */
       loginAs(userType: keyof UsersFixture): Chainable<void>;
+      createTestSeed(): Chainable<void>;
+      deleteTestSeed(): Chainable<void>;
     }
   }
 }
@@ -81,6 +83,18 @@ Cypress.Commands.add("loginAs", (userType: keyof UsersFixture) => {
       });
     });
   });
+});
+
+Cypress.Commands.add("createTestSeed", () => {
+  cy.request("POST", `${Cypress.env("API_URL")}/tests/create-seed`)
+    .its("status")
+    .should("eq", 200);
+});
+
+Cypress.Commands.add("deleteTestSeed", () => {
+  cy.request("POST", `${Cypress.env("API_URL")}/tests/delete-seed`)
+    .its("status")
+    .should("eq", 200);
 });
 
 export {};
