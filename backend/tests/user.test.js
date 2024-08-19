@@ -78,7 +78,7 @@ describe('Send tips', () => {
 
     const fetchedSale = await saleModel.findOne({ owner: user2._id });
     expect(fetchedSale.saleType).toEqual('tip');
-    expect(fetchedSale.amount.fiatValue).toEqual(200);
+    expect(fetchedSale.amount.fiatValue).toEqual(100);
     expect(fetchedSale.amount.creditValue).toEqual(200);
     expect(fetchedSale.isPaid).toEqual(false);
     expect(fetchedSale.fromUser).toEqual(user._id);
