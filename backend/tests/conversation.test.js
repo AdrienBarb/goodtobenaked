@@ -89,8 +89,8 @@ describe('Send a message', () => {
     const fetchedSale = await saleModel.findOne({ owner: user2._id });
     expect(fetchedSale.saleType).toEqual('message');
     expect(fetchedSale.fromUser.toString()).toEqual(user._id.toString());
-    expect(fetchedSale.amount.fiatValue).toEqual(25);
-    expect(fetchedSale.amount.creditValue).toEqual(25);
+    expect(fetchedSale.amount.fiatValue).toEqual(10);
+    expect(fetchedSale.amount.creditValue).toEqual(20);
     const expectedAvailableDate = moment
       .utc(fetchedSale.createdAt)
       .add(7, 'days')
@@ -99,7 +99,7 @@ describe('Send a message', () => {
     expect(fetchedSale.availableDate).toEqual(expectedAvailableDate);
 
     const fetchedUser = await userModel.findById(user._id);
-    expect(fetchedUser.creditAmount).toEqual(5);
+    expect(fetchedUser.creditAmount).toEqual(10);
   });
 });
 

@@ -62,7 +62,7 @@ describe('Create a nude', () => {
 
     expect(nude._id).toBeDefined();
     expect(nude.priceDetails.fiatPrice).toEqual(2299);
-    expect(nude.priceDetails.creditPrice).toEqual(2299);
+    expect(nude.priceDetails.creditPrice).toEqual(4598);
     expect(nude.description).toEqual('Description');
     expect(nude.visibility).toEqual('public');
   });
@@ -91,7 +91,7 @@ describe('Edit a nude', () => {
 
     expect(fetchedNude._id).toBeDefined();
     expect(fetchedNude.priceDetails.fiatPrice).toEqual(2299);
-    expect(fetchedNude.priceDetails.creditPrice).toEqual(2299);
+    expect(fetchedNude.priceDetails.creditPrice).toEqual(4598);
     expect(fetchedNude.description).toEqual('Updated description');
     expect(fetchedNude.isFree).toEqual(true);
   });
