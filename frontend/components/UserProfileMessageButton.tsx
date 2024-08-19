@@ -37,7 +37,7 @@ const UserProfileMessageButton: FC<Props> = ({}) => {
   );
 
   const handleWriteMessageClick = () => {
-    if (status === "unauthenticated") {
+    if (status !== "authenticated") {
       redirectToLoginPage();
       return;
     }
