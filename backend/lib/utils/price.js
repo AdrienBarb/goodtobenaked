@@ -6,7 +6,7 @@ const getMediaPrice = (price) => {
 
   return {
     fiatPrice: roundedPrice,
-    creditPrice: roundedPrice,
+    creditPrice: roundedPrice * 2,
   };
 };
 
@@ -17,7 +17,7 @@ const getPriceInFiatFromCredits = (creditPrice) => {
   const rounded = Math.round(formatted);
 
   return {
-    fiatPrice: rounded,
+    fiatPrice: rounded / 2,
     creditPrice: rounded,
   };
 };
