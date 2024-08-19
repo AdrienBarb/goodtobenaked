@@ -13,7 +13,7 @@ const LoginPage = () => {
     <PageContainer>
       <div className={styles.container}>
         <div className={styles.titleWrapper}>
-          <h2>{t("common.signIn")}</h2>
+          <h2 data-id="sign-in-title">{t("common.signIn")}</h2>
         </div>
         <UserSignInForm />
         <div className={styles.buttonsWrapper}>

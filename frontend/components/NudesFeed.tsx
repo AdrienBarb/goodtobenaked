@@ -3,14 +3,12 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import styles from "@/styles/CardsList.module.scss";
 import { Nude } from "@/types/models/Nude";
-import NudeCard from "./NudeCard";
 import useApi from "@/lib/hooks/useApi";
 import { useSession } from "next-auth/react";
 import ActionTabsMenu from "./ActionTabsMenu";
 import { useTranslations } from "next-intl";
-import NoResults from "./Common/NoResults";
 import dynamic from "next/dynamic";
-import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
+import NudesFeedList from "./NudesFeedList";
 
 interface Props {
   initialNudesDatas: {
@@ -38,29 +36,28 @@ const NudesFeed: FC<Props> = ({ initialNudesDatas }) => {
   const { data: session } = useSession();
 
   const { useInfinite } = useApi();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
-    useInfinite(
-      queryKey,
-      "/api/nudes",
-      { showOnlyFollowedUser },
-      {
-        getNextPageParam: (lastPage: any) => lastPage.nextCursor || undefined,
-        initialData: {
-          pages: [
-            {
-              nudes: initialNudesDatas.nudes,
-              nextCursor: initialNudesDatas.nextCursor,
-            },
-          ],
-          pageParams: [null],
-        },
-        onSuccess: (data: any) => {
-          setNudeList(data?.pages.flatMap((page: any) => page.nudes));
-          setGlobalLoading(false);
-        },
-        refetchOnWindowFocus: false,
-      }
-    );
+  const { fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinite(
+    queryKey,
+    "/api/nudes",
+    { showOnlyFollowedUser },
+    {
+      getNextPageParam: (lastPage: any) => lastPage.nextCursor || undefined,
+      initialData: {
+        pages: [
+          {
+            nudes: initialNudesDatas.nudes,
+            nextCursor: initialNudesDatas.nextCursor,
+          },
+        ],
+        pageParams: [null],
+      },
+      onSuccess: (data: any) => {
+        setNudeList(data?.pages.flatMap((page: any) => page.nudes));
+        setGlobalLoading(false);
+      },
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const loadMoreRef = useRef(null);
 
@@ -89,8 +86,6 @@ const NudesFeed: FC<Props> = ({ initialNudesDatas }) => {
     setShowOnlyFollowedUser(value);
   };
 
-  const totalNudes = nudeList.length;
-
   return (
     <div className={styles.container}>
       {session?.user?.id && (
@@ -115,23 +110,7 @@ const NudesFeed: FC<Props> = ({ initialNudesDatas }) => {
         />
       ) : (
         <>
-          <div className={styles.feedList}>
-            {nudeList.length ? (
-              nudeList.map((currentNude: Nude, index: number) => {
-                const cardClass =
-                  index < totalNudes - 1 ? styles.cardWithBorder : "";
-
-                return (
-                  <div className={cardClass} key={index}>
-                    <NudeCard nude={currentNude} key={index} display="post" />
-                  </div>
-                );
-              })
-            ) : (
-              <NoResults text={t("common.noPosts")} />
-            )}
-          </div>
-
+          <NudesFeedList nudeList={nudeList} setNudeList={setNudeList} />
           <div
             style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}
             ref={loadMoreRef}

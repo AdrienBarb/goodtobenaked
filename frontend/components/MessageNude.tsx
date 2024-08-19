@@ -1,17 +1,16 @@
 import React, { FC, useEffect, useState } from "react";
-import { Message } from "@/types/models/Message";
 import useApi from "@/lib/hooks/useApi";
 import NudeMediaSkeleton from "./LoadingSkeleton/NudeMediaSkeleton";
-import NudeCard from "./NudeCard";
 import styles from "@/styles/MessageNude.module.scss";
+import PrivateNudeCard from "./PrivateNudeCard";
 
 interface Props {
   nudeId: string;
 }
 
 const MessageNude: FC<Props> = ({ nudeId }) => {
-  const [nude, setNude] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentNude, setCurrentNude] = useState(null);
 
   const { fetchData } = useApi();
 
@@ -19,7 +18,7 @@ const MessageNude: FC<Props> = ({ nudeId }) => {
     try {
       setIsLoading(true);
       const fetchedNude = await fetchData(`/api/nudes/${nudeId}`);
-      setNude(fetchedNude);
+      setCurrentNude(fetchedNude);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -35,10 +34,15 @@ const MessageNude: FC<Props> = ({ nudeId }) => {
 
   return (
     <div className={styles.container}>
-      {isLoading || !nude ? (
+      {isLoading || !currentNude ? (
         <NudeMediaSkeleton />
+      ) : currentNude ? (
+        <PrivateNudeCard
+          currentNude={currentNude}
+          setCurrentNude={setCurrentNude}
+        />
       ) : (
-        <NudeCard nude={nude} display="card" />
+        <></>
       )}
     </div>
   );

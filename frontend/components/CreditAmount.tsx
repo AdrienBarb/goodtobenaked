@@ -29,6 +29,7 @@ const CreditAmount = () => {
   return (
     <>
       <div
+        data-id="navigation-credit-amount"
         className={styles.creditAmount}
         onClick={() => setOpenCreditResumeModal(true)}
       >

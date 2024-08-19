@@ -31,10 +31,18 @@ const UserProfileTopButtons: FC<Props> = () => {
     <>
       <div className={styles.buttonsWrapper}>
         {session?.user?.id === userId && (
-          <IconButton onClick={handleEditAccountDetailsClick} icon={faPen} />
+          <IconButton
+            onClick={handleEditAccountDetailsClick}
+            icon={faPen}
+            dataId="edit-profile-btn"
+          />
         )}
 
-        <IconButton onClick={() => setOpenShareModal(true)} icon={faShare} />
+        <IconButton
+          onClick={() => setOpenShareModal(true)}
+          icon={faShare}
+          dataId="share-profile-btn"
+        />
       </div>
 
       <ShareModal open={openShareModal} setOpen={setOpenShareModal} />

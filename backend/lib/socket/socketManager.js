@@ -1,4 +1,7 @@
-const { Redis } = require('ioredis');
+const Redis =
+  process.env.NODE_ENV === 'test'
+    ? require('ioredis-mock')
+    : require('ioredis');
 const { Server } = require('socket.io');
 const { createAdapter } = require('@socket.io/redis-adapter');
 
@@ -21,10 +24,16 @@ class SocketManager {
     this.subClient = this.pubClient.duplicate();
 
     this.pubClient.on('error', (err) => {
+      if (process.env.NODE_ENV === 'test') {
+        return;
+      }
       console.error('Redis pubClient error:', err);
     });
 
     this.subClient.on('error', (err) => {
+      if (process.env.NODE_ENV === 'test') {
+        return;
+      }
       console.error('Redis subClient error:', err);
     });
 

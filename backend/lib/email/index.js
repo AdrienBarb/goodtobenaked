@@ -30,11 +30,10 @@ const sendResetPasswordEmail = (email, link) => {
 };
 
 const sendCreatorEmailVerification = (email, link) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 
@@ -54,11 +53,10 @@ const sendCreatorEmailVerification = (email, link) => {
 //Done
 
 const sendCreatorAccountVerificationUpdate = (email, state, link) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 
@@ -86,11 +84,10 @@ const sendCreatorAccountVerificationUpdate = (email, state, link) => {
 
 //When creator edit his password
 const editCreatorPassword = (email) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 
@@ -107,11 +104,10 @@ const editCreatorPassword = (email) => {
 };
 
 const sendPayInvoice = (email) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 
@@ -128,11 +124,10 @@ const sendPayInvoice = (email) => {
 };
 
 const creatorAskPayment = (email) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 
@@ -149,11 +144,10 @@ const creatorAskPayment = (email) => {
 };
 
 const notifyCreatorToCompleteHisProfile = (email, link) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 
@@ -171,11 +165,10 @@ const notifyCreatorToCompleteHisProfile = (email, link) => {
 };
 
 const notifyUserForUnreadMessage = (email, link) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 
@@ -193,11 +186,10 @@ const notifyUserForUnreadMessage = (email, link) => {
 };
 
 const notifyCreatorForMissingBankDetails = (email) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 
@@ -232,11 +224,10 @@ const sendVerificationCode = (email, code) => {
 };
 
 const notifyReferral = (email, pseudo, link) => {
-  if (process.env.NODE_ENV === 'test') {
-    return;
-  }
-
-  if (process.env.NODE_ENV === 'dev') {
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'development'
+  ) {
     return;
   }
 

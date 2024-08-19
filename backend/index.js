@@ -27,6 +27,7 @@ const mediaRouter = require('./routes/mediaRouter');
 const nudeRouter = require('./routes/nudeRouter');
 const appConfigurationRouter = require('./routes/appConfigurationRouter');
 const paymentsRouter = require('./routes/paymentsRouter');
+const testsRouter = require('./routes/testsRouter');
 const { getSnsNotification } = require('./controllers/snsController');
 
 const app = express();
@@ -67,6 +68,7 @@ app.use('/api/medias', mediaRouter);
 app.use('/api/nudes', nudeRouter);
 app.use('/api/config', appConfigurationRouter);
 app.use('/api/payments', paymentsRouter);
+app.use('/api/tests', testsRouter);
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 

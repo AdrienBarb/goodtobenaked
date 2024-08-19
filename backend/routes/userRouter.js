@@ -11,7 +11,6 @@ const {
   getAccountOwner,
   userProfile,
   addProfilPicture,
-  addBannerPicture,
   refreshCreditAmount,
   notificationSubscribe,
   checkIfUserVerified,
@@ -26,6 +25,7 @@ const {
   sendTips,
   editUserType,
   getVerificationStep,
+  getIdentityVerificationUrl,
 } = require('../controllers/userController');
 
 const multer = require('multer');
@@ -56,6 +56,12 @@ router.put('/user-type', userProtect, editUserType);
 router.put('/edit-password', userProtect, editPassword);
 router.put('/delete-account', userProtect, deleteUser);
 router.get('/referrals', userProtect, getReferrals);
+router.post('/identity-verification', userProtect, identityVerification);
+router.post(
+  '/identity-verification-url',
+  userProtect,
+  getIdentityVerificationUrl,
+);
 
 router.post(
   '/profil-picture',
@@ -63,22 +69,6 @@ router.post(
   upload.single('profilePicture'),
   addProfilPicture,
 );
-router.post(
-  '/profil-banner',
-  userProtect,
-  upload.single('bannerPicture'),
-  addBannerPicture,
-);
 router.get('/:userId', getUser);
-router.post(
-  '/identity-verification',
-  userProtect,
-  upload.fields([
-    { name: 'frontIdentity', maxCount: 1 },
-    { name: 'backIdentity', maxCount: 1 },
-    { name: 'frontAndFaceIdentity', maxCount: 1 },
-  ]),
-  identityVerification,
-);
 
 module.exports = router;

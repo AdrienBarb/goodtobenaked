@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import IconButton from "@/components/Buttons/IconButton";
 import UserProfileTopButtons from "@/components/UserProfileTopButtons";
+import UserSecondaryProfileImageGallery from "@/components/UserSecondaryProfileImagesGallery";
 
 const ProfileLayout = async ({
   params,
@@ -32,7 +33,7 @@ const ProfileLayout = async ({
   const initialUserDatas = await userService.getUser(userId);
 
   try {
-    if (session?.user?.id !== userId) {
+    if (session?.user?.id && session?.user?.id !== userId) {
       await userService.profileVisit({ userId });
     }
   } catch (error) {
@@ -52,6 +53,9 @@ const ProfileLayout = async ({
       )}
       <UserUncompletedProfileBand />
       <UserProfileHeader initialUserDatas={initialUserDatas} />
+      <UserSecondaryProfileImageGallery
+        images={initialUserDatas.secondaryProfileImages}
+      />
       {(initialUserDatas?.isAccountVerified ||
         session?.user?.id === userId) && (
         <div className={styles.contentContainer}>{children}</div>

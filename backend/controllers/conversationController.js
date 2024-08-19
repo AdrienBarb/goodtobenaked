@@ -73,7 +73,7 @@ const getAllConversations = asyncHandler(async (req, res, next) => {
             in: {
               _id: '$$participant._id',
               pseudo: '$$participant.pseudo',
-              image: { profil: '$$participant.image.profil' },
+              profileImage: '$$participant.profileImage',
             },
           },
         },
@@ -194,7 +194,7 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
             in: {
               _id: '$$participant._id',
               pseudo: '$$participant.pseudo',
-              image: { profil: '$$participant.image.profil' },
+              profileImage: '$$participant.profileImage',
             },
           },
         },
@@ -245,7 +245,7 @@ const checkIfUnreadMessages = asyncHandler(async (req, res, next) => {
 const getConversation = asyncHandler(async (req, res, next) => {
   const conversation = await Conversation.findById(
     req.params.conversationId,
-  ).populate('participants', '_id pseudo image.profil userType');
+  ).populate('participants', '_id pseudo profileImage userType');
 
   if (!conversation) {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
@@ -290,7 +290,7 @@ const sendMessage = asyncHandler(async (req, res, next) => {
   );
   const isOtherParticipantCreator = otherParticipant.userType === 'creator';
 
-  if (isOtherParticipantCreator && user.creditAmount < 25) {
+  if (isOtherParticipantCreator && user.creditAmount < 20) {
     return next(new CustomError(400, errorMessages.NOT_ENOUGH_CREDIT));
   }
 
@@ -316,7 +316,7 @@ const sendMessage = asyncHandler(async (req, res, next) => {
     );
 
     if (isOtherParticipantCreator) {
-      const newMemberCreditAmount = user.creditAmount - 25;
+      const newMemberCreditAmount = user.creditAmount - 20;
 
       await userModel.updateOne(
         { _id: user._id },
@@ -333,8 +333,8 @@ const sendMessage = asyncHandler(async (req, res, next) => {
             fromUser: user._id,
             saleType: 'message',
             amount: {
-              fiatValue: 25,
-              creditValue: 25,
+              fiatValue: 10,
+              creditValue: 20,
             },
           },
         ],

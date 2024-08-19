@@ -30,7 +30,10 @@ const NavigationBar = () => {
       <div className={styles.navContainer}>
         <div className={styles.navbar}>
           {matches && status === "authenticated" && (
-            <div onClick={() => setOpenMenuDrawer(true)}>
+            <div
+              onClick={() => setOpenMenuDrawer(true)}
+              data-id="mobile-burger-menu"
+            >
               <MenuIcon
                 sx={{ fontSize: "48", cursor: "pointer", color: "#1C131E" }}
               />
@@ -57,7 +60,9 @@ const NavigationBar = () => {
 
           <div className={styles.flexWrapper}>
             {status === "unauthenticated" && (
-              <SimpleButton href="/login">{t("common.signIn")}</SimpleButton>
+              <SimpleButton href="/login" dataId="sign-in-button">
+                {t("common.signIn")}
+              </SimpleButton>
             )}
             {status === "authenticated" &&
               session?.user?.userType === "creator" && <UserAddMenu />}

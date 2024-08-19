@@ -10,6 +10,7 @@ interface IconButtonProps {
   icon: IconDefinition;
   disabled?: boolean;
   href?: string;
+  dataId?: string;
 }
 
 const IconButton: FC<IconButtonProps> = ({
@@ -18,10 +19,17 @@ const IconButton: FC<IconButtonProps> = ({
   icon,
   disabled,
   href,
+  dataId,
 }) => {
   if (href) {
     return (
-      <Link href={href} className={styles.iconButton} style={style} prefetch>
+      <Link
+        href={href}
+        className={styles.iconButton}
+        style={style}
+        data-id={dataId}
+        prefetch
+      >
         <FontAwesomeIcon icon={icon} color="white" size="lg" />
       </Link>
     );
@@ -29,6 +37,7 @@ const IconButton: FC<IconButtonProps> = ({
 
   return (
     <button
+      data-id={dataId}
       className={styles.iconButton}
       style={{
         backgroundColor: disabled ? "rgba(0, 0, 0, 0.2)" : "#Cecaff",

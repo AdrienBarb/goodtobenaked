@@ -1,0 +1,22 @@
+@import "library.scss";
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: absolute;
+  padding: 1rem;
+
+  .payIcon {
+    position: relative;
+    width: 62px;
+    height: 62px;
+    display: block;
+
+    @media (max-width: $md) {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}

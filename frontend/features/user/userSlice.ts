@@ -46,7 +46,7 @@ export const getCreditAmount = createAsyncThunk(
 
 export const addProfilPicture = createAsyncThunk(
   "user/addProfilPicture",
-  async (values: FormData, thunkAPI) => {
+  async (values: { filetype: string }, thunkAPI) => {
     try {
       return await userService.addProfilPicture(values);
     } catch (error) {

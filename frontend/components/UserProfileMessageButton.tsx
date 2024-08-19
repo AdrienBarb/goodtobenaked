@@ -31,14 +31,13 @@ const UserProfileMessageButton: FC<Props> = ({}) => {
     "/api/conversations",
     {
       onSuccess: (data) => {
-        console.log(data);
         router.push(`/dashboard/account/messages/${data._id}`);
       },
     }
   );
 
   const handleWriteMessageClick = () => {
-    if (status === "unauthenticated") {
+    if (status !== "authenticated") {
       redirectToLoginPage();
       return;
     }
@@ -48,7 +47,11 @@ const UserProfileMessageButton: FC<Props> = ({}) => {
 
   return (
     <div>
-      <ProfileButton onClick={handleWriteMessageClick} isLoading={isLoading}>
+      <ProfileButton
+        dataId="profile-message-btn"
+        onClick={handleWriteMessageClick}
+        isLoading={isLoading}
+      >
         {t("profile.popover_write_message")}
       </ProfileButton>
     </div>

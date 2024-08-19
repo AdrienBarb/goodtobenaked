@@ -13,11 +13,15 @@ interface MediasGalleryProps {
   setOpen: (e: boolean) => void;
   setSelectedMedias: (medias: Media[]) => void;
   selectedMedias: Media[];
+  multiple: boolean;
+  mediaType: string[];
 }
 
 const MediasGallery: FC<MediasGalleryProps> = ({
   setSelectedMedias,
   selectedMedias,
+  multiple,
+  mediaType,
 }) => {
   const [medias, setMedias] = useState<Media[]>([]);
   const [openUploadModal, setOpenUploadModal] = useState(false);
@@ -29,7 +33,6 @@ const MediasGallery: FC<MediasGalleryProps> = ({
 
   const getMedias = async () => {
     const r = await fetchData("/api/medias");
-
     setMedias(r);
   };
 
@@ -39,34 +42,41 @@ const MediasGallery: FC<MediasGalleryProps> = ({
     if (!socket) return;
 
     socket?.off("mediaStatusUpdated")?.on("mediaStatusUpdated", (newMedia) => {
-      setMedias((previousMedias: Media[]) => [
-        ...previousMedias.map((m) => {
-          if (newMedia._id === m._id) {
-            return newMedia;
-          }
-
-          return m;
-        }),
-      ]);
+      setMedias((previousMedias: Media[]) =>
+        previousMedias.map((m) => (newMedia._id === m._id ? newMedia : m))
+      );
     });
   }, []);
 
   const { mutate: archiveMedia } = usePut(`/api/medias/archived`, {
     onSuccess: (archivedMediaId) => {
-      setMedias((previousMedias: Media[]) => [
-        ...previousMedias.filter((m) => m._id !== archivedMediaId),
-      ]);
+      setMedias((previousMedias: Media[]) =>
+        previousMedias.filter((m) => m._id !== archivedMediaId)
+      );
     },
   });
 
   const handleSelectMedia = (media: Media) => {
+    if (!mediaType.includes(media.mediaType)) {
+      return;
+    }
+
     let clonedSelectedMedia = [...selectedMedias];
-    if (clonedSelectedMedia.some((el) => el._id === media._id)) {
-      clonedSelectedMedia = [
-        ...clonedSelectedMedia.filter((el) => el._id !== media._id),
-      ];
+
+    if (multiple) {
+      if (clonedSelectedMedia.some((el) => el._id === media._id)) {
+        clonedSelectedMedia = clonedSelectedMedia.filter(
+          (el) => el._id !== media._id
+        );
+      } else {
+        clonedSelectedMedia = [...clonedSelectedMedia, media];
+      }
     } else {
-      clonedSelectedMedia = [...clonedSelectedMedia, media];
+      if (clonedSelectedMedia.some((el) => el._id === media._id)) {
+        clonedSelectedMedia = [];
+      } else {
+        clonedSelectedMedia = [media];
+      }
     }
 
     setSelectedMedias(clonedSelectedMedia);

@@ -17,9 +17,9 @@ const UserAvatar: FC<UserAvatarProps> = ({ user, size }) => {
         style={{
           width: size,
           height: size,
-          ...(user?.image?.profil && {
+          ...(user?.profileImage && {
             backgroundImage: `url(${
-              process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA + user?.image?.profil
+              process.env.NEXT_PUBLIC_CLOUDFRONT_MEDIA + user?.profileImage
             })`,
           }),
         }}

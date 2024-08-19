@@ -24,6 +24,8 @@ const conversationModel = require('../models/conversationModel');
 const { getPriceInFiatFromCredits } = require('../lib/utils/price');
 const saleModel = require('../models/saleModel');
 const config = require('../config');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const signUrl = require('../lib/utils/signedUrl');
 
 const register = asyncHandler(async (req, res, next) => {
   const { pseudo, email, password } = req.body;
@@ -176,16 +178,31 @@ const getUser = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo image verified version isAmbassador lastLogin description notificationSubscribers socialMediaLink country nationality isAccountVerified isArchived',
+      'pseudo profileImage userType secondaryProfileImages verified version isAmbassador lastLogin description notificationSubscribers socialMediaLink country nationality isAccountVerified isArchived',
     )
     .populate('gender')
+    .populate('secondaryProfileImages')
     .lean();
 
   if (!user) {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
   }
 
-  res.status(200).json(user);
+  res.status(200).json({
+    ...user,
+    secondaryProfileImages:
+      user.secondaryProfileImages.map((currentMedia) => {
+        return {
+          ...currentMedia,
+          posterKey: signUrl(
+            `${process.env.CLOUDFRONT_URL}${currentMedia.posterKey}`,
+          ),
+          convertedKey: signUrl(
+            `${process.env.CLOUDFRONT_URL}${currentMedia.convertedKey}`,
+          ),
+        };
+      }) || [],
+  });
 });
 
 const getAccountOwner = asyncHandler(async (req, res, next) => {
@@ -194,20 +211,32 @@ const getAccountOwner = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo email image version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
+      'pseudo email profileImage secondaryProfileImages version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
     )
     .populate('gender')
+    .populate('secondaryProfileImages')
     .lean();
 
   if (!user) {
     return next(new CustomError(404, errorMessages.NOT_FOUND));
   }
 
-  res.status(200).json(user);
+  res.status(200).json({
+    ...user,
+    secondaryProfileImages:
+      user.secondaryProfileImages.map((currentMedia) => {
+        return {
+          ...currentMedia,
+          posterKey: signUrl(
+            `${process.env.CLOUDFRONT_URL}${currentMedia.posterKey}`,
+          ),
+        };
+      }) || [],
+  });
 });
 
 const userProfile = asyncHandler(async (req, res, next) => {
-  const user = await userModel.findById(req.user.id);
+  let user = await userModel.findById(req.user.id);
   const values = req.body;
 
   if (!user) {
@@ -224,28 +253,46 @@ const userProfile = asyncHandler(async (req, res, next) => {
     return next(new CustomError(400, 'Pseudo already exist'));
   }
 
-  await userModel.updateOne(
-    { _id: user._id },
-    {
-      $set: {
-        pseudo: values.pseudo ? values.pseudo : user.pseudo,
-        description: values.description,
-        socialMediaLink: {
-          twitter: values.twitterLink,
-          instagram: values.instagramLink,
-          mym: values.mymLink,
-          onlyfans: values.onlyfansLink,
-        },
-        ...(values.age && { age: parseInt(values.age, 10) }),
-        ...(values.gender && { gender: values.gender }),
-        ...(values.breastSize && { breastSize: values.breastSize }),
-        ...(values.buttSize && { buttSize: values.buttSize }),
-        ...(values.bodyType && { bodyType: values.bodyType }),
-        ...(values.hairColor && { hairColor: values.hairColor }),
-        ...(values.country && { country: values.country }),
-      },
-    },
-  );
+  console.log('values.secondaryProfileImages ', values.secondaryProfileImages);
+
+  user.pseudo = values.pseudo ? values.pseudo : user.pseudo;
+  user.description = values.description;
+
+  if (values.secondaryProfileImages) {
+    console.log('je passe la ');
+
+    user.secondaryProfileImages = values.secondaryProfileImages;
+  }
+
+  if (values.age) {
+    user.age = parseInt(values.age, 10);
+  }
+
+  if (values.gender) {
+    user.gender = values.gender;
+  }
+
+  if (values.breastSize) {
+    user.breastSize = values.breastSize;
+  }
+
+  if (values.buttSize) {
+    user.buttSize = values.buttSize;
+  }
+
+  if (values.bodyType) {
+    user.bodyType = values.bodyType;
+  }
+
+  if (values.hairColor) {
+    user.hairColor = values.hairColor;
+  }
+
+  if (values.country) {
+    user.country = values.country;
+  }
+
+  await user.save();
 
   res.status(200).json('ok');
 });
@@ -273,26 +320,26 @@ const profileVisit = asyncHandler(async (req, res, next) => {
 
     await visitedUser.save({ session });
 
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const existingNotification = await notificationModel.findOne({
-      fromUser: visitor,
-      targetUser: visitedUser,
-      type: 'profile_viewed',
-      createdAt: { $gte: oneDayAgo },
-    });
+    // const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    // const existingNotification = await notificationModel.findOne({
+    //   fromUser: visitor,
+    //   targetUser: visitedUser,
+    //   type: 'profile_viewed',
+    //   createdAt: { $gte: oneDayAgo },
+    // });
 
-    if (!existingNotification) {
-      await notificationModel.create(
-        [
-          {
-            fromUser: visitor,
-            targetUser: visitedUser,
-            type: 'profile_viewed',
-          },
-        ],
-        { session },
-      );
-    }
+    // if (!existingNotification) {
+    //   await notificationModel.create(
+    //     [
+    //       {
+    //         fromUser: visitor,
+    //         targetUser: visitedUser,
+    //         type: 'profile_viewed',
+    //       },
+    //     ],
+    //     { session },
+    //   );
+    // }
   });
 
   res.status(200).json('success');
@@ -300,11 +347,8 @@ const profileVisit = asyncHandler(async (req, res, next) => {
 
 const addProfilPicture = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id).lean();
-  const profilPicture = req.file;
 
-  if (!profilPicture) {
-    return next(new CustomError(400, 'Missing files'));
-  }
+  const { filetype } = req.body;
 
   if (!user) {
     return next(new CustomError(404, 'Not found'));
@@ -318,81 +362,38 @@ const addProfilPicture = asyncHandler(async (req, res, next) => {
     region: config.awsRegion,
   });
 
-  const image = sharp(profilPicture.buffer);
-  const optimizedBuffer = await image
-    .rotate()
-    .resize(400, 500)
-    .jpeg({ quality: 80 })
-    .toBuffer();
+  let fileExtension;
+
+  switch (filetype) {
+    case 'image/jpeg':
+      fileExtension = 'jpg';
+      break;
+    case 'image/png':
+      fileExtension = 'png';
+      break;
+    case 'image/webp':
+      fileExtension = 'webp';
+      break;
+    default:
+      return next(new CustomError(400, errorMessages.INVALID_FILE));
+  }
 
   let imageToken = crypto.randomBytes(32).toString('hex');
-  const imageKey = `profile/${user._id}/${imageToken}.jpg`;
+  const imageKey = `profile/${user._id}/${imageToken}.${fileExtension}`;
+  await userModel.updateOne({ _id: user._id }, { profileImage: imageKey });
 
-  const profilPictureCommand = new PutObjectCommand({
+  let command = new PutObjectCommand({
     Bucket: config.s3BucketProcessedMedia,
     Key: imageKey,
-    Body: optimizedBuffer,
-    ContentType: 'image/jpeg',
+    ContentType: filetype,
   });
 
-  await s3.send(profilPictureCommand);
+  const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
-  const updatedImageData = { ...user.image, profil: imageKey };
-
-  await userModel.updateOne({ _id: user._id }, { image: updatedImageData });
-
-  res.status(200).json(imageKey);
-});
-
-const addBannerPicture = asyncHandler(async (req, res, next) => {
-  const user = await userModel.findById(req.user.id).lean();
-  const banner = req.file;
-
-  if (!banner) {
-    return next(new CustomError(400, 'Missing files'));
-  }
-
-  if (!user) {
-    return next(new CustomError(404, 'Not found'));
-  }
-
-  const s3 = new S3Client({
-    credentials: {
-      accessKeyId: config.awsAccessKeyId,
-      secretAccessKey: config.awsSecretAccessKey,
-    },
-    region: config.awsRegion,
+  res.status(200).json({
+    signedUrl,
+    profileImageUrl: imageKey,
   });
-
-  const image = sharp(banner.buffer);
-  const optimizedBuffer = await image
-    .rotate()
-    .resize(844, 300)
-    .jpeg({ quality: 80 })
-    .toBuffer();
-
-  let imageToken = crypto.randomBytes(32).toString('hex');
-  const bannerKey = `banner/${user._id}/${imageToken}.jpg`;
-
-  const profilPictureCommand = new PutObjectCommand({
-    Bucket: config.s3BucketProcessedMedia,
-    Key: bannerKey,
-    Body: optimizedBuffer,
-    ContentType: 'image/jpeg',
-  });
-
-  await s3.send(profilPictureCommand);
-
-  const updatedImageData = { ...user.image, banner: bannerKey };
-
-  await userModel.updateOne(
-    { _id: user._id },
-    {
-      image: updatedImageData,
-    },
-  );
-
-  res.status(200).json(bannerKey);
 });
 
 const getAllUsers = asyncHandler(async (req, res, next) => {
@@ -402,7 +403,7 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
   const matchQuery = {
     isAccountVerified: true,
     isArchived: false,
-    'image.profil': { $ne: '' },
+    profileImage: { $ne: '' },
   };
 
   const ageMap = {
@@ -416,7 +417,6 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
     matchQuery.age = ageMap[query.age];
   }
 
-  // Autres filtres en fonction du contenu de query
   const filtersMap = {
     bodyType: () => ({ bodyType: query.bodyType }),
     hairColor: () => ({ hairColor: query.hairColor }),
@@ -439,27 +439,52 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
   aggregateQuery.push({ $limit: 12 });
 
   aggregateQuery.push({
+    $lookup: {
+      from: 'media', // La collection de référence (nom exact dans la DB)
+      localField: 'secondaryProfileImages', // Champ dans le document User
+      foreignField: '_id', // Champ dans la collection Media
+      as: 'secondaryProfileImages', // Nom du champ dans le résultat
+    },
+  });
+
+  aggregateQuery.push({
     $project: {
       pseudo: 1,
-      'image.profil': 1,
+      profileImage: 1,
       verified: 1,
       isHighlighted: 1,
       lastLogin: 1,
+      secondaryProfileImages: {
+        $map: {
+          input: '$secondaryProfileImages',
+          as: 'image',
+          in: {
+            _id: '$$image._id',
+            convertedKey: '$$image.convertedKey',
+          },
+        },
+      },
     },
   });
 
   let users = await userModel.aggregate(aggregateQuery);
-  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
 
-  users = users.map((user) => {
-    if (user.image.profil) {
-      user.image.profil = `${cloudFrontUrl}${user.image.profil}`;
-    }
-    if (user.image.banner) {
-      user.image.banner = `${cloudFrontUrl}${user.image.banner}`;
-    }
-    return user;
-  });
+  // Transformation pour signer les URLs
+  users = users.map((user) => ({
+    ...user,
+    profileImage: user.profileImage
+      ? `${process.env.CLOUDFRONT_URL}${user.profileImage}`
+      : '',
+    secondaryProfileImages:
+      user.secondaryProfileImages.map((currentMedia) => {
+        return {
+          ...currentMedia,
+          convertedKey: signUrl(
+            `${process.env.CLOUDFRONT_URL}${currentMedia.convertedKey}`,
+          ),
+        };
+      }) || [],
+  }));
 
   const nextCursor =
     users.length > 0 ? users[users.length - 1].lastLogin.toISOString() : null;
@@ -517,7 +542,7 @@ const checkIfUserVerified = asyncHandler(async (req, res, next) => {
 
   const isEmailVerified = user.emailVerified;
   const isIdentityVerified = user.verified === 'verified';
-  const isProfileCompleted = Boolean(user.image?.profil);
+  const isProfileCompleted = Boolean(user.profileImage);
   const isBankAccountCompleted = Boolean(
     user.bankAccount?.iban &&
       user.bankAccount?.name &&
@@ -550,7 +575,7 @@ const getVerificationStep = asyncHandler(async (req, res, next) => {
 
   const isEmailVerified = user.emailVerified;
   const isIdentityVerified = user.verified === 'verified';
-  const isProfileCompleted = Boolean(user.image?.profil);
+  const isProfileCompleted = Boolean(user.profileImage);
   const isBankAccountCompleted = Boolean(
     user.bankAccount?.iban &&
       user.bankAccount?.name &&
@@ -568,56 +593,14 @@ const getVerificationStep = asyncHandler(async (req, res, next) => {
 });
 
 const identityVerification = asyncHandler(async (req, res, next) => {
-  const user = await userModel.findById(req.user.id);
-
-  const frontIdentity = req.files['frontIdentity'];
-  const backIdentity = req.files['backIdentity'];
-  const frontAndFaceIdentity = req.files['frontAndFaceIdentity'];
+  const user = req.user;
+  const { frontIdentity, backIdentity, frontAndFaceIdentity } = req.body;
 
   if (!frontIdentity || !backIdentity || !frontAndFaceIdentity) {
     return next(new CustomError(400, errorMessages.MISSING_FIELDS));
   }
 
-  if (!user) {
-    return next(new CustomError(404, errorMessages.NOT_FOUND));
-  }
-
   try {
-    const s3 = new S3Client({
-      credentials: {
-        accessKeyId: config.awsAccessKeyId,
-        secretAccessKey: config.awsSecretAccessKey,
-      },
-      region: config.awsRegion,
-    });
-
-    const frontIdentity = `identity/${user._id.toString()}/frontIdentity`;
-    const backIdentity = `identity/${user._id.toString()}/backIdentity`;
-    const frontAndFaceIdentity = `identity/${user._id.toString()}/frontAndFaceIdentity`;
-
-    const frontIdentityCommand = new PutObjectCommand({
-      Bucket: config.s3BucketProcessedMedia,
-      Key: frontIdentity,
-      Body: frontIdentity[0].buffer,
-      ContentType: frontIdentity[0].mimetype,
-    });
-    const backIdentityCommand = new PutObjectCommand({
-      Bucket: config.s3BucketProcessedMedia,
-      Key: backIdentity,
-      Body: backIdentity[0].buffer,
-      ContentType: backIdentity[0].mimetype,
-    });
-    const frontAndFaceIdentityCommand = new PutObjectCommand({
-      Bucket: config.s3BucketProcessedMedia,
-      Key: frontAndFaceIdentity,
-      Body: frontAndFaceIdentity[0].buffer,
-      ContentType: frontAndFaceIdentity[0].mimetype,
-    });
-
-    await s3.send(frontIdentityCommand);
-    await s3.send(backIdentityCommand);
-    await s3.send(frontAndFaceIdentityCommand);
-
     await executeInTransaction(async (session) => {
       await creatorIdentityVerificationModel.create(
         [
@@ -643,6 +626,50 @@ const identityVerification = asyncHandler(async (req, res, next) => {
       new CustomError(500, 'An error occured during image upload', error.stack),
     );
   }
+});
+
+const getIdentityVerificationUrl = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+
+  const s3 = new S3Client({
+    credentials: {
+      accessKeyId: config.awsAccessKeyId,
+      secretAccessKey: config.awsSecretAccessKey,
+    },
+    region: config.awsRegion,
+  });
+
+  const generateSignedUrl = async (path) => {
+    const command = new PutObjectCommand({
+      Bucket: config.s3BucketProcessedMedia,
+      Key: path,
+      ContentType: 'image/jpeg',
+    });
+    return await getSignedUrl(s3, command, { expiresIn: 3600 });
+  };
+
+  const frontIdentityPath = `identity/${user._id.toString()}/frontIdentity.jpg`;
+  const backIdentityPath = `identity/${user._id.toString()}/backIdentity.jpg`;
+  const frontAndFaceIdentityPath = `identity/${user._id.toString()}/frontAndFaceIdentity.jpg`;
+
+  const frontIdentityUrl = await generateSignedUrl(frontIdentityPath);
+  const backIdentityUrl = await generateSignedUrl(backIdentityPath);
+  const frontAndFaceIdentityUrl = await generateSignedUrl(
+    frontAndFaceIdentityPath,
+  );
+
+  res.status(200).json({
+    signedUrls: {
+      frontIdentityUrl,
+      backIdentityUrl,
+      frontAndFaceIdentityUrl,
+    },
+    keys: {
+      frontIdentity: frontIdentityPath,
+      backIdentity: backIdentityPath,
+      frontAndFaceIdentity: frontAndFaceIdentityPath,
+    },
+  });
 });
 
 const editEmail = asyncHandler(async (req, res, next) => {
@@ -890,7 +917,6 @@ module.exports = {
   getAccountOwner,
   userProfile,
   addProfilPicture,
-  addBannerPicture,
   refreshCreditAmount,
   notificationSubscribe,
   checkIfUserVerified,
@@ -905,4 +931,5 @@ module.exports = {
   sendTips,
   editUserType,
   getVerificationStep,
+  getIdentityVerificationUrl,
 };

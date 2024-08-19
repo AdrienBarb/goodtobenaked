@@ -37,18 +37,9 @@ const profileVisit = async (values: { userId: string }) => {
   return response.data;
 };
 
-const addProfilPicture = async (values: FormData) => {
-  const response = await axiosInstanceMultipartForm.post(
+const addProfilPicture = async (values: { filetype: string }) => {
+  const response = await axiosInstance.post(
     "/api/users/profil-picture",
-    values
-  );
-
-  return response.data;
-};
-
-const addBannerPicture = async (values: FormData) => {
-  const response = await axiosInstanceMultipartForm.post(
-    "/api/users/profil-banner",
     values
   );
 
@@ -62,7 +53,6 @@ const userService = {
   getAccountOwner,
   userProfile,
   addProfilPicture,
-  addBannerPicture,
   getCreditAmount,
 };
 

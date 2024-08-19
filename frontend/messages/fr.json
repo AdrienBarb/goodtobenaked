@@ -136,8 +136,10 @@
     "linkCopied": "Lien copié",
     "shareOnTwitter": "Partager sur Twitter",
     "copyLink": "Copier le lien de mon profil",
+    "copyNudeLink": "Copier le lien",
     "yourNudeWasPoster": "Ton nude a bien été posté !",
     "shareYourProfileToEnjoyYourCommunity": "Partage ton profil sur tes réseaux pour faire profiter ta communauté.",
+    "shareYourNudeToEnjoyYourCommunity": "Partage le sur tes réseaux pour faire profiter ta communauté.",
     "wantBecomeACreator?": "Vous voulez devenir un créateur ?",
     "clicOnButton": "Alors cliquez sur le bouton ci-dessous.",
     "becomingCreator": "Devenir un créateur",
@@ -167,12 +169,17 @@
     "messageSenders": "Expéditeurs de Messages",
     "nudeBuyers": "Acheteurs de Nudes",
     "pushExplanation": "En envoyant un « Push », vous pouvez cibler directement certains types d’utilisateurs. Le nude sera envoyé directement par message. ",
-    "whichGroupOfUsers": "Veuillez sélectionner les groupes d’utilisateurs auxquels vous souhaitez envoyer ce nude :"
+    "whichGroupOfUsers": "Veuillez sélectionner les groupes d’utilisateurs auxquels vous souhaitez envoyer ce nude :",
+    "wantToSeeMore": "Envie d'en voir plus ?",
+    "nudeCardCreditAmount": "{creditAmount} crédits",
+    "secondaryPictureProfile": "Images de profil secondaire",
+    "seeMyProfile": "Voir mon profil",
+    "shareTitleNudeSocialMedia": "Venez découvrir mon dernier nude"
   },
   "home": {
-    "title": "GOODTOBENAKED",
-    "subTitle": "Rencontrez des créateurs, rencontrez des fans.",
-    "subTitle1": "Explorez votre sexualité, sans aucune censure.",
+    "title": "PARTAGE TA SEXUALITÉ",
+    "subTitle": "Inscris-toi maintenant et",
+    "subTitle1": "gagne 100 % de tes revenus pendant les 3 premiers mois !",
     "exploreNudes": "Explorer les nudes",
     "comeMeetTheseGirls": "VIENS DISCUTER AVEC ELLES",
     "weTalkAboutSexe": "ON PARLE DE SEXE"

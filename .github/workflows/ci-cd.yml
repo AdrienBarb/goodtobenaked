@@ -16,10 +16,25 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SERVER_IP: ${{ secrets.SERVER_IP }}
       STAGING_SERVER_IP: ${{ secrets.STAGING_SERVER_IP }}
+      MAIL_GUN_API_KEY: ${{ secrets.MAIL_GUN_API_KEY }}
+      MAIL_GUN_BASE_URL: ${{ secrets.MAIL_GUN_BASE_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      STRIPE_ENDPOINT_SECRET: ${{ secrets.STRIPE_ENDPOINT_SECRET }}
+      STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+      STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set environment-specific variables
+        run: |
+          export MAIL_GUN_API_KEY=${{ secrets.MAIL_GUN_API_KEY }}
+          export MAIL_GUN_BASE_URL=${{ secrets.MAIL_GUN_BASE_URL }}
+          export JWT_SECRET=${{ secrets.JWT_SECRET }}
+          export STRIPE_ENDPOINT_SECRET=${{ secrets.STRIPE_ENDPOINT_SECRET }}
+          export STRIPE_API_KEY=${{ secrets.STRIPE_API_KEY }}
+          export STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -54,28 +69,17 @@ jobs:
             $ARGS \
             -f frontend/Dockerfile.prod --push ./frontend
 
-      - name: Pause for rate limit
-        run: sleep 30s
-
       - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 \
             -t $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }} \
             -f backend/Dockerfile.prod --push ./backend
 
-      - name: Deploy to server
-        if: github.ref == 'refs/heads/main'
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ env.SSH_PRIVATE_KEY }}
-          script: |
-            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
-            docker system prune -f
-            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml goodtobenaked
-            docker service update --force goodtobenaked_backend
-            docker service update --force goodtobenaked_frontend
+      - name: Run tests before deployment
+        run: |
+          cd backend
+          npm install
+          npm run test:ci
 
       - name: Deploy to staging server
         if: github.ref == 'refs/heads/staging'
@@ -90,3 +94,17 @@ jobs:
             docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack-staging.yml goodtobenaked-staging
             docker service update --force goodtobenaked-staging_backend
             docker service update --force goodtobenaked-staging_frontend
+
+      - name: Deploy to production server
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: root
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          script: |
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
+            docker system prune -f
+            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml goodtobenaked
+            docker service update --force goodtobenaked_backend
+            docker service update --force goodtobenaked_frontend

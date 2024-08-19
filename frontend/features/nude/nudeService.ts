@@ -8,8 +8,15 @@ const getAllNudes = async (query: any) => {
   return response.data;
 };
 
+const getUserNudes = async (userId: string) => {
+  const response = await axiosInstance.get(`/api/nudes/user/${userId}`);
+
+  return response.data;
+};
+
 const nudeService = {
   getAllNudes,
+  getUserNudes,
 };
 
 export default nudeService;

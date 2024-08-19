@@ -10,7 +10,7 @@ const Footer = () => {
   const t = useTranslations();
 
   return (
-    <footer className={styles.container}>
+    <footer className={styles.container} data-id="homepage-footer">
       <div className={styles.wrapper}>
         <div className={styles.footerLeft}>
           <div className={styles.logoWrapper}>

@@ -1,0 +1,25 @@
+@import "library.scss";
+
+.container {
+  padding: 2rem;
+
+  @media (max-width: $md) {
+    padding: 1rem;
+  }
+
+  .userDetailsWrapper {
+    margin-bottom: 0.6rem;
+  }
+
+  .mediaContainer {
+    border-radius: 6px;
+    position: relative;
+    aspect-ratio: 4/5;
+    width: 100%;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

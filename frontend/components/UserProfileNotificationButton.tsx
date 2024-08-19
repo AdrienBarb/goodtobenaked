@@ -66,6 +66,7 @@ const UserProfileNotificationButton: FC<Props> = ({
         onClick={handleNotificationSubscribe}
         isLoading={isLoading}
         isFull={IS_SUBSCRIBE}
+        dataId="profile-follow-btn"
       >
         {IS_SUBSCRIBE
           ? t("profile.popover_desactive_notification")

@@ -10,15 +10,16 @@ import SimpleButton from "./SimpleButton";
 import { useSelector } from "react-redux";
 import { RootStateType, useAppDispatch } from "@/store/store";
 import { getCreditAmount } from "@/features/user/userSlice";
+import useRedirectToLoginPage from "@/lib/hooks/useRedirectToLoginPage";
 
 interface Props {
   nude: Nude;
-  setCurrentNude: (e: Nude) => void;
+  callback: (e: Nude) => void;
 }
 
-const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
+const BuyMediaButton: FC<Props> = ({ nude, callback }) => {
   //session
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   //redux
   const dispatch = useAppDispatch();
@@ -36,7 +37,7 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
       dispatch(getCreditAmount());
 
       if (session?.user?.id) {
-        setCurrentNude(updatedNude);
+        callback(updatedNude);
       }
     },
   });
@@ -44,7 +45,14 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
   //translations
   const t = useTranslations();
 
+  const redirectToLoginPage = useRedirectToLoginPage();
+
   const handleBuyClick = () => {
+    if (status === "unauthenticated") {
+      redirectToLoginPage();
+      return;
+    }
+
     if (userState.creditAmount < nude.priceDetails.creditPrice) {
       setOpenCreditModal(true);
       return;
@@ -66,7 +74,7 @@ const BuyMediaButton: FC<Props> = ({ nude, setCurrentNude }) => {
           padding: "0.4rem 0.8rem",
           position: "absolute",
           width: "100%",
-          maxWidth: "320px",
+          maxWidth: "260px",
           minHeight: "40px",
         }}
       >
