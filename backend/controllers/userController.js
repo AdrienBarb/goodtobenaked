@@ -178,7 +178,7 @@ const getUser = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo profileImage secondaryProfileImages verified version isAmbassador lastLogin description notificationSubscribers socialMediaLink country nationality isAccountVerified isArchived',
+      'pseudo profileImage userType secondaryProfileImages verified version isAmbassador lastLogin description notificationSubscribers socialMediaLink country nationality isAccountVerified isArchived',
     )
     .populate('gender')
     .populate('secondaryProfileImages')
@@ -320,26 +320,26 @@ const profileVisit = asyncHandler(async (req, res, next) => {
 
     await visitedUser.save({ session });
 
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const existingNotification = await notificationModel.findOne({
-      fromUser: visitor,
-      targetUser: visitedUser,
-      type: 'profile_viewed',
-      createdAt: { $gte: oneDayAgo },
-    });
+    // const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    // const existingNotification = await notificationModel.findOne({
+    //   fromUser: visitor,
+    //   targetUser: visitedUser,
+    //   type: 'profile_viewed',
+    //   createdAt: { $gte: oneDayAgo },
+    // });
 
-    if (!existingNotification) {
-      await notificationModel.create(
-        [
-          {
-            fromUser: visitor,
-            targetUser: visitedUser,
-            type: 'profile_viewed',
-          },
-        ],
-        { session },
-      );
-    }
+    // if (!existingNotification) {
+    //   await notificationModel.create(
+    //     [
+    //       {
+    //         fromUser: visitor,
+    //         targetUser: visitedUser,
+    //         type: 'profile_viewed',
+    //       },
+    //     ],
+    //     { session },
+    //   );
+    // }
   });
 
   res.status(200).json('success');

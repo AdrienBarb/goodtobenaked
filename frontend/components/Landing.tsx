@@ -10,8 +10,9 @@ const Landing = () => {
     <div className={styles.container}>
       <div className={styles.textContainer}>
         <h1 data-id="homepage-title">{t("home.title")}</h1>
-        <h2>{t("home.subTitle")}</h2>
-        <h2>{t("home.subTitle1")}</h2>
+        <h2>
+          {t("home.subTitle")} <span>{t("home.subTitle1")}</span>
+        </h2>
         <div className={styles.buttonWrapper}>
           <LandingButton />
         </div>

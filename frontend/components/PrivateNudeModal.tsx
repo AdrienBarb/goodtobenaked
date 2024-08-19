@@ -231,7 +231,7 @@ const PrivateNudeModal: FC<Props> = ({
                 isLoading={isLoading || isMessageCreateLoading}
               >
                 {otherUser?.userType === "creator"
-                  ? t("conversation.sendFor", { creditAmount: 0.25 })
+                  ? t("conversation.sendFor", { creditAmount: 0.2 })
                   : t("conversation.send")}
               </FullButton>
             </div>

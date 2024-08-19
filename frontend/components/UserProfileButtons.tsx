@@ -46,14 +46,15 @@ const UserProfileButtons: FC<Props> = ({ currentUser, setCurrentUser }) => {
     <>
       <div className={styles.buttonsWrapper}>
         {session?.user?.id !== userId && <UserProfileMessageButton />}
-        {session?.user?.id !== userId && (
-          <UserProfileNotificationButton
-            currentUser={currentUser}
-            setCurrentUser={setCurrentUser}
-          />
-        )}
+        {session?.user?.id !== userId &&
+          currentUser?.userType === "creator" && (
+            <UserProfileNotificationButton
+              currentUser={currentUser}
+              setCurrentUser={setCurrentUser}
+            />
+          )}
         {session?.user?.id !== userId && currentUser?.isAccountVerified && (
-          <ProfileButton onClick={handleOpenTipsModal}>
+          <ProfileButton dataId="tips-btn" onClick={handleOpenTipsModal}>
             {t("profile.sendTips")}
           </ProfileButton>
         )}

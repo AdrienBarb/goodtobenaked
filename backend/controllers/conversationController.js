@@ -290,7 +290,7 @@ const sendMessage = asyncHandler(async (req, res, next) => {
   );
   const isOtherParticipantCreator = otherParticipant.userType === 'creator';
 
-  if (isOtherParticipantCreator && user.creditAmount < 25) {
+  if (isOtherParticipantCreator && user.creditAmount < 20) {
     return next(new CustomError(400, errorMessages.NOT_ENOUGH_CREDIT));
   }
 
@@ -316,7 +316,7 @@ const sendMessage = asyncHandler(async (req, res, next) => {
     );
 
     if (isOtherParticipantCreator) {
-      const newMemberCreditAmount = user.creditAmount - 25;
+      const newMemberCreditAmount = user.creditAmount - 20;
 
       await userModel.updateOne(
         { _id: user._id },
@@ -333,8 +333,8 @@ const sendMessage = asyncHandler(async (req, res, next) => {
             fromUser: user._id,
             saleType: 'message',
             amount: {
-              fiatValue: 25,
-              creditValue: 25,
+              fiatValue: 10,
+              creditValue: 20,
             },
           },
         ],

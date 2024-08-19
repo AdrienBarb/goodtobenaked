@@ -136,8 +136,10 @@
     "linkCopied": "Link Copied",
     "shareOnTwitter": "Share on Twitter",
     "copyLink": "Copy my profile link",
+    "copyNudeLink": "Copy the link",
     "yourNudeWasPoster": "Your nude has been posted successfully!",
     "shareYourProfileToEnjoyYourCommunity": "Share your profile on your networks to benefit your community.",
+    "shareYourNudeToEnjoyYourCommunity": "Share it on your networks to benefit your community.",
     "wantBecomeACreator?": "Want to become a creator?",
     "clicOnButton": "Then click on the button below.",
     "becomingCreator": "Become a Creator",
@@ -170,12 +172,14 @@
     "whichGroupOfUsers": "Please select the user groups to whom you want to send this nude:",
     "wantToSeeMore": "Want to see more?",
     "nudeCardCreditAmount": "{creditAmount} credits",
-    "secondaryPictureProfile": "Secondary profile images"
+    "secondaryPictureProfile": "Secondary profile images",
+    "seeMyProfile": "See my profile",
+    "shareTitleNudeSocialMedia": "Come discover my last nude"
   },
   "home": {
-    "title": "GOODTOBENAKED",
-    "subTitle": "Meet creators, meet fans.",
-    "subTitle1": "Explore your sexuality, without any censorship.",
+    "title": "SHARE YOUR SEXUALITY",
+    "subTitle": "Sign up now and",
+    "subTitle1": "earn 100% of your revenue for the first 3 months!",
     "exploreNudes": "Explore Nudes",
     "comeMeetTheseGirls": "COME CHAT WITH THEM",
     "weTalkAboutSexe": "WE TALK ABOUT SEX"

@@ -25,15 +25,15 @@ const NavigationBar = () => {
   const matches = useMediaQuery(`(max-width:${screenSizes.md}px)`);
   const { status, data: session } = useSession();
 
-  console.log("session ", session);
-  console.log("status ", status);
-
   return (
     <>
       <div className={styles.navContainer}>
         <div className={styles.navbar}>
           {matches && status === "authenticated" && (
-            <div onClick={() => setOpenMenuDrawer(true)}>
+            <div
+              onClick={() => setOpenMenuDrawer(true)}
+              data-id="mobile-burger-menu"
+            >
               <MenuIcon
                 sx={{ fontSize: "48", cursor: "pointer", color: "#1C131E" }}
               />

@@ -82,7 +82,7 @@ const UserProfileHeader: FC<Props> = ({ initialUserDatas }) => {
                 popoverDescription={t("profile.verifiedProfile")}
               />
             )}
-            <Title Tag="h2" titleStyle={{ margin: "0" }}>
+            <Title Tag="h2" titleStyle={{ margin: "0" }} dataId="user-pseudo">
               {currentUser.pseudo}
             </Title>
           </div>

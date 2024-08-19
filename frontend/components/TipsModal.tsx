@@ -71,7 +71,7 @@ const TipsModal: FC<Props> = ({ open, setOpen, userId }) => {
   return (
     <>
       <CustomModal open={open} onClose={setOpen} withCloseIcon>
-        <div className={styles.container}>
+        <div className={styles.container} data-id="tips-modal">
           <div className={styles.creditWrapper}>
             <span className={styles.creditlabel}>
               {t("common.youreGonnaSend")}

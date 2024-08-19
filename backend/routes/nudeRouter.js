@@ -21,7 +21,7 @@ router.post('/', userProtect, createNude);
 router.post('/push', userProtect, createPush);
 router.get('/', identifyUserIfConnected, getAllNudes);
 router.get('/:nudeId', userProtect, getCurrentNude);
-router.get('/user/:userId', getUserNudes);
+router.get('/user/:userId', identifyUserIfConnected, getUserNudes);
 router.put('/:nudeId/archived', userProtect, archivedNude);
 router.put('/:nudeId', userProtect, editNude);
 router.post('/buy', userProtect, buyNude);

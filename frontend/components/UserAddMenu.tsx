@@ -32,7 +32,7 @@ const UserAddMenu = () => {
   };
 
   return (
-    <div>
+    <div data-id="user-add-menu">
       <Button
         id="basic-button"
         aria-controls={open ? "basic-menu" : undefined}

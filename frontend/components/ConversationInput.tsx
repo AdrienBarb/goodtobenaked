@@ -155,7 +155,7 @@ const ConversationInput: FC<Props> = ({ conversation, setMessagesList }) => {
           disabled={!message || haveBeenBlocked}
         >
           {otherUser?.userType === "creator"
-            ? t("conversation.sendFor", { creditAmount: 0.25 })
+            ? t("conversation.sendFor", { creditAmount: 0.2 })
             : t("conversation.send")}
         </FullButton>
       </div>

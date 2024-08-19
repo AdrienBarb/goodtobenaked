@@ -32,14 +32,14 @@ const NudeCard: FC<Props> = ({
   const { userId } = useParams();
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-id={`user-nude-${itemNumber}`}>
       {showUserMenu && isOwner && (
         <div className={styles.userMenuWrapper}>
           <NudeCardUserMenu nude={nude} setNudeList={setNudeList} />
         </div>
       )}
       <MediaDetails medias={nude.medias} />
-      <Link href={`/dashboard/community/gallery/${userId}#item-${itemNumber}`}>
+      <Link href={`/dashboard/community/gallery/${userId}#item-${nude._id}`}>
         <DisplayedMedia nude={nude} currentMediaIndex={0} type="card" />
         {!canView && !isOwner && <BlurMedia />}
 

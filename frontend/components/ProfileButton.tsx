@@ -7,6 +7,7 @@ interface ProfileButtonProps {
   onClick?: () => void;
   isFull?: boolean;
   isLoading?: boolean;
+  dataId?: string;
 }
 
 const ProfileButton: FC<ProfileButtonProps> = ({
@@ -14,6 +15,7 @@ const ProfileButton: FC<ProfileButtonProps> = ({
   onClick,
   isLoading,
   isFull = false,
+  dataId,
 }) => {
   return (
     <button
@@ -23,6 +25,7 @@ const ProfileButton: FC<ProfileButtonProps> = ({
         color: isFull ? "#FFF0EB" : "#Cecaff",
       }}
       onClick={onClick}
+      data-id={dataId}
     >
       {isLoading ? (
         <CircularProgress

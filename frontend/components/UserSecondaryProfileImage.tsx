@@ -8,14 +8,19 @@ import { Media } from "@/types/models/Media";
 
 interface Props {
   image: Media;
+  index: number;
 }
 
-const UserSecondaryProfileImage: FC<Props> = ({ image }) => {
+const UserSecondaryProfileImage: FC<Props> = ({ image, index }) => {
   const [openModal, setOpenModal] = useState(false);
 
   return (
     <>
-      <div className={styles.container} onClick={() => setOpenModal(true)}>
+      <div
+        className={styles.container}
+        onClick={() => setOpenModal(true)}
+        data-id={`user-secondary-images-${index}`}
+      >
         <S3Image
           imageKey={image.posterKey}
           imageAlt={`media`}
