@@ -8,6 +8,9 @@ import { TwitterShareButton } from "react-share";
 import { useSession } from "next-auth/react";
 import ClassicButton from "@/components/Buttons/ClassicButton";
 import toast from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
+import Text from "@/components/Text";
+import { useRouter } from "@/navigation";
 
 interface Props {
   params: {
@@ -18,8 +21,11 @@ interface Props {
 const CreateNudeSuccessPage: FC<Props> = ({ params: { locale } }) => {
   const t = useTranslations();
   const { data: session } = useSession();
+  const params = useSearchParams();
+  const userId = params.get("createdNudeId");
+  const router = useRouter();
 
-  const URL = `${process.env.NEXT_PUBLIC_BASE_URL}/${locale}/dashboard/community/${session?.user?.id}`;
+  const URL = `${process.env.NEXT_PUBLIC_BASE_URL}/${locale}/dashboard/community/gallery/${session?.user?.id}#item-${userId}`;
 
   const copyToClipboard = async () => {
     try {
@@ -34,11 +40,11 @@ const CreateNudeSuccessPage: FC<Props> = ({ params: { locale } }) => {
     <ScrollableContainer>
       <AppMessage
         title={t("common.yourNudeWasPoster")}
-        text={t("common.shareYourProfileToEnjoyYourCommunity")}
+        text={t("common.shareYourNudeToEnjoyYourCommunity")}
       >
         <TwitterShareButton
           url={URL}
-          title={t("profile.shareTitleSocialMedia")}
+          title={t("common.shareTitleNudeSocialMedia")}
           style={{ width: "100%" }}
         >
           <ClassicButton customStyles={{ width: "100%" }}>
@@ -49,7 +55,16 @@ const CreateNudeSuccessPage: FC<Props> = ({ params: { locale } }) => {
           customStyles={{ width: "100%" }}
           onClick={copyToClipboard}
         >
-          {t("common.copyLink")}
+          {t("common.copyNudeLink")}
+        </ClassicButton>
+        <Text customStyles={{ color: "white" }}>{t("common.or")}</Text>
+        <ClassicButton
+          customStyles={{ width: "100%" }}
+          onClick={() =>
+            router.push(`/dashboard/community/${session?.user?.id}`)
+          }
+        >
+          {t("common.seeMyProfile")}
         </ClassicButton>
       </AppMessage>
     </ScrollableContainer>

@@ -39,7 +39,7 @@ const NudeCard: FC<Props> = ({
         </div>
       )}
       <MediaDetails medias={nude.medias} />
-      <Link href={`/dashboard/community/gallery/${userId}#item-${itemNumber}`}>
+      <Link href={`/dashboard/community/gallery/${userId}#item-${nude._id}`}>
         <DisplayedMedia nude={nude} currentMediaIndex={0} type="card" />
         {!canView && !isOwner && <BlurMedia />}
 

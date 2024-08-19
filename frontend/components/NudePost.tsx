@@ -23,7 +23,7 @@ const NudePost: FC<Props> = ({ nude, setNudeList, itemNumber }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
   return (
-    <div className={styles.container} id={`item-${itemNumber}`}>
+    <div className={styles.container} id={`item-${nude._id}`}>
       <div className={styles.userDetailsWrapper}>
         <NudeUserDetails nude={nude} showAvatar />
       </div>

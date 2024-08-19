@@ -47,9 +47,11 @@ const CreateNude: FC<CreateNudeProps> = () => {
   const nudeId = searchParams.get("nudeId");
 
   const { mutate: createNude, isLoading } = usePost(`/api/nudes`, {
-    onSuccess: () => {
+    onSuccess: (nude) => {
       if (session?.user?.isAccountVerified) {
-        router.push(`/dashboard/account/add/nudes/success`);
+        router.push(
+          `/dashboard/account/add/nudes/success?createdNudeId=${nude._id}`
+        );
       } else {
         router.push(`/dashboard/community/${session?.user?.id}`);
       }

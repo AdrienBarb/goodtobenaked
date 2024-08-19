@@ -136,8 +136,10 @@
     "linkCopied": "Lien copié",
     "shareOnTwitter": "Partager sur Twitter",
     "copyLink": "Copier le lien de mon profil",
+    "copyNudeLink": "Copier le lien",
     "yourNudeWasPoster": "Ton nude a bien été posté !",
     "shareYourProfileToEnjoyYourCommunity": "Partage ton profil sur tes réseaux pour faire profiter ta communauté.",
+    "shareYourNudeToEnjoyYourCommunity": "Partage le sur tes réseaux pour faire profiter ta communauté.",
     "wantBecomeACreator?": "Vous voulez devenir un créateur ?",
     "clicOnButton": "Alors cliquez sur le bouton ci-dessous.",
     "becomingCreator": "Devenir un créateur",
@@ -170,7 +172,9 @@
     "whichGroupOfUsers": "Veuillez sélectionner les groupes d’utilisateurs auxquels vous souhaitez envoyer ce nude :",
     "wantToSeeMore": "Envie d'en voir plus ?",
     "nudeCardCreditAmount": "{creditAmount} crédits",
-    "secondaryPictureProfile": "Images de profil secondaire"
+    "secondaryPictureProfile": "Images de profil secondaire",
+    "seeMyProfile": "Voir mon profil",
+    "shareTitleNudeSocialMedia": "Venez découvrir mon dernier nude"
   },
   "home": {
     "title": "GOODTOBENAKED",
