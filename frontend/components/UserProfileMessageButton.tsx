@@ -31,7 +31,6 @@ const UserProfileMessageButton: FC<Props> = ({}) => {
     "/api/conversations",
     {
       onSuccess: (data) => {
-        console.log(data);
         router.push(`/dashboard/account/messages/${data._id}`);
       },
     }

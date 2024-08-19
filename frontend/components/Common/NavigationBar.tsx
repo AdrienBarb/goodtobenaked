@@ -25,9 +25,6 @@ const NavigationBar = () => {
   const matches = useMediaQuery(`(max-width:${screenSizes.md}px)`);
   const { status, data: session } = useSession();
 
-  console.log("session ", session);
-  console.log("status ", status);
-
   return (
     <>
       <div className={styles.navContainer}>
