@@ -147,7 +147,9 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
           <div className={styles.userList}>
             {usersList?.length &&
               usersList.map((currentUser, index) => {
-                return <UserCard key={index} user={currentUser} />;
+                return (
+                  <UserCard key={index} user={currentUser} index={index} />
+                );
               })}
           </div>
 
