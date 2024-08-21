@@ -82,6 +82,12 @@ jobs:
           npm install
           npm run test:ci
 
+      - name: Decrypt SSH key
+        run: |
+          echo "$SSH_PRIVATE_KEY_HOSTINGER" > /tmp/encrypted_key
+          openssl rsa -in /tmp/encrypted_key -out /tmp/decrypted_key -passin pass:${{ secrets.SSH_KEY_PASSWORD }}
+          chmod 600 /tmp/decrypted_key
+
       - name: Deploy to staging server
         if: github.ref == 'refs/heads/staging'
         uses: appleboy/ssh-action@v0.1.0
@@ -102,7 +108,7 @@ jobs:
         with:
           host: ${{ env.SERVER_IP }}
           username: root
-          key: ${{ env.SSH_PRIVATE_KEY_HOSTINGER }}
+          key: /tmp/decrypted_key
           script: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker system prune -f
