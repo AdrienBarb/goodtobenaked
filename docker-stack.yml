@@ -52,7 +52,7 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 2  
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
@@ -104,7 +104,7 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 2 
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
@@ -151,9 +151,14 @@ services:
       - SYS_PTRACE
     pid: host
     privileged: true
+    environment:
+      - NRIA_LICENSE_KEY=YOUR_NEW_RELIC_LICENSE_KEY
+      - NRIA_LOG_FILE="/var/log/newrelic-infra/newrelic-infra.log"
+      - LOGGING_ENABLED=true
     volumes:
       - "/:/host:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/log:/var/log"
     deploy:
       mode: global
       restart_policy:

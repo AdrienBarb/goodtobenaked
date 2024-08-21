@@ -174,7 +174,7 @@ const getUserNudes = asyncHandler(async (req, res, next) => {
   const nudes = await nudeModel
     .find(filter)
     .sort({ createdAt: -1 })
-    .populate('user', 'pseudo image.profil')
+    .populate('user', 'pseudo profileImage')
     .populate(
       'medias',
       'user mediaType convertedKey blurredKey posterKey status',
