@@ -65,7 +65,7 @@ const CheckoutPage = () => {
         <span className={styles.divider}></span>
         <div className={styles.middleText}>
           <div className={styles.label}>{`Buy ${
-            selectedPackage.coinsAmount
+            selectedPackage.coinsAmount / 100
           } credits for ${selectedPackage.price / 100}€`}</div>
         </div>
 

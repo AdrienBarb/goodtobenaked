@@ -1,4 +1,12 @@
 describe("Homepage", () => {
+  before(() => {
+    cy.createTestSeed();
+  });
+
+  after(() => {
+    cy.deleteTestSeed();
+  });
+
   beforeEach(() => {
     cy.visit("/");
   });
@@ -8,7 +16,10 @@ describe("Homepage", () => {
     cy.get('[data-id="sign-in-button"]').should("contain", "Sign In");
 
     cy.get('[data-id="homepage-title"]').should("be.visible");
-    cy.get('[data-id="homepage-title"]').should("contain", "GOODTOBENAKED");
+    cy.get('[data-id="homepage-title"]').should(
+      "contain",
+      "SHARE YOUR SEXUALITY"
+    );
 
     cy.get('[data-id^="user-card-"]').should("have.length", 12);
 
