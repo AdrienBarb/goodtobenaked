@@ -14,6 +14,7 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_PRIVATE_KEY_HOSTINGER: ${{ secrets.SSH_PRIVATE_KEY_HOSTINGER }}
       SERVER_IP: ${{ secrets.SERVER_IP }}
       STAGING_SERVER_IP: ${{ secrets.STAGING_SERVER_IP }}
       MAIL_GUN_API_KEY: ${{ secrets.MAIL_GUN_API_KEY }}
@@ -101,7 +102,7 @@ jobs:
         with:
           host: ${{ env.SERVER_IP }}
           username: root
-          key: ${{ env.SSH_PRIVATE_KEY }}
+          key: ${{ env.SSH_PRIVATE_KEY_HOSTINGER }}
           script: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker system prune -f
