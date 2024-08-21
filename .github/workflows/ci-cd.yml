@@ -96,13 +96,19 @@ jobs:
             docker service update --force goodtobenaked-staging_backend
             docker service update --force goodtobenaked-staging_frontend
 
+      - name: Set up SSH agent for production
+        if: github.ref == 'refs/heads/main'
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_HOSTINGER }}
+
       - name: Deploy to production server
         if: github.ref == 'refs/heads/main'
         uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ env.SERVER_IP }}
           username: root
-          key: ${{ env.SSH_PRIVATE_KEY_HOSTINGER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_HOSTINGER }}
           script: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker system prune -f
