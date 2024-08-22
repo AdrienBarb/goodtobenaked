@@ -1,28 +1,21 @@
-@import'library.scss';
+@import "library.scss";
 
 .container {
-    max-width: $container-width;
-    padding: 6rem 1rem;
-    margin: 0 auto;
+  max-width: $container-width;
+  padding: 6rem 1rem;
+  margin: 0 auto;
 
-    h2 {
-        text-align: center;
-        margin-bottom: 2rem;
-        font-size: 44px;
+  .blogList {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 2rem;
+
+    @media (max-width: $md) {
+      grid-template-columns: 1fr 1fr;
     }
 
-    .blogList {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-gap: 2rem;
-
-        @media (max-width: $md) {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        @media (max-width: $sm) {
-            grid-template-columns: 1fr;
-        }
-        
+    @media (max-width: $sm) {
+      grid-template-columns: 1fr;
     }
+  }
 }
