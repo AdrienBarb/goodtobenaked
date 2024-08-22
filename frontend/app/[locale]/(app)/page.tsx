@@ -3,6 +3,7 @@ import { appRouter } from "@/appRouter";
 import { client } from "@/client";
 import Footer from "@/components/Footer";
 import Landing from "@/components/Landing";
+import LandingFeatures from "@/components/LandingFeatures";
 import LastArticleHomeSection from "@/components/LastArticleHomeSection";
 import LastUsersHomeSection from "@/components/LastUsersHomeSection";
 import userService from "@/features/user/userService";
@@ -49,6 +50,7 @@ const Home = async ({ params: { locale } }: { params: { locale: string } }) => {
   return (
     <>
       <Landing />
+      <LandingFeatures />
       <LastUsersHomeSection users={users} />
       <LastArticleHomeSection posts={posts} locale={locale} />
       <Footer />

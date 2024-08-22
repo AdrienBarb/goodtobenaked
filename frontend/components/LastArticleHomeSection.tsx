@@ -4,6 +4,7 @@ import BlogCard from "@/components/BlogCard";
 import imageUrlBuilder from "@sanity/image-url";
 import { client } from "@/client";
 import { useTranslations } from "next-intl";
+import LandingHeader from "./LandingHeader";
 
 const LastArticleHomeSection = ({
   posts = [],
@@ -20,7 +21,7 @@ const LastArticleHomeSection = ({
 
   return (
     <section className={styles.container}>
-      <h2>{t("home.weTalkAboutSexe")}</h2>
+      <LandingHeader title={t("home.weTalkAboutSexe")} />
       <div className={styles.blogList}>
         {posts.map((currentPost: any, idx: number) => {
           return (
