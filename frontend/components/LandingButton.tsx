@@ -4,14 +4,12 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import FullButton from "./Buttons/FullButton";
 import { useSession } from "next-auth/react";
-import useRedirectToLoginPage from "@/lib/hooks/useRedirectToLoginPage";
 import { useRouter } from "@/navigation";
 
 const LandingButton = () => {
   const t = useTranslations();
 
   const { data: session, status } = useSession();
-  const redirectToLoginPage = useRedirectToLoginPage();
   const router = useRouter();
 
   const handleClick = () => {
@@ -26,7 +24,7 @@ const LandingButton = () => {
   return (
     <FullButton onClick={handleClick}>
       {status === "unauthenticated"
-        ? t("common.signIn")
+        ? t("home.getStarted")
         : t("home.exploreNudes")}
     </FullButton>
   );
