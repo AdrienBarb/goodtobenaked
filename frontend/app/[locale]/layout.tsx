@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.scss";
+import "@/styles/tailwind.css";
 import siteMetadata from "@/data/siteMetadata";
 import Script from "next/script";
 import CustomQueryClientProvider from "@/components/Common/CustomQueryClientProvider";
