@@ -1,6 +1,7 @@
 import { genPageMetadata } from "@/app/seo";
 import { appRouter } from "@/appRouter";
 import { client } from "@/client";
+import AppFAQ from "@/components/AppFAQ";
 import Footer from "@/components/Footer";
 import Landing from "@/components/Landing";
 import LandingFeatures from "@/components/LandingFeatures";
@@ -53,6 +54,7 @@ const Home = async ({ params: { locale } }: { params: { locale: string } }) => {
       <LandingFeatures />
       <LastUsersHomeSection users={users} />
       <LastArticleHomeSection posts={posts} locale={locale} />
+      <AppFAQ />
       <Footer />
     </>
   );

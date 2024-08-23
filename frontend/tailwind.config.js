@@ -10,6 +10,11 @@ module.exports = {
         karla: ["Karla", "sans-serif"],
         rubik: ["Rubik", "sans-serif"],
       },
+      colors: {
+        primary: "#cecaff",
+        "primary-light": "#d9d7f6",
+        background: "#fff0eb",
+      },
     },
   },
   plugins: [],

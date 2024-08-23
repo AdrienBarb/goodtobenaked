@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "@/styles/LastArticleHomeSection.module.scss";
 import { useTranslations } from "next-intl";
 import FeatureCard from "./FeatureCard";
 import LandingHeader from "./LandingHeader";
@@ -8,7 +7,7 @@ const LandingFeatures = () => {
   const t = useTranslations();
 
   return (
-    <section className={styles.container}>
+    <section className="max-w-4xl mx-auto py-16 px-4">
       <LandingHeader title={t("home.earnWhile")} />
       <div className="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-8">
         <FeatureCard
