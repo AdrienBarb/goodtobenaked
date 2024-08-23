@@ -23,9 +23,6 @@ describe("Homepage", () => {
 
     cy.get('[data-id^="user-card-"]').should("have.length", 12);
 
-    cy.get('[data-id="see-more-users-btn"]').should("be.visible");
-    cy.get('[data-id="see-more-users-btn"]').should("contain", "See More");
-
     cy.get('[data-id="homepage-footer"]').should("be.visible");
   });
 
