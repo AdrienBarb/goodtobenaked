@@ -247,7 +247,8 @@
     "not_enough_credit": "Vous n'avez pas assez de crédit.",
     "downloadingMedia": "Média en cours de téléchargement.",
     "errorMedia": "Une erreur est survenue avec ton média",
-    "fileTooLarge": "Votre fichier est trop large. Le maximum est de : {maxSize}"
+    "fileTooLarge": "Votre fichier est trop large. Le maximum est de : {maxSize}",
+    "pseudo_invalid": "Le pseudonyme doit contenir entre 3 et 30 caractères, uniquement des lettres, chiffres, points ou tirets bas. Les espaces, les caractères spéciaux comme @, #, et les répétitions de points ou de tirets bas ne sont pas autorisés."
   },
   "success": {
     "login": "Vous êtes connecté",

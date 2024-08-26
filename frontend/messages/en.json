@@ -247,7 +247,8 @@
     "not_enough_credit": "You don't have enough credit.",
     "downloadingMedia": "Media is uploading.",
     "errorMedia": "An error has occurred with your media",
-    "fileTooLarge": "Your file is too large. This maximum is : {maxSize}"
+    "fileTooLarge": "Your file is too large. This maximum is : {maxSize}",
+    "pseudo_invalid": "The username must be between 3 and 30 characters long, containing only letters, numbers, dots, or underscores. Spaces, special characters like @, #, and repeated dots or underscores are not allowed."
   },
   "success": {
     "login": "You are logged in",

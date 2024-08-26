@@ -85,7 +85,10 @@ const UserForm: FC<Props> = ({
   }, [userId]);
 
   const validationSchema = yup.object({
-    pseudo: yup.string().required("Pseudo is required"),
+    pseudo: yup
+      .string()
+      .matches(/^[a-zA-Z0-9._-]{3,30}$/, t("error.pseudo_invalid"))
+      .required("Pseudo is required"),
   });
 
   const formik = useFormik({
