@@ -2,7 +2,7 @@
 const siteMetadata = {
   title: "KYYNK",
   description:
-    "The first social network for adults: amateurs, exhibitionists and porn stars. Come and chat with them. Registration is free.",
+    "Get closer than ever to the hottest creators. Unlock and enjoy exclusive content, connect directly with creators, and more.",
   language: "en-us",
   siteUrl: "https://www.kyynk.com",
   siteLogo: "/images/logo-kyynk.jpg",
