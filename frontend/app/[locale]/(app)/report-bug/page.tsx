@@ -7,7 +7,7 @@ import SupportContact from "@/components/SupportContact";
 export const metadata = genPageMetadata({
   title: "Signaler un bug",
   description:
-    "Signalez un bug ou un problème technique que vous rencontrez sur Goodtobenaked. Vos retours sont précieux pour nous permettre d'améliorer et d'optimiser notre plateforme.",
+    "Signalez un bug ou un problème technique que vous rencontrez sur KYYNK. Vos retours sont précieux pour nous permettre d'améliorer et d'optimiser notre plateforme.",
 });
 
 const ReportBugPage = () => {

@@ -14,7 +14,7 @@ import ErrorModal from '../components/ErrorModal';
 
 const CheckoutPage = () => {
   //hooks
-  const { isTokenValid } = useAuthToken('api-goodtobenaked');
+  const { isTokenValid } = useAuthToken('api-kyynk');
   const navigate = useNavigate();
 
   //localstate

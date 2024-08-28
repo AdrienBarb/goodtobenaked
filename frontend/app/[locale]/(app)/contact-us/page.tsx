@@ -6,7 +6,7 @@ import ContactForm from "@/components/TypeForms/ContactForm";
 export const metadata = genPageMetadata({
   title: "Contactez-nous",
   description:
-    "Contactez l'équipe de Goodtobenaked pour toute question, demande de support ou proposition de partenariat. Nous sommes à votre écoute et nous ferons de notre mieux pour vous aider.",
+    "Contactez l'équipe de KYYNK pour toute question, demande de support ou proposition de partenariat. Nous sommes à votre écoute et nous ferons de notre mieux pour vous aider.",
 });
 
 const ContactUsPage = () => {

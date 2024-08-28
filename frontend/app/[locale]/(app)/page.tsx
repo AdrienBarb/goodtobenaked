@@ -7,6 +7,7 @@ import Landing from "@/components/Landing";
 import LandingFeatures from "@/components/LandingFeatures";
 import LastArticleHomeSection from "@/components/LastArticleHomeSection";
 import LastUsersHomeSection from "@/components/LastUsersHomeSection";
+import ModelOffer from "@/components/ModelOffer";
 import userService from "@/features/user/userService";
 import { redirect } from "@/navigation";
 import { Metadata } from "next";
@@ -51,6 +52,7 @@ const Home = async ({ params: { locale } }: { params: { locale: string } }) => {
   return (
     <>
       <Landing />
+      <ModelOffer />
       <LandingFeatures />
       <LastUsersHomeSection users={users} />
       <LastArticleHomeSection posts={posts} locale={locale} />

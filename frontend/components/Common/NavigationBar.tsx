@@ -48,7 +48,7 @@ const NavigationBar = () => {
               <div className={styles.logo}>
                 <Image
                   src={logo}
-                  alt="Logo Goodtobenaked"
+                  alt="Logo KYYNK"
                   fill={true}
                   objectFit="contain"
                 />

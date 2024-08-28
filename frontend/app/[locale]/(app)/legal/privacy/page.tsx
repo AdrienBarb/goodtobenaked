@@ -7,7 +7,7 @@ import { genPageMetadata } from "@/app/seo";
 export const metadata = genPageMetadata({
   title: "Politique de confidentialité",
   description:
-    "Découvrez notre politique de confidentialité et apprenez comment Goodtobenaked protège vos informations personnelles, gère les cookies et respecte les régulations en matière de protection des données.",
+    "Découvrez notre politique de confidentialité et apprenez comment KYYNK protège vos informations personnelles, gère les cookies et respecte les régulations en matière de protection des données.",
 });
 
 const privacyPage = () => {
@@ -19,15 +19,15 @@ const privacyPage = () => {
           <h2>Qui est le responsable de traitement ?</h2>
           <p>
             Le responsable des traitements de données personnelles visé
-            ci-dessous est l’éditeur du site internet Goodtobenaked.
+            ci-dessous est l’éditeur du site internet KYYNK.
           </p>
           <h2>Pourquoi recueillons-nous vos données personnelles ?</h2>
           <p>
-            Goodtobenaked traite vos données uniquement lorsque cela est
-            autorisé par la réglementation, dans le respect du Règlement général
-            sur la protection des données (RGPD) et de la loi Informatique et
-            Libertés modifiée.  Vos données personnelles sont susceptibles
-            d’être recueillies pour des finalités suivantes :
+            KYYNK traite vos données uniquement lorsque cela est autorisé par la
+            réglementation, dans le respect du Règlement général sur la
+            protection des données (RGPD) et de la loi Informatique et Libertés
+            modifiée.  Vos données personnelles sont susceptibles d’être
+            recueillies pour des finalités suivantes :
           </p>
           <ul>
             <li>Gestion des comptes utilisateurs,</li>
@@ -36,34 +36,33 @@ const privacyPage = () => {
           </ul>
           <h2>Gestion des comptes utilisateurs</h2>
           <p>
-            La gestion de votre inscription à Goodtobenaked suppose la mise en
-            œuvre d’un traitement de données personnelles sur la base des
-            conditions générales d’utilisation que vous avez acceptées sur notre
-            site internet.{" "}
+            La gestion de votre inscription à KYYNK suppose la mise en œuvre
+            d’un traitement de données personnelles sur la base des conditions
+            générales d’utilisation que vous avez acceptées sur notre site
+            internet.{" "}
           </p>
-          <h2>Compte « vendeurs »</h2>
+          <h2>Compte « Créateur »</h2>
           <p>
-            En tant que « vendeurs », la création de votre compte implique de
+            En tant que « Créateur », la création de votre compte implique de
             pouvoir vérifier votre âge ainsi que votre identité. Lors de la
-            création de votre compte, vous êtes invitée à créer un profil privé
-            en renseignant des informations obligatoires, matérialisées par un
-            astérisque. Ces informations sont toutes nécessaires à la poursuite
-            des finalités décrites dans cette section. A défaut, il ne vous sera
-            pas permis de créer un compte et de bénéficier des services
-            associés. Ce profil privé qui comprend votre identité n’est pas
-            rendu accessible au public. Vous avez également la faculté
+            création de votre compte, vous êtes invité(e) à créer un profil
+            privé en renseignant des informations obligatoires, matérialisées
+            par un astérisque. Ces informations sont toutes nécessaires à la
+            poursuite des finalités décrites dans cette section. A défaut, il ne
+            vous sera pas permis de créer un compte et de bénéficier des
+            services associés. Ce profil privé qui comprend votre identité n’est
+            pas rendu accessible au public. Vous avez également la faculté
             d’alimenter un profil public, accessible par les autres utilisateurs
-            de Goodtobenaked, en précisant certaines informations sur vos
-            habitudes personnelles, vos préférences, etc. Ces informations ne
-            sont pas obligatoires. Afin de vous garantir l’anonymat, le profil
-            public est associé au pseudo que vous avez choisi lors de la
-            création du compte. Enfin, la création de votre compte vous permet
-            de suivre vos ventes, d’échanger avec les autres utilisateurs via le
-            chat privé et de paramétrer des notifications.
+            de KYYNK, en précisant certaines informations sur vos habitudes
+            personnelles, vos préférences, etc. Ces informations ne sont pas
+            obligatoires. Afin de vous garantir l’anonymat, le profil public est
+            associé au pseudo que vous avez choisi lors de la création du
+            compte. Les « Créateurs » peuvent vendre des médias et discuter avec
+            les autres utilisateurs de la plateforme.
           </p>
-          <h2>Compte « acheteur »</h2>
+          <h2>Compte « Acheteur »</h2>
           <p>
-            Lors de la création de votre compte, vous êtes invité à créer un
+            Lors de la création de votre compte, vous êtes invité(e) à créer un
             profil privé en renseignant des informations obligatoires,
             matérialisées par un astérisque. Ces informations sont toutes
             nécessaires à la poursuite des finalités décrites dans cette
@@ -71,20 +70,14 @@ const privacyPage = () => {
             de bénéficier des services associés. Ce profil privé qui comprend
             votre identité n’est pas rendu accessible au public. Vous avez
             également la faculté d’alimenter un profil public, accessible par
-            les autres utilisateurs de Goodtobenaked, en précisant certaines
+            les autres utilisateurs de KYYNK, en précisant certaines
             informations sur vos habitudes personnelles, vos préférences, etc.
             Ces informations ne sont pas obligatoires. Afin de vous garantir
             l’anonymat, le profil public est associé au pseudo que vous avez
             choisi lors de la création du compte. Enfin, la création de votre
-            compte vous permet d’acheter les produits des « vendeurs », de
-            suivre vos achats, d’échanger avec les autres utilisateurs via le
-            chat privé et de paramétrer des notifications. Vente des produits
-            des « vendeurs »  De même, lorsque vous achetez des produits aux «
-            vendeurs », nous avons besoins de traiter certaines de vos données
-            personnelles pour nous permettre d’exécuter le contrat de vente
-            entre les « acheteurs » et les « vendeurs » dont nous nous faisons
-            l’intermédiaire ou de répondre aux obligations légales en matière de
-            comptabilité et de fiscalité. 
+            compte vous permet d’acheter des médias des « Créateurs », de suivre
+            vos achats, d’échanger avec les autres utilisateurs via le chat
+            privé, et de paramétrer des notifications.
           </p>
           <h2>
             Quelles données vous concernant sommes-nous susceptibles de
@@ -93,17 +86,16 @@ const privacyPage = () => {
           <p>
             En fonction des finalités de traitement visées ci-dessus, voici les
             catégories de données personnelles vous concernant susceptibles
-            d’être traitées par Goodtobenaked.
+            d’être traitées par KYYNK.
           </p>
           <ul>
             <li>
               Données d’identification : nom, prénom, civilité, sexe, pseudo,
-              copie du document d’identité, identifiant, photos, date de
-              naissance, adresse postale de facturation/livraison, adresse
-              email, téléphone, adresse IP, etc. ;
+              copie du document d’identité, identifiant, photos, adresse email,
+              téléphone, adresse IP, etc. ;
             </li>
             <li>
-              Données relatives au compte : profil (vendeur/acheteur), données
+              Données relatives au compte : profil (créateur/acheteur), données
               liées à l’inscription (date de création, date de la dernière
               connexion, langue favorite, etc.), signalement, motif du
               bannissement, données de modération, etc. ;
@@ -130,11 +122,8 @@ const privacyPage = () => {
           <p>
             Nous accordons la plus haute importance à la confidentialité de vos
             données. Elles ne seront ni cédées ni vendues. Seuls les équipes de
-            Goodtobenaked et leurs sous-traitants ont accès à vos données
-            personnelles dans le respect des finalités visées ci-dessus. Elles
-            ne seront communiquées à aucun tiers à moins que vous acceptiez de
-            les partager sur les réseaux sociaux et/ou les plateformes de vidéos
-            en ligne.
+            KYYNK et leurs sous-traitants ont accès à vos données personnelles
+            dans le respect des finalités visées ci-dessus.
           </p>
           <h2>
             Vos données sont-elles transférées en-dehors de l’Union européennes
@@ -143,23 +132,20 @@ const privacyPage = () => {
           <p>
             Vos données personnelles sont hébergées et traitées en France. Aucun
             transfert de données personnelles n’est effectué à destination d’un
-            pays situé en-dehors de l’Union européenne. Concernant les partages
-            sur les réseaux sociaux et/ou les plateformes de vidéos en ligne,
-            nous vous invitons à consulter leurs politiques de confidentialité
-            respectives.
+            pays situé en-dehors de l’Union européenne.
           </p>
           <h2>Combien de temps conservons-nous vos données personnelles ?</h2>
           <p>
             Nous conservons vos données personnelles uniquement pendant la durée
             strictement nécessaire à la poursuite des finalités visées
             ci-dessus. Gestion des comptes utilisateurs : pendant la durée de
-            l’inscription ; Vente des produits des « vendeurs » : pendant la
+            l’inscription ; Vente des médias des « Créateurs » : pendant la
             durée nécessaire à la gestion commerciale ; Prospection et promotion
             de nos services : 3 ans après la fin de la relation contractuelle.
             Enfin, vos données personnelles sont susceptibles d’être archivées
             pour éviter toute réclamation, gracieuse ou contentieuse, à
-            l’encontre de Goodtobenaked et lui permettre, en cas de besoin,
-            d’argumenter et se défendre en justice.
+            l’encontre de KYYNK et lui permettre, en cas de besoin, d’argumenter
+            et se défendre en justice.
           </p>
           <h2>Comment vos données personnelles sont-elles protégées ?</h2>
           <p>
@@ -181,9 +167,9 @@ const privacyPage = () => {
           <p>
             Lors de la consultation de notre site des informations sont
             susceptibles d&apos;être enregistrées dans des fichiers « cookies »
-            installés par Goodtobenaked ou par des tiers dans votre ordinateur,
-            tablette ou téléphone mobile afin d’assurer le bon fonctionnement de
-            notre site et afin d’analyser notre trafic.{" "}
+            installés par KYYNK ou par des tiers dans votre ordinateur, tablette
+            ou téléphone mobile afin d’assurer le bon fonctionnement de notre
+            site et afin d’analyser notre trafic.{" "}
           </p>
           <h2>Qu’est-ce qu’un cookie ?</h2>
           <p>

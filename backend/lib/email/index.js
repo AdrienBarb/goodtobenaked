@@ -3,7 +3,7 @@ const config = require('../../config');
 
 const DOMAIN = config.mailGunBaseUrl;
 const API_KEY = config.mailGunApiKey;
-const FROM = 'Goodtobenaked@goodtobenaked.com';
+const FROM = 'notification@kyynk.com';
 
 const mg = mailgun({
   apiKey: API_KEY,

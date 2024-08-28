@@ -11,17 +11,17 @@ export default defineConfig({
   e2e: {
     baseUrl:
       environment === "staging"
-        ? "https://staging.goodtobenaked.com"
+        ? "https://staging.kyynk.com"
         : "http://localhost:3000",
     setupNodeEvents(on, config) {},
     env: {
       LOGIN_API_URL:
         environment === "staging"
-          ? "https://api-staging.goodtobenaked.com/api/users/login"
+          ? "https://api-staging.kyynk.com/api/users/login"
           : "http://localhost:3001/api/users/login",
       API_URL:
         environment === "staging"
-          ? "https://api-staging.goodtobenaked.com/api"
+          ? "https://api-staging.kyynk.com/api"
           : "http://localhost:3001/api",
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     },
