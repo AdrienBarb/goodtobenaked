@@ -27,9 +27,15 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
     return;
   }
 
-  const nudes = await nudeService.getUserNudes(userId);
+  const { nudes, availableTags } = await nudeService.getUserNudes(userId);
 
-  return <NudesWall nudes={nudes} userId={userId} />;
+  return (
+    <NudesWall
+      nudes={nudes}
+      initialAvailableTags={availableTags}
+      userId={userId}
+    />
+  );
 };
 
 export default UserPage;

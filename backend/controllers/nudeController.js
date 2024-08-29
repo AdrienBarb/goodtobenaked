@@ -164,15 +164,42 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
 
 const getUserNudes = asyncHandler(async (req, res, next) => {
   const { userId } = req.params;
+  const { tag } = req.query;
 
-  let filter = {
+  let baseFilter = {
     isArchived: false,
     visibility: 'public',
     user: mongoose.Types.ObjectId(userId),
   };
 
+  const allNudes = await nudeModel
+    .find(baseFilter)
+    .populate('medias', 'mediaType')
+    .lean();
+
+  let tagsMap = {};
+  allNudes.forEach((nude) => {
+    if (nude.tags && nude.tags.length > 0) {
+      nude.tags.forEach((tag) => {
+        if (!tagsMap[tag]) {
+          tagsMap[tag] = 0;
+        }
+        tagsMap[tag]++;
+      });
+    }
+  });
+
+  const availableTags = Object.keys(tagsMap).map((tag) => ({
+    tag,
+    count: tagsMap[tag],
+  }));
+
+  if (tag) {
+    baseFilter.tags = tag;
+  }
+
   const nudes = await nudeModel
-    .find(filter)
+    .find(baseFilter)
     .sort({ createdAt: -1 })
     .populate('user', 'pseudo profileImage')
     .populate(
@@ -213,7 +240,10 @@ const getUserNudes = asyncHandler(async (req, res, next) => {
     };
   });
 
-  res.status(200).json(updatedNudes);
+  res.status(200).json({
+    nudes: updatedNudes,
+    availableTags,
+  });
 });
 
 const getCurrentNude = asyncHandler(async (req, res, next) => {

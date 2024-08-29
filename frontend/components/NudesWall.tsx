@@ -6,24 +6,37 @@ import NudeCard from "@/components/NudeCard";
 import { Nude } from "@/types/models/Nude";
 import useApi from "@/lib/hooks/useApi";
 import { useParams } from "next/navigation";
+import IconButton from "./Buttons/IconButton";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
+import UserNudesFilters from "./UserNudesFilters";
+import { TagsList } from "@/types";
 
 interface Props {
   nudes: Nude[];
+  initialAvailableTags: TagsList[];
   userId?: string;
 }
 
-const NudesWall: FC<Props> = ({ nudes }) => {
+const NudesWall: FC<Props> = ({ nudes, initialAvailableTags }) => {
   //localstate
   const [nudeList, setNudeList] = useState<Nude[]>(nudes);
+  const [tagsList, setTagsList] = useState<TagsList[]>(initialAvailableTags);
+  const [filters, setFilters] = useState({
+    tag: "",
+  });
   const { userId } = useParams();
 
   const { fetchData } = useApi();
 
   const getNudes = async () => {
     try {
-      const r = await fetchData(`/api/nudes/user/${userId}`);
+      const { nudes, availableTags } = await fetchData(
+        `/api/nudes/user/${userId}`,
+        filters
+      );
 
-      setNudeList(r);
+      setNudeList(nudes);
+      setTagsList(availableTags);
     } catch (error) {
       console.log(error);
     }
@@ -33,25 +46,34 @@ const NudesWall: FC<Props> = ({ nudes }) => {
     if (userId) {
       getNudes();
     }
-  }, [userId]);
+  }, [userId, filters]);
 
   return (
-    <div className={styles.container}>
-      {nudeList.length > 0 && (
-        <div className={styles.nudeCardList}>
-          {nudeList.map((currentNude: Nude, index: number) => {
-            return (
-              <NudeCard
-                nude={currentNude}
-                key={index}
-                showUserMenu={true}
-                setNudeList={setNudeList}
-                itemNumber={index}
-              />
-            );
-          })}
-        </div>
-      )}
+    <div>
+      <div className="mb-4">
+        <UserNudesFilters
+          tagsList={tagsList}
+          setFilters={setFilters}
+          filters={filters}
+        />
+      </div>
+      <div className={styles.container}>
+        {nudeList.length > 0 && (
+          <div className={styles.nudeCardList}>
+            {nudeList.map((currentNude: Nude, index: number) => {
+              return (
+                <NudeCard
+                  nude={currentNude}
+                  key={index}
+                  showUserMenu={true}
+                  setNudeList={setNudeList}
+                  itemNumber={index}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

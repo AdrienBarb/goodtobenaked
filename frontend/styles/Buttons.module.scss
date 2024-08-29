@@ -59,6 +59,7 @@
 }
 
 .iconButton {
+  border: 1px solid #cecaff;
   background-color: #cecaff;
   z-index: 100;
   border-radius: 6px;
@@ -68,8 +69,8 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: none;
   aspect-ratio: 1;
+  flex-shrink: 0;
 
   .iconWrapper {
     width: 22px;
