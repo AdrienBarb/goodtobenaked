@@ -174,7 +174,20 @@
     "nudeCardCreditAmount": "{creditAmount} credits",
     "secondaryPictureProfile": "Secondary profile images",
     "seeMyProfile": "See my profile",
-    "shareTitleNudeSocialMedia": "Come discover my last nude"
+    "shareTitleNudeSocialMedia": "Come discover my last nude",
+    "NoNudeFound": "No nude was found"
+  },
+  "filters": {
+    "Filters": "Filters",
+    "MediaType": "Media Type",
+    "Bundle": "Bundle",
+    "Video": "Video",
+    "Photo": "Photo",
+    "AccessType": "Content Access",
+    "Paid": "Paid",
+    "Free": "Free",
+    "ClearFilters": "Clear Filters",
+    "Show": "Show"
   },
   "home": {
     "title": "GET CLOSER THAN EVER TO THE HOTTEST CREATORS",

@@ -27,12 +27,12 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
     return;
   }
 
-  const { nudes, availableTags } = await nudeService.getUserNudes(userId);
+  const { nudes, availableFilters } = await nudeService.getUserNudes(userId);
 
   return (
     <NudesWall
       nudes={nudes}
-      initialAvailableTags={availableTags}
+      initialAvailableFilters={availableFilters}
       userId={userId}
     />
   );

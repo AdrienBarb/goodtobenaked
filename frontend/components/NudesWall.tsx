@@ -6,23 +6,27 @@ import NudeCard from "@/components/NudeCard";
 import { Nude } from "@/types/models/Nude";
 import useApi from "@/lib/hooks/useApi";
 import { useParams } from "next/navigation";
-import IconButton from "./Buttons/IconButton";
-import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import UserNudesFilters from "./UserNudesFilters";
-import { TagsList } from "@/types";
+import { AvailableFilters, NudeFilters } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface Props {
   nudes: Nude[];
-  initialAvailableTags: TagsList[];
+  initialAvailableFilters: AvailableFilters;
   userId?: string;
 }
 
-const NudesWall: FC<Props> = ({ nudes, initialAvailableTags }) => {
+const NudesWall: FC<Props> = ({ nudes, initialAvailableFilters }) => {
   //localstate
   const [nudeList, setNudeList] = useState<Nude[]>(nudes);
-  const [tagsList, setTagsList] = useState<TagsList[]>(initialAvailableTags);
-  const [filters, setFilters] = useState({
+  const [currentAvailableFilters, setCurrentAvailableFilters] = useState(
+    initialAvailableFilters
+  );
+  const t = useTranslations();
+  const [filters, setFilters] = useState<NudeFilters>({
     tag: "",
+    isFree: null,
+    mediaTypes: null,
   });
   const { userId } = useParams();
 
@@ -30,13 +34,13 @@ const NudesWall: FC<Props> = ({ nudes, initialAvailableTags }) => {
 
   const getNudes = async () => {
     try {
-      const { nudes, availableTags } = await fetchData(
+      const { nudes, availableFilters } = await fetchData(
         `/api/nudes/user/${userId}`,
         filters
       );
 
       setNudeList(nudes);
-      setTagsList(availableTags);
+      setCurrentAvailableFilters(availableFilters);
     } catch (error) {
       console.log(error);
     }
@@ -52,13 +56,13 @@ const NudesWall: FC<Props> = ({ nudes, initialAvailableTags }) => {
     <div>
       <div className="mb-4">
         <UserNudesFilters
-          tagsList={tagsList}
+          availableFilters={currentAvailableFilters}
           setFilters={setFilters}
           filters={filters}
         />
       </div>
       <div className={styles.container}>
-        {nudeList.length > 0 && (
+        {nudeList.length > 0 ? (
           <div className={styles.nudeCardList}>
             {nudeList.map((currentNude: Nude, index: number) => {
               return (
@@ -71,6 +75,10 @@ const NudesWall: FC<Props> = ({ nudes, initialAvailableTags }) => {
                 />
               );
             })}
+          </div>
+        ) : (
+          <div className="w-full font-karla font-light text-center mt-16">
+            {t("common.NoNudeFound")}
           </div>
         )}
       </div>

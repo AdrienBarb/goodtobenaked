@@ -174,7 +174,20 @@
     "nudeCardCreditAmount": "{creditAmount} crédits",
     "secondaryPictureProfile": "Images de profil secondaire",
     "seeMyProfile": "Voir mon profil",
-    "shareTitleNudeSocialMedia": "Venez découvrir mon dernier nude"
+    "shareTitleNudeSocialMedia": "Venez découvrir mon dernier nude",
+    "NoNudeFound": "Aucun nude n'a été trouvé"
+  },
+  "filters": {
+    "Filters": "Filtres",
+    "MediaType": "Type de Média",
+    "Bundle": "Bundle",
+    "Video": "Vidéo",
+    "Photo": "Photo",
+    "AccessType": "Accès au contenus",
+    "Paid": "Payant",
+    "Free": "Gratuit",
+    "ClearFilters": "Effacer les filtres",
+    "Show": "Afficher"
   },
   "home": {
     "title": "PLUS PROCHE QUE JAMAIS DES CRÉATEURS LES PLUS HOT",

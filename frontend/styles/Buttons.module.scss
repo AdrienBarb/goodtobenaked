@@ -71,6 +71,7 @@
   cursor: pointer;
   aspect-ratio: 1;
   flex-shrink: 0;
+  z-index: 10;
 
   .iconWrapper {
     width: 22px;
