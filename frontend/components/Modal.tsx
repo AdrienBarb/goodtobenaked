@@ -2,7 +2,6 @@ import Modal from "@mui/material/Modal";
 import styles from "@/styles/CustomModal.module.scss";
 import ModalHeader from "@/components/ModalHeader";
 import { CSSProperties, FC, ReactNode } from "react";
-import clsx from "clsx";
 
 interface CustomModal {
   open: boolean;
