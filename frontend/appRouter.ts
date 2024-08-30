@@ -1,4 +1,6 @@
 export const appRouter = {
+  preferences: "/register/preferences",
+  userType: "/register/user-type",
   feed: "/dashboard/feed",
   community: "/dashboard/community",
   explore: "/dashboard/explore",

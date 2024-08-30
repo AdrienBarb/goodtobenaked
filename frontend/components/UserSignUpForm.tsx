@@ -96,7 +96,7 @@ const UserSignUpForm = () => {
 
           if (login?.ok) {
             sendEvent("new user");
-            router.push(appRouter.feed);
+            router.push(appRouter.userType);
           }
         }
 

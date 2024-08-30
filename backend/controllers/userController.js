@@ -211,7 +211,7 @@ const getAccountOwner = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo email profileImage secondaryProfileImages version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
+      'pseudo email profileImage secondaryProfileImages version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification preferences',
     )
     .populate('gender')
     .populate('secondaryProfileImages')
@@ -902,6 +902,26 @@ const sendTips = asyncHandler(async (req, res, next) => {
   res.status(200).json(creditPrice);
 });
 
+const setUserPreferences = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.user.id);
+
+  if (!user) {
+    return next(new CustomError(404, 'User not found'));
+  }
+
+  const { preferences } = req.body;
+
+  if (!preferences || !Array.isArray(preferences)) {
+    return next(new CustomError(400, errorMessages.MISSING_FIELDS));
+  }
+
+  user.preferences = preferences;
+
+  await user.save();
+
+  res.status(200).json('Ok');
+});
+
 const generateToken = (id) => {
   return jwt.sign({ id }, config.jwtSecret, { expiresIn: '30d' });
 };
@@ -932,4 +952,5 @@ module.exports = {
   editUserType,
   getVerificationStep,
   getIdentityVerificationUrl,
+  setUserPreferences,
 };

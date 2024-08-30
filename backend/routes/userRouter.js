@@ -26,6 +26,7 @@ const {
   editUserType,
   getVerificationStep,
   getIdentityVerificationUrl,
+  setUserPreferences,
 } = require('../controllers/userController');
 
 const multer = require('multer');
@@ -62,6 +63,7 @@ router.post(
   userProtect,
   getIdentityVerificationUrl,
 );
+router.put('/preferences', userProtect, setUserPreferences);
 
 router.post(
   '/profil-picture',

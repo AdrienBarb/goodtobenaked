@@ -175,7 +175,8 @@
     "secondaryPictureProfile": "Secondary profile images",
     "seeMyProfile": "See my profile",
     "shareTitleNudeSocialMedia": "Come discover my last nude",
-    "NoNudeFound": "No nude was found"
+    "NoNudeFound": "No nude was found",
+    "whatPreferences": "What are your preferences?"
   },
   "filters": {
     "Filters": "Filters",
@@ -884,7 +885,8 @@
     "address": "Address",
     "zip_code": "Zip Code",
     "city": "City",
-    "country": "Country"
+    "country": "Country",
+    "preferences": "Preferences"
   },
   "incomes": {
     "summary": "My Balance",
