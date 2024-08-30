@@ -11,7 +11,7 @@ import { BODY_TYPE, HAIR_COLOR } from "@/constants/formValue";
 import FiltersWrapper from "./FiltersWrapper";
 import dynamic from "next/dynamic";
 import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
-import { TAGS } from "@/constants/constants";
+import { tagList, TAGS } from "@/constants/constants";
 
 const ageFilters = ["18-22", "22-30", "30-40", "40+"];
 
@@ -158,7 +158,12 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
         <FilterSelect
           handleChange={handleSelectTagChange}
           placeholder={t("db.tags")}
-          options={TAGS}
+          options={tagList.map((currentTag) => {
+            return {
+              value: currentTag,
+              label: t(`nudeCategories.${currentTag}`),
+            };
+          })}
         />
       </FiltersWrapper>
 

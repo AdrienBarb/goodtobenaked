@@ -56,10 +56,10 @@ const ProfileLayout = async ({
       <UserSecondaryProfileImageGallery
         images={initialUserDatas.secondaryProfileImages}
       />
-      {(initialUserDatas?.isAccountVerified ||
-        session?.user?.id === userId) && (
-        <div className={styles.contentContainer}>{children}</div>
-      )}
+      {(initialUserDatas?.isAccountVerified || session?.user?.id === userId) &&
+        initialUserDatas?.userType === "creator" && (
+          <div className={styles.contentContainer}>{children}</div>
+        )}
     </ScrollableContainer>
   );
 };
