@@ -11,6 +11,7 @@ import { BODY_TYPE, HAIR_COLOR } from "@/constants/formValue";
 import FiltersWrapper from "./FiltersWrapper";
 import dynamic from "next/dynamic";
 import { useIntersectionObserver } from "@/lib/hooks/useIntersectionObserver";
+import { TAGS } from "@/constants/constants";
 
 const ageFilters = ["18-22", "22-30", "30-40", "40+"];
 
@@ -27,6 +28,7 @@ export type UserFilters = {
   bodyType: string;
   hairColor: string;
   age: string;
+  tag: string;
 };
 
 const UsersList: FC<Props> = ({ initialUsersDatas }) => {
@@ -34,6 +36,7 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
     bodyType: "",
     hairColor: "",
     age: "",
+    tag: "",
   });
   const queryKey = useMemo(() => ["usersList", filters], [filters]);
   const t = useTranslations();
@@ -114,6 +117,20 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
     });
   };
 
+  const handleSelectTagChange = (
+    value: {
+      value: string;
+      label: string;
+    } | null
+  ) => {
+    setGlobalLoading(true);
+
+    setFilters({
+      ...filters,
+      tag: value ? value.value : "",
+    });
+  };
+
   return (
     <div className={styles.container}>
       <FiltersWrapper>
@@ -138,20 +155,30 @@ const UsersList: FC<Props> = ({ initialUsersDatas }) => {
             return { value: el, label: el };
           })}
         />
+        <FilterSelect
+          handleChange={handleSelectTagChange}
+          placeholder={t("db.tags")}
+          options={TAGS}
+        />
       </FiltersWrapper>
 
       {globalLoading ? (
         <Loader style={{ color: "#cecaff" }} />
       ) : (
         <>
-          <div className={styles.userList}>
-            {usersList?.length &&
-              usersList.map((currentUser, index) => {
+          {usersList?.length ? (
+            <div className={styles.userList}>
+              {usersList.map((currentUser, index) => {
                 return (
                   <UserCard key={index} user={currentUser} index={index} />
                 );
               })}
-          </div>
+            </div>
+          ) : (
+            <div className="w-full font-karla font-light text-center mt-16">
+              {t("common.NoUserFound")}
+            </div>
+          )}
 
           <div
             style={{ height: "10rem", display: hasNextPage ? "flex" : "none" }}

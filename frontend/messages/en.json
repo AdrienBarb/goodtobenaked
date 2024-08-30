@@ -176,6 +176,7 @@
     "seeMyProfile": "See my profile",
     "shareTitleNudeSocialMedia": "Come discover my last nude",
     "NoNudeFound": "No nude was found",
+    "NoUserFound": "No user was found",
     "whatPreferences": "What are your preferences?"
   },
   "filters": {
@@ -404,6 +405,7 @@
     "social": "Social Network"
   },
   "db": {
+    "tags": "Tags",
     "pseudo": "Username",
     "twitter_link": "Twitter Link",
     "insta_link": "Instagram Link",

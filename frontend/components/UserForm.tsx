@@ -30,7 +30,8 @@ import { Media } from "@/types/models/Media";
 import GalleryModal from "./GalleryModal";
 import GalleryCard from "./GalleryCard";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { revalidatePath } from "next/cache";
+import Select from "react-select";
+import { TAGS, TagsType, tagList } from "@/constants/constants";
 
 interface Props {
   initialUserDatas: User;
@@ -73,6 +74,15 @@ const UserForm: FC<Props> = ({
 
       setCurrentUser(r);
       setSelectedMedias(r.secondaryProfileImages);
+
+      formik.setFieldValue("tags", [
+        ...TAGS.filter((el) => r.tags.includes(el.value)).map((c) => {
+          return {
+            value: c.value,
+            label: t(`nudeCategories.${c.label}`),
+          };
+        }),
+      ]);
     } catch (error) {
       console.log(error);
     }
@@ -101,6 +111,7 @@ const UserForm: FC<Props> = ({
       bodyType: currentUser.bodyType ?? "",
       hairColor: currentUser.hairColor ?? "",
       country: currentUser.country ?? "",
+      tags: [],
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -113,6 +124,7 @@ const UserForm: FC<Props> = ({
         hairColor: values.hairColor,
         country: values.country,
         secondaryProfileImages: selectedMedias.map((m) => m._id),
+        tags: values.tags.map((t: TagsType) => t.value),
       };
 
       doPost(formValues);
@@ -262,6 +274,80 @@ const UserForm: FC<Props> = ({
                 typeof formik.errors.description === "string" &&
                 formik.errors.description
               }
+            />
+          </InputWrapper>
+
+          <InputWrapper label={t("common.tags")}>
+            <Select
+              name="tags"
+              className={styles.multiSelect}
+              onChange={(selectedOptions) =>
+                formik.setFieldValue("tags", selectedOptions)
+              }
+              options={tagList.map((currentTag) => {
+                return {
+                  value: currentTag,
+                  label: t(`nudeCategories.${currentTag}`),
+                };
+              })}
+              value={formik.values.tags}
+              classNamePrefix="react-select"
+              getOptionLabel={(el: TagsType) => el.label}
+              getOptionValue={(el: TagsType) => el.value}
+              closeMenuOnSelect={false}
+              placeholder={t("common.selectTagPlaceholder")}
+              noOptionsMessage={() => <span>{t("common.noOtpions")}</span>}
+              styles={{
+                control: (styles) => ({
+                  ...styles,
+                  backgroundColor: "transparent",
+                  boxShadow: "none",
+                  outline: "none",
+                  border: "1px solid rgba(0, 0, 0, 0.3)",
+                  ":hover": {
+                    border: "1px solid black",
+                  },
+                }),
+                option: (
+                  styles,
+                  { data, isDisabled, isFocused, isSelected }
+                ) => ({
+                  ...styles,
+                  backgroundColor: isDisabled
+                    ? undefined
+                    : isSelected
+                    ? "#d9d7f6"
+                    : isFocused
+                    ? "#d9d7f6"
+                    : undefined,
+                }),
+                menuList: (styles) => ({
+                  ...styles,
+                  backgroundColor: "#fff0eb",
+                  borderRadius: "6px",
+                }),
+                multiValue: (styles) => ({
+                  ...styles,
+                  backgroundColor: "#cecaff",
+                }),
+                multiValueLabel: (styles) => ({
+                  ...styles,
+                  color: "white",
+                }),
+                multiValueRemove: (styles) => ({
+                  ...styles,
+                  color: "white",
+                }),
+                noOptionsMessage: (styles) => ({
+                  ...styles,
+                  color: "black",
+                }),
+                placeholder: (styles) => ({
+                  ...styles,
+                  color: "rgba(0, 0, 0, 0.3)",
+                }),
+              }}
+              isMulti
             />
           </InputWrapper>
 
