@@ -7,11 +7,11 @@ interface Props {
 
 const LandingHeader: FC<Props> = ({ title, description }) => {
   return (
-    <div className="flex justify-center mb-12">
+    <div className="flex items-center flex-col text-center justify-center mb-12">
       <h2 className="font-rubik font-bold text-center text-4xl max-w-md">
         {title}
       </h2>
-      {description && <p>{description}</p>}
+      {description && <p className="uppercase">{description}</p>}
     </div>
   );
 };

@@ -164,25 +164,112 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
 
 const getUserNudes = asyncHandler(async (req, res, next) => {
   const { userId } = req.params;
+  const { tag, isFree, mediaTypes } = req.query;
 
-  let filter = {
+  let matchStage = {
     isArchived: false,
     visibility: 'public',
     user: mongoose.Types.ObjectId(userId),
   };
 
-  const nudes = await nudeModel
-    .find(filter)
-    .sort({ createdAt: -1 })
-    .populate('user', 'pseudo profileImage')
-    .populate(
-      'medias',
-      'user mediaType convertedKey blurredKey posterKey status',
-    )
-    .lean();
+  if (tag) {
+    matchStage.tags = tag;
+  }
+
+  if (isFree !== undefined) {
+    matchStage.isFree = isFree === 'true';
+  }
+
+  const aggregationPipeline = [
+    { $match: matchStage },
+    {
+      $lookup: {
+        from: 'media',
+        localField: 'medias',
+        foreignField: '_id',
+        as: 'mediaDetails',
+      },
+    },
+    {
+      $addFields: {
+        mediaCount: { $size: '$mediaDetails' },
+        videoCount: {
+          $size: {
+            $filter: {
+              input: '$mediaDetails',
+              as: 'media',
+              cond: { $eq: ['$$media.mediaType', 'video'] },
+            },
+          },
+        },
+        photoCount: {
+          $size: {
+            $filter: {
+              input: '$mediaDetails',
+              as: 'media',
+              cond: { $eq: ['$$media.mediaType', 'image'] },
+            },
+          },
+        },
+      },
+    },
+    ...(mediaTypes === 'photo'
+      ? [{ $match: { photoCount: { $gt: 0 }, videoCount: 0 } }]
+      : mediaTypes === 'video'
+      ? [{ $match: { videoCount: { $gt: 0 }, photoCount: 0 } }]
+      : mediaTypes === 'bundle'
+      ? [{ $match: { mediaCount: { $gt: 1 } } }]
+      : []),
+    {
+      $facet: {
+        nudes: [
+          { $sort: { createdAt: -1 } },
+          {
+            $project: {
+              _id: 1,
+              user: 1,
+              description: 1,
+              priceDetails: 1,
+              isArchived: 1,
+              isFree: 1,
+              paidMembers: 1,
+              tags: 1,
+              medias: 1,
+              visibility: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              __v: 1,
+              mediaDetails: 1,
+            },
+          },
+        ],
+        tagCounts: [
+          { $unwind: '$tags' },
+          { $sortByCount: '$tags' },
+          {
+            $project: {
+              _id: 0,
+              tag: '$_id',
+              count: '$count',
+            },
+          },
+        ],
+      },
+    },
+  ];
+
+  let [result] = await nudeModel.aggregate(aggregationPipeline).exec();
+
+  result.nudes = await nudeModel.populate(result.nudes, [
+    {
+      path: 'medias',
+      select: 'user mediaType convertedKey blurredKey posterKey status',
+    },
+    { path: 'user', select: 'pseudo profileImage' },
+  ]);
 
   const cloudFrontUrl = process.env.CLOUDFRONT_URL;
-  const updatedNudes = nudes.map((nude) => {
+  const updatedNudes = result.nudes.map((nude) => {
     const updatedMedias = nude.medias.map((media) => {
       const isOwnerOrPaidMember =
         req.user?.id &&
@@ -213,7 +300,12 @@ const getUserNudes = asyncHandler(async (req, res, next) => {
     };
   });
 
-  res.status(200).json(updatedNudes);
+  res.status(200).json({
+    nudes: updatedNudes,
+    availableFilters: {
+      availableTags: result.tagCounts,
+    },
+  });
 });
 
 const getCurrentNude = asyncHandler(async (req, res, next) => {

@@ -30,7 +30,9 @@ import { Media } from "@/types/models/Media";
 import GalleryModal from "./GalleryModal";
 import GalleryCard from "./GalleryCard";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { revalidatePath } from "next/cache";
+import Select from "react-select";
+import { TAGS, TagsType, tagList } from "@/constants/constants";
+import { useSession } from "next-auth/react";
 
 interface Props {
   initialUserDatas: User;
@@ -57,6 +59,8 @@ const UserForm: FC<Props> = ({
   const [openGalleryModal, setOpenGalleryModal] = useState(false);
   const [selectedMedias, setSelectedMedias] = useState<Media[]>([]);
 
+  const { data: session } = useSession();
+
   const profilInput = useRef<HTMLInputElement>(null);
 
   const { usePut, useGet, fetchData } = useApi();
@@ -73,6 +77,15 @@ const UserForm: FC<Props> = ({
 
       setCurrentUser(r);
       setSelectedMedias(r.secondaryProfileImages);
+
+      formik.setFieldValue("tags", [
+        ...TAGS.filter((el) => r.tags.includes(el.value)).map((c) => {
+          return {
+            value: c.value,
+            label: t(`nudeCategories.${c.label}`),
+          };
+        }),
+      ]);
     } catch (error) {
       console.log(error);
     }
@@ -85,7 +98,10 @@ const UserForm: FC<Props> = ({
   }, [userId]);
 
   const validationSchema = yup.object({
-    pseudo: yup.string().required("Pseudo is required"),
+    pseudo: yup
+      .string()
+      .matches(/^[a-zA-Z0-9._-]{3,30}$/, t("error.pseudo_invalid"))
+      .required("Pseudo is required"),
   });
 
   const formik = useFormik({
@@ -98,6 +114,7 @@ const UserForm: FC<Props> = ({
       bodyType: currentUser.bodyType ?? "",
       hairColor: currentUser.hairColor ?? "",
       country: currentUser.country ?? "",
+      tags: [],
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -110,6 +127,7 @@ const UserForm: FC<Props> = ({
         hairColor: values.hairColor,
         country: values.country,
         secondaryProfileImages: selectedMedias.map((m) => m._id),
+        tags: values.tags.map((t: TagsType) => t.value),
       };
 
       doPost(formValues);
@@ -203,29 +221,31 @@ const UserForm: FC<Props> = ({
             </div>
           </div>
 
-          <InputWrapper label={t("common.secondaryPictureProfile")}>
-            <div className={styles.mediaContainer}>
-              <div className={styles.add} onClick={handleOpenGallery}>
-                <AddCircleIcon
-                  sx={{ fontSize: "48", cursor: "pointer", color: "white" }}
-                />
+          {session?.user?.userType === "creator" && (
+            <InputWrapper label={t("common.secondaryPictureProfile")}>
+              <div className={styles.mediaContainer}>
+                <div className={styles.add} onClick={handleOpenGallery}>
+                  <AddCircleIcon
+                    sx={{ fontSize: "48", cursor: "pointer", color: "white" }}
+                  />
+                </div>
+                {selectedMedias.map(
+                  (currentLocalSelectedMedia: Media, index: number) => {
+                    return (
+                      <div className={styles.media} key={index}>
+                        <GalleryCard
+                          media={currentLocalSelectedMedia}
+                          deleteAction={() =>
+                            handleClickOnDelete(currentLocalSelectedMedia._id)
+                          }
+                        />
+                      </div>
+                    );
+                  }
+                )}
               </div>
-              {selectedMedias.map(
-                (currentLocalSelectedMedia: Media, index: number) => {
-                  return (
-                    <div className={styles.media} key={index}>
-                      <GalleryCard
-                        media={currentLocalSelectedMedia}
-                        deleteAction={() =>
-                          handleClickOnDelete(currentLocalSelectedMedia._id)
-                        }
-                      />
-                    </div>
-                  );
-                }
-              )}
-            </div>
-          </InputWrapper>
+            </InputWrapper>
+          )}
 
           <InputWrapper label={t("db.pseudo")}>
             <CustomTextField
@@ -261,6 +281,82 @@ const UserForm: FC<Props> = ({
               }
             />
           </InputWrapper>
+
+          {session?.user?.userType === "creator" && (
+            <InputWrapper label={t("common.tags")}>
+              <Select
+                name="tags"
+                className={styles.multiSelect}
+                onChange={(selectedOptions) =>
+                  formik.setFieldValue("tags", selectedOptions)
+                }
+                options={tagList.map((currentTag) => {
+                  return {
+                    value: currentTag,
+                    label: t(`nudeCategories.${currentTag}`),
+                  };
+                })}
+                value={formik.values.tags}
+                classNamePrefix="react-select"
+                getOptionLabel={(el: TagsType) => el.label}
+                getOptionValue={(el: TagsType) => el.value}
+                closeMenuOnSelect={false}
+                placeholder={t("common.selectTagPlaceholder")}
+                noOptionsMessage={() => <span>{t("common.noOtpions")}</span>}
+                styles={{
+                  control: (styles) => ({
+                    ...styles,
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                    outline: "none",
+                    border: "1px solid rgba(0, 0, 0, 0.3)",
+                    ":hover": {
+                      border: "1px solid black",
+                    },
+                  }),
+                  option: (
+                    styles,
+                    { data, isDisabled, isFocused, isSelected }
+                  ) => ({
+                    ...styles,
+                    backgroundColor: isDisabled
+                      ? undefined
+                      : isSelected
+                      ? "#d9d7f6"
+                      : isFocused
+                      ? "#d9d7f6"
+                      : undefined,
+                  }),
+                  menuList: (styles) => ({
+                    ...styles,
+                    backgroundColor: "#fff0eb",
+                    borderRadius: "6px",
+                  }),
+                  multiValue: (styles) => ({
+                    ...styles,
+                    backgroundColor: "#cecaff",
+                  }),
+                  multiValueLabel: (styles) => ({
+                    ...styles,
+                    color: "white",
+                  }),
+                  multiValueRemove: (styles) => ({
+                    ...styles,
+                    color: "white",
+                  }),
+                  noOptionsMessage: (styles) => ({
+                    ...styles,
+                    color: "black",
+                  }),
+                  placeholder: (styles) => ({
+                    ...styles,
+                    color: "rgba(0, 0, 0, 0.3)",
+                  }),
+                }}
+                isMulti
+              />
+            </InputWrapper>
+          )}
 
           <InputWrapper label={t("db.country")}>
             <FormControl

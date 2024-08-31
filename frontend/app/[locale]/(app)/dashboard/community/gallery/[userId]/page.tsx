@@ -11,7 +11,7 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
     return;
   }
 
-  const nudes = await nudeService.getUserNudes(userId);
+  const { nudes } = await nudeService.getUserNudes(userId);
 
   return (
     <ScrollableContainer>

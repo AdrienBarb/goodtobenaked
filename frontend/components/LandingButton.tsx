@@ -22,7 +22,10 @@ const LandingButton = () => {
   };
 
   return (
-    <FullButton onClick={handleClick}>
+    <FullButton
+      onClick={handleClick}
+      customStyles={{ backgroundColor: "#fff0eb" }}
+    >
       {status === "unauthenticated"
         ? t("home.getStarted")
         : t("home.exploreNudes")}

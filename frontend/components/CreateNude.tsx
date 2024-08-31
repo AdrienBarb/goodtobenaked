@@ -74,7 +74,12 @@ const CreateNude: FC<CreateNudeProps> = () => {
       formik.setFieldValue("description", currentNude?.description);
       formik.setFieldValue("price", currentNude.priceDetails.fiatPrice / 100);
       formik.setFieldValue("tags", [
-        ...TAGS.filter((el) => currentNude.tags.includes(el.value)),
+        ...TAGS.filter((el) => currentNude.tags.includes(el.value)).map((c) => {
+          return {
+            value: c.value,
+            label: t(`nudeCategories.${c.label}`),
+          };
+        }),
       ]);
       setFetchedPrice(currentNude.priceDetails.fiatPrice / 100);
     } catch (error) {

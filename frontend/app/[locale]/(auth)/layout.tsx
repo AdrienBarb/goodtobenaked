@@ -10,10 +10,6 @@ interface Props {
 const AuthLayout: FC<Props> = async ({ children }) => {
   const session = await getServerSession();
 
-  if (session) {
-    redirect("/");
-  }
-
   return (
     <>
       <header>

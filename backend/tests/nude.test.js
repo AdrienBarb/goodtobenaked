@@ -693,3 +693,122 @@ describe('Get Current Nude', () => {
     });
   });
 });
+
+describe('GET /api/nudes/user/:userId', () => {
+  let user, userToken;
+
+  beforeEach(async () => {
+    user = await createUser({});
+    userToken = generateToken(user._id);
+  });
+
+  test('Should return nudes for a user', async () => {
+    const media = await createMedia(user);
+    const nude = await createNude({ user, medias: [media] });
+
+    const res = await request(app)
+      .get(`/api/nudes/user/${user._id}`)
+      .auth(userToken, { type: 'bearer' })
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body.nudes).toHaveLength(1);
+    expect(res.body.nudes[0]._id).toEqual(nude._id.toString());
+    expect(res.body.availableFilters).toBeDefined();
+  });
+
+  test('Should filter nudes by tag', async () => {
+    const media = await createMedia(user);
+    const tag = 'test-tag';
+    const nude = await createNude({ user, medias: [media], tags: [tag] });
+
+    const res = await request(app)
+      .get(`/api/nudes/user/${user._id}`)
+      .auth(userToken, { type: 'bearer' })
+      .query({ tag })
+      .send();
+
+    console.log(res.body.availableFilters.availableTags);
+
+    expect(res.status).toBe(200);
+    expect(res.body.nudes).toHaveLength(1);
+    expect(res.body.nudes[0]._id).toEqual(nude._id.toString());
+    expect(res.body.availableFilters.availableTags).toContainEqual({
+      tag,
+      count: 1,
+    });
+  });
+
+  test('Should filter nudes by isFree', async () => {
+    const media = await createMedia(user);
+    await createNude({ user, medias: [media], isFree: true });
+    const paidNude = await createNude({ user, medias: [media], isFree: false });
+
+    const res = await request(app)
+      .get(`/api/nudes/user/${user._id}`)
+      .auth(userToken, { type: 'bearer' })
+      .query({ isFree: 'false' })
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body.nudes).toHaveLength(1);
+    expect(res.body.nudes[0]._id).toEqual(paidNude._id.toString());
+  });
+
+  test('Should filter nudes by mediaType (photo)', async () => {
+    const photoMedia = await createMedia(user, 'image');
+    const videoMedia = await createMedia(user, 'video');
+
+    await createNude({ user, medias: [photoMedia] });
+    await createNude({ user, medias: [videoMedia] });
+
+    const res = await request(app)
+      .get(`/api/nudes/user/${user._id}`)
+      .auth(userToken, { type: 'bearer' })
+      .query({ mediaTypes: 'photo' })
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body.nudes).toHaveLength(1);
+    expect(res.body.nudes[0].mediaDetails[0].mediaType).toBe('image');
+  });
+
+  test('Should filter nudes by mediaType (video)', async () => {
+    const photoMedia = await createMedia(user, 'image');
+    const videoMedia = await createMedia(user, 'video');
+
+    await createNude({ user, medias: [photoMedia] });
+    await createNude({ user, medias: [videoMedia] });
+
+    const res = await request(app)
+      .get(`/api/nudes/user/${user._id}`)
+      .auth(userToken, { type: 'bearer' })
+      .query({ mediaTypes: 'video' })
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body.nudes).toHaveLength(1);
+    expect(res.body.nudes[0].mediaDetails[0].mediaType).toBe('video');
+  });
+
+  test('Should return 404 if user has no nudes', async () => {
+    const res = await request(app)
+      .get(`/api/nudes/user/${user._id}`)
+      .auth(userToken, { type: 'bearer' })
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body.nudes).toHaveLength(0);
+    expect(res.body.availableFilters.availableTags).toHaveLength(0);
+  });
+
+  test('Should return 400 for invalid mediaType filter', async () => {
+    const res = await request(app)
+      .get(`/api/nudes/user/${user._id}`)
+      .auth(userToken, { type: 'bearer' })
+      .query({ mediaTypes: 'invalid' })
+      .send();
+
+    expect(res.body.nudes).toHaveLength(0);
+  });
+});

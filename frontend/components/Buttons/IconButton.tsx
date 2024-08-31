@@ -11,6 +11,7 @@ interface IconButtonProps {
   disabled?: boolean;
   href?: string;
   dataId?: string;
+  iconColor?: string;
 }
 
 const IconButton: FC<IconButtonProps> = ({
@@ -20,6 +21,7 @@ const IconButton: FC<IconButtonProps> = ({
   disabled,
   href,
   dataId,
+  iconColor = "white",
 }) => {
   if (href) {
     return (
@@ -30,7 +32,7 @@ const IconButton: FC<IconButtonProps> = ({
         data-id={dataId}
         prefetch
       >
-        <FontAwesomeIcon icon={icon} color="white" size="lg" />
+        <FontAwesomeIcon icon={icon} color={iconColor} size="lg" />
       </Link>
     );
   }
@@ -46,7 +48,7 @@ const IconButton: FC<IconButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
     >
-      <FontAwesomeIcon icon={icon} color="white" size="lg" />
+      <FontAwesomeIcon icon={icon} color={iconColor} size="lg" />
     </button>
   );
 };

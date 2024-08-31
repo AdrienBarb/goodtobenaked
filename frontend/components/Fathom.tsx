@@ -14,7 +14,7 @@ function TrackPageView() {
 
     load("LYCVBUWS", {
       auto: false,
-      includedDomains: ["www.goodtobenaked.com"],
+      includedDomains: ["www.kyynk.com"],
     });
   }, []);
 

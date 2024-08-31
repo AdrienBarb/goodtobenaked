@@ -211,7 +211,7 @@ const getAccountOwner = asyncHandler(async (req, res, next) => {
   const user = await userModel
     .findById(userId)
     .select(
-      'pseudo email profileImage secondaryProfileImages version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification',
+      'pseudo email profileImage secondaryProfileImages version isAmbassador address salesFee country verified lastLogin description notificationSubscribers profileViewers messageSenders nudeBuyers socialMediaLink nationality breastSize buttSize bodyType hairColor age bankAccount emailNotification inappNotification preferences tags',
     )
     .populate('gender')
     .populate('secondaryProfileImages')
@@ -253,15 +253,15 @@ const userProfile = asyncHandler(async (req, res, next) => {
     return next(new CustomError(400, 'Pseudo already exist'));
   }
 
-  console.log('values.secondaryProfileImages ', values.secondaryProfileImages);
-
   user.pseudo = values.pseudo ? values.pseudo : user.pseudo;
   user.description = values.description;
 
   if (values.secondaryProfileImages) {
-    console.log('je passe la ');
-
     user.secondaryProfileImages = values.secondaryProfileImages;
+  }
+
+  if (values.tags) {
+    user.tags = values.tags;
   }
 
   if (values.age) {
@@ -417,6 +417,10 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
     matchQuery.age = ageMap[query.age];
   }
 
+  if (query.tag) {
+    matchQuery.tags = query.tag;
+  }
+
   const filtersMap = {
     bodyType: () => ({ bodyType: query.bodyType }),
     hairColor: () => ({ hairColor: query.hairColor }),
@@ -440,10 +444,10 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
 
   aggregateQuery.push({
     $lookup: {
-      from: 'media', // La collection de référence (nom exact dans la DB)
-      localField: 'secondaryProfileImages', // Champ dans le document User
-      foreignField: '_id', // Champ dans la collection Media
-      as: 'secondaryProfileImages', // Nom du champ dans le résultat
+      from: 'media',
+      localField: 'secondaryProfileImages',
+      foreignField: '_id',
+      as: 'secondaryProfileImages',
     },
   });
 
@@ -469,7 +473,6 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
 
   let users = await userModel.aggregate(aggregateQuery);
 
-  // Transformation pour signer les URLs
   users = users.map((user) => ({
     ...user,
     profileImage: user.profileImage
@@ -902,6 +905,26 @@ const sendTips = asyncHandler(async (req, res, next) => {
   res.status(200).json(creditPrice);
 });
 
+const setUserPreferences = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.user.id);
+
+  if (!user) {
+    return next(new CustomError(404, 'User not found'));
+  }
+
+  const { preferences } = req.body;
+
+  if (!preferences || !Array.isArray(preferences)) {
+    return next(new CustomError(400, errorMessages.MISSING_FIELDS));
+  }
+
+  user.preferences = preferences;
+
+  await user.save();
+
+  res.status(200).json('Ok');
+});
+
 const generateToken = (id) => {
   return jwt.sign({ id }, config.jwtSecret, { expiresIn: '30d' });
 };
@@ -932,4 +955,5 @@ module.exports = {
   editUserType,
   getVerificationStep,
   getIdentityVerificationUrl,
+  setUserPreferences,
 };
