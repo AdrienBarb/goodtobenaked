@@ -29,7 +29,7 @@ services:
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-        - "traefik.http.routers.traefik.rule=Host(`traefik-staging.goodtobenaked.com`)"
+        - "traefik.http.routers.traefik.rule=Host(`traefik-staging.kyynk.com`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.routers.traefik.middlewares=auth"
@@ -40,7 +40,7 @@ services:
       - "./acme.json:/letsencrypt/acme.json"
 
   frontend:
-    image: adrienbarb/goodtobenaked-frontend:staging
+    image: adrienbarb/kyynk-frontend:staging
     environment:
       - NODE_ENV=staging
     secrets:
@@ -51,14 +51,14 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.frontend.rule=Host(`staging.goodtobenaked.com`, `www.staging.goodtobenaked.com`)"
+        - "traefik.http.routers.frontend.rule=Host(`staging.kyynk.com`, `www.staging.kyynk.com`)"
         - "traefik.http.routers.frontend.entrypoints=websecure"
         - "traefik.http.services.frontend.loadbalancer.server.port=3000"
         - "traefik.http.routers.frontend.tls=true"
         - "traefik.http.routers.frontend.tls.certresolver=myresolver"
 
   backend:
-    image: adrienbarb/goodtobenaked-backend:staging
+    image: adrienbarb/kyynk-backend:staging
     environment:
       - NODE_ENV=staging
       - REDIS_URL=redis://redis:6379
@@ -90,7 +90,7 @@ services:
       replicas: 1
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.backend.rule=Host(`api-staging.goodtobenaked.com`, `www.api-staging.goodtobenaked.com`)"
+        - "traefik.http.routers.backend.rule=Host(`api-staging.kyynk.com`, `www.api-staging.kyynk.com`)"
         - "traefik.http.routers.backend.entrypoints=websecure"
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
