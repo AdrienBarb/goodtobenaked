@@ -16,6 +16,8 @@ const DashboardLayout: FC<Props> = ({ children }) => {
   const checkIfUserVerified = useCheckIfUserVerified();
   const router = useRouter();
 
+  console.log("Session : ", session);
+
   useEffect(() => {
     if (session?.user?.id && !session?.user?.userType) {
       router.push("/register/user-type");

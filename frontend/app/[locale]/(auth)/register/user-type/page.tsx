@@ -23,6 +23,8 @@ const SignUpPage = () => {
 
   const { mutate: editUserType, isLoading } = usePut(`/api/users/user-type`, {
     onSuccess: ({ userType }) => {
+      console.log("userType ", userType);
+
       if (session) {
         const updatedSession = {
           ...session,
