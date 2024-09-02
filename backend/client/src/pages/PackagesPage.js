@@ -17,7 +17,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 const PackagesPage = () => {
   //hooks
-  const { token, isTokenValid } = useAuthToken('api-goodtobenaked');
+  const { token, isTokenValid } = useAuthToken('api-kyynk');
 
   //localstate
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);

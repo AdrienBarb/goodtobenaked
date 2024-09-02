@@ -10,7 +10,7 @@ import { unstable_setRequestLocale } from "next-intl/server";
 export const metadata = genPageMetadata({
   title: "Blog",
   description:
-    "Explorez les tendances, conseils et astuces sur la plateforme Goodtobenaked dédiée aux amateurs de culottes sales. Découvrez nos articles de blog pour approfondir vos connaissances et enrichir votre expérience sur notre site.",
+    "Explorez les tendances, conseils et astuces sur la plateforme KYYNK. Découvrez nos articles de blog pour approfondir vos connaissances et enrichir votre expérience sur notre site.",
 });
 
 const BlogArticlePage = async ({

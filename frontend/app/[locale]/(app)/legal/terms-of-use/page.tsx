@@ -7,7 +7,7 @@ import { genPageMetadata } from "@/app/seo";
 export const metadata = genPageMetadata({
   title: "Conditions d'utilisation",
   description:
-    "Consultez les conditions d'utilisation de Goodtobenaked pour comprendre vos droits et responsabilités en tant qu'utilisateur de notre plateforme.",
+    "Consultez les conditions d'utilisation de KYYNK pour comprendre vos droits et responsabilités en tant qu'utilisateur de notre plateforme.",
 });
 
 const TermsOfUsePage = () => {

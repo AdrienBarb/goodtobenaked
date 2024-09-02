@@ -9,13 +9,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     let publishedDate = moment(post.publishedAt).format("YYYY-MM-DD");
 
     return {
-      url: `https://www.goodtobenaked.com/fr/blog/articles/${post.slug.current}`,
+      url: `https://www.kyynk.com/fr/blog/articles/${post.slug.current}`,
       lastModified: publishedDate,
       changeFrequency: "weekly",
       priority: 1,
       alternates: {
         languages: {
-          en: `https://www.goodtobenaked.com/en/blog/articles/${post.slug.current}`,
+          en: `https://www.kyynk.com/en/blog/articles/${post.slug.current}`,
         },
       },
     };
@@ -23,11 +23,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: "https://www.goodtobenaked.com/fr",
+      url: "https://www.kyynk.com/fr",
       lastModified: new Date(),
       alternates: {
         languages: {
-          en: "https://www.goodtobenaked.com/en",
+          en: "https://www.kyynk.com/en",
         },
       },
       changeFrequency: "weekly",

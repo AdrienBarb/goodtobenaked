@@ -4,8 +4,8 @@ import DashboardMenu from "@/components/DashboardMenu";
 import React, { FC, ReactNode, useEffect, useState } from "react";
 import styles from "@/styles/DashboardLayout.module.scss";
 import { useSession } from "next-auth/react";
-import UserTypeModal from "@/components/UserTypeModal";
 import useCheckIfUserVerified from "@/lib/hooks/useCheckIfUserVerified";
+import { useRouter } from "@/navigation";
 
 interface Props {
   children: ReactNode;
@@ -13,12 +13,12 @@ interface Props {
 
 const DashboardLayout: FC<Props> = ({ children }) => {
   const { data: session } = useSession();
-  const [showUserTypeModal, setShowUserTypeModal] = useState(false);
   const checkIfUserVerified = useCheckIfUserVerified();
+  const router = useRouter();
 
   useEffect(() => {
     if (session?.user?.id && !session?.user?.userType) {
-      setShowUserTypeModal(true);
+      router.push("/register/user-type");
     }
   }, [session?.user?.id]);
 
@@ -35,7 +35,6 @@ const DashboardLayout: FC<Props> = ({ children }) => {
       >
         {children}
       </div>
-      <UserTypeModal open={showUserTypeModal} setOpen={setShowUserTypeModal} />
     </div>
   );
 };

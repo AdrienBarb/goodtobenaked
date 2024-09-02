@@ -18,8 +18,8 @@ const MediaFactory = new Factory()
   .attr('status', 'created')
   .attr('isArchived', false);
 
-const createMedia = async (user) => {
-  const mediaData = MediaFactory.build({ user });
+const createMedia = async (user, mediaType = 'image') => {
+  const mediaData = MediaFactory.build({ user, mediaType });
   const media = new mediaModel(mediaData);
   return media.save();
 };

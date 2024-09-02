@@ -16,7 +16,7 @@ const CheckoutForm = ({ selectedPackage, stripeTransactionId }) => {
   //hooks
   const stripe = useStripe();
   const elements = useElements();
-  const { token, isTokenValid } = useAuthToken('api-goodtobenaked');
+  const { token, isTokenValid } = useAuthToken('api-kyynk');
 
   //localstate
   const [isProcessing, setIsProcessing] = useState(false);

@@ -1,10 +1,10 @@
-# Goodtobenaked
+# KYYNK
 
 A social media platform with core features like photo/video sharing, messaging, content selling, and user authentication.
 
 ## Description
 
-Goodtobenaked is a comprehensive social media application where users can share photos and videos, send messages, sell content, and manage their profiles with secure authentication. The application is built using Next.js for the frontend and Node.js for the backend, with MongoDB serving as the database. The app is deployed in a highly available and scalable environment using Docker Swarm, ensuring reliable performance and easy management across a cluster of servers.
+KYYNK is a comprehensive social media application where users can share photos and videos, send messages, sell content, and manage their profiles with secure authentication. The application is built using Next.js for the frontend and Node.js for the backend, with MongoDB serving as the database. The app is deployed in a highly available and scalable environment using Docker Swarm, ensuring reliable performance and easy management across a cluster of servers.
 
 ### Key Technologies:
 

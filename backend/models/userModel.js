@@ -169,6 +169,14 @@ const userSchema = mongoose.Schema(
       type: Date,
       default: () => moment.utc().add(3, 'months').startOf('day').toDate(),
     },
+    preferences: {
+      type: [String],
+      default: [],
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

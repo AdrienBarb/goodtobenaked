@@ -43,7 +43,10 @@ const UserSignUpForm = () => {
   };
 
   const validationSchema = yup.object({
-    pseudo: yup.string().required(t("error.field_required")),
+    pseudo: yup
+      .string()
+      .matches(/^[a-zA-Z0-9._-]{3,30}$/, t("error.pseudo_invalid"))
+      .required(t("error.field_required")),
     email: yup
       .string()
       .email(t("error.field_not_valid"))
@@ -93,7 +96,7 @@ const UserSignUpForm = () => {
 
           if (login?.ok) {
             sendEvent("new user");
-            router.push(appRouter.feed);
+            router.push(appRouter.userType);
           }
         }
 

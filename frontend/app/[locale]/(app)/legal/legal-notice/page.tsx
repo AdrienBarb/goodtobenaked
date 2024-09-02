@@ -7,7 +7,7 @@ import { genPageMetadata } from "@/app/seo";
 export const metadata = genPageMetadata({
   title: "Mentions légales",
   description:
-    "Consultez les mentions légales de Goodtobenaked pour en savoir plus sur notre entreprise, nos conditions d'utilisation, notre politique de confidentialité et d'autres informations importantes.",
+    "Consultez les mentions légales de KYYNK pour en savoir plus sur notre entreprise, nos conditions d'utilisation, notre politique de confidentialité et d'autres informations importantes.",
 });
 
 const LegalNoticePage = () => {

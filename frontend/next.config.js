@@ -88,12 +88,12 @@ const nextConfig = {
       },
       {
         source: "/support/members",
-        destination: "/fr/blog/categories/goodtobenaked",
+        destination: "/fr/blog/categories/kyynk",
         permanent: true,
       },
       {
         source: "/support/creators",
-        destination: "/fr/blog/categories/goodtobenaked",
+        destination: "/fr/blog/categories/kyynk",
         permanent: true,
       },
       {

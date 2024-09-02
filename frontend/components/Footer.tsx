@@ -14,12 +14,7 @@ const Footer = () => {
       <div className={styles.wrapper}>
         <div className={styles.footerLeft}>
           <div className={styles.logoWrapper}>
-            <Image
-              src={logo}
-              alt="Logo Goodtobenaked"
-              width={260}
-              objectFit="cover"
-            />
+            <Image src={logo} alt="Logo KYYNK" width={120} objectFit="cover" />
           </div>
           <h2 className={styles.footerText}>{t("metadata.homeDescription")}</h2>
         </div>
@@ -58,33 +53,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/blog/categories/goodtobenaked">
+                <Link href="/blog/categories/kyynk">
                   {t("footer.linkGtbn")}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className={styles.menuSection}>
-            <h4>{t("footer.alternatives")}</h4>
-            <ul>
-              <li>
-                <Link href="/blog/articles/vends-ta-culotte-vos-culottes-sales-peuvent-elles-se-transformer-en-revenus">
-                  Vends ta culotte
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/articles/mym-fans-faire-de-votre-contenu-un-gain">
-                  Mym Fans
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/articles/balance-ta-nude-partage-intime-et-rentabilite">
-                  Balance ta nude
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/articles/onlyfans-tout-ce-que-vous-devez-savoir-pour-reussir">
-                  Onlyfans
                 </Link>
               </li>
             </ul>
@@ -93,7 +63,7 @@ const Footer = () => {
       </div>
       <div className={styles.divider}></div>
       <div className={styles.bottomFooter}>
-        <p className={styles.copyright}>© Copyright 2023 - Goodtobenaked™</p>
+        <p className={styles.copyright}>© Copyright 2023 - KYYNK</p>
         <div className={styles.legalLink}>
           <Link href="/legal/terms-of-use">{t("footer.termsOfUse")}</Link>
           <Link href="/legal/legal-notice">{t("footer.legalNotice")}</Link>

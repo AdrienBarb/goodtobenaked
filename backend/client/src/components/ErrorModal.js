@@ -22,8 +22,7 @@ const ErrorModal = ({ open, onClose }) => {
           <span className={styles.label}>Oops!</span>
           <div className={styles.text}>
             An error occurred. You can try again, and if the problem persists,
-            you can contact us{' '}
-            <a href={`mailto:help@goodtobenaked.com`}>here</a>.
+            you can contact us <a href={`mailto:help@kyynk.com`}>here</a>.
           </div>
           <SimpleButton
             onClick={() => {

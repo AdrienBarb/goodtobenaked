@@ -52,28 +52,28 @@ jobs:
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             echo "IMAGE_TAG=latest" >> $GITHUB_ENV
             echo "ARGS=--build-arg NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001 \
-                  --build-arg NEXT_PUBLIC_API_URL=https://api.goodtobenaked.com/ \
-                  --build-arg NEXT_PUBLIC_BASE_URL=https://goodtobenaked.com \
+                  --build-arg NEXT_PUBLIC_API_URL=https://api.kyynk.com/ \
+                  --build-arg NEXT_PUBLIC_BASE_URL=https://kyynk.com \
                   --build-arg NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://duz30n69vbwvd.cloudfront.net/" >> $GITHUB_ENV
           else
             echo "IMAGE_TAG=staging" >> $GITHUB_ENV
             echo "ARGS=--build-arg NEXT_PUBLIC_INTERNAL_API_URL=http://backend:3001 \
-                  --build-arg NEXT_PUBLIC_API_URL=https://api-staging.goodtobenaked.com/ \
-                  --build-arg NEXT_PUBLIC_BASE_URL=https://staging.goodtobenaked.com \
+                  --build-arg NEXT_PUBLIC_API_URL=https://api-staging.kyynk.com/ \
+                  --build-arg NEXT_PUBLIC_BASE_URL=https://staging.kyynk.com \
                   --build-arg NEXT_PUBLIC_CLOUDFRONT_MEDIA=https://d10arthua11ogq.cloudfront.net/" >> $GITHUB_ENV
           fi
 
       - name: Build and push frontend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-frontend:${{ env.IMAGE_TAG }} \
+            -t $DOCKERHUB_USERNAME/kyynk-frontend:${{ env.IMAGE_TAG }} \
             $ARGS \
             -f frontend/Dockerfile.prod --push ./frontend
 
       - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t $DOCKERHUB_USERNAME/goodtobenaked-backend:${{ env.IMAGE_TAG }} \
+            -t $DOCKERHUB_USERNAME/kyynk-backend:${{ env.IMAGE_TAG }} \
             -f backend/Dockerfile.prod --push ./backend
 
       - name: Run tests before deployment
@@ -92,9 +92,9 @@ jobs:
           script: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker system prune -f
-            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack-staging.yml goodtobenaked-staging
-            docker service update --force goodtobenaked-staging_backend
-            docker service update --force goodtobenaked-staging_frontend
+            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack-staging.yml kyynk-staging
+            docker service update --force kyynk-staging_backend
+            docker service update --force kyynk-staging_frontend
 
       - name: Deploy to production server
         if: github.ref == 'refs/heads/main'
@@ -106,6 +106,6 @@ jobs:
           script: |
             docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
             docker system prune -f
-            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml goodtobenaked
-            docker service update --force goodtobenaked_backend
-            docker service update --force goodtobenaked_frontend
+            docker stack deploy --with-registry-auth --resolve-image=always -c ./docker-stack.yml kyynk
+            docker service update --force kyynk_backend
+            docker service update --force kyynk_frontend

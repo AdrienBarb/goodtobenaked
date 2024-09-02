@@ -10,7 +10,7 @@ export interface SupportedCountry {
 
 export type Notification = "profile_viewed";
 
-export const HELP_EMAIL = "help@goodtobenaked.com";
+export const HELP_EMAIL = "help@kyynk.com";
 export const SUBSCRIPTION = "subscription";
 export const PRODUCT_SALE = "productSale";
 
