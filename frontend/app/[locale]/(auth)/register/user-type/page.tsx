@@ -22,9 +22,7 @@ const SignUpPage = () => {
   const router = useRouter();
 
   const { mutate: editUserType, isLoading } = usePut(`/api/users/user-type`, {
-    onSuccess: ({ userType }) => {
-      console.log("userType ", userType);
-
+    onSuccess: async ({ userType }) => {
       if (session) {
         const updatedSession = {
           ...session,
@@ -34,8 +32,9 @@ const SignUpPage = () => {
           },
         };
 
-        update(updatedSession);
-        userType === "member"
+        const s = await update(updatedSession);
+
+        s?.user?.userType === "member"
           ? router.push(appRouter.preferences)
           : router.push(appRouter.feed);
       }
