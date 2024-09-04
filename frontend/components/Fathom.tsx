@@ -12,9 +12,9 @@ function TrackPageView() {
     const env = process.env.NODE_ENV;
     if (env !== "production") return;
 
-    load("LYCVBUWS", {
+    load("FQVVZMVY", {
       auto: false,
-      includedDomains: ["www.kyynk.com"],
+      includedDomains: ["www.kyynk.com", "kyynk.com"],
     });
   }, []);
 
