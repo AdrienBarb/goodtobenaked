@@ -32,18 +32,23 @@ services:
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
         - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-        - "traefik.http.routers.traefik.rule=Host(`traefik.goodtobenaked.com`)"
+        - "traefik.http.routers.traefik.rule=Host(`traefik.kyynk.com`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.routers.traefik.middlewares=auth"
         - "traefik.http.middlewares.auth.basicauth.users=admin:$apr1$r/k/4P2u$ymeak2FN1yJW9YQdyLCT21"
         - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+        - "traefik.http.routers.redirect-goodtobenaked.rule=Host(`goodtobenaked.com`, `www.goodtobenaked.com`)"
+        - "traefik.http.routers.redirect-goodtobenaked.entrypoints=web"
+        - "traefik.http.middlewares.redirect-to-kyynk.redirectregex.regex=^https://goodtobenaked.com(.*)"
+        - "traefik.http.middlewares.redirect-to-kyynk.redirectregex.replacement=https://kyynk.com$${1}"
+        - "traefik.http.routers.redirect-goodtobenaked.middlewares=redirect-to-kyynk"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./acme.json:/letsencrypt/acme.json"
 
   frontend:
-    image: adrienbarb/goodtobenaked-frontend:latest
+    image: adrienbarb/kyynk-frontend:latest
     environment:
       - NODE_ENV=production
     secrets:
@@ -66,7 +71,7 @@ services:
           - spread: node.id
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.frontend.rule=Host(`goodtobenaked.com`, `www.goodtobenaked.com`)"
+        - "traefik.http.routers.frontend.rule=Host(`kyynk.com`, `www.kyynk.com`)"
         - "traefik.http.routers.frontend.entrypoints=websecure"
         - "traefik.http.services.frontend.loadbalancer.server.port=3000"
         - "traefik.http.routers.frontend.tls=true"
@@ -75,7 +80,7 @@ services:
         - "com.newrelic.logs.parser=auto"
 
   backend:
-    image: adrienbarb/goodtobenaked-backend:latest
+    image: adrienbarb/kyynk-backend:latest
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379
@@ -118,7 +123,7 @@ services:
           - spread: node.id
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.backend.rule=Host(`api.goodtobenaked.com`, `www.api.goodtobenaked.com`)"
+        - "traefik.http.routers.backend.rule=Host(`api.kyynk.com`, `www.api.kyynk.com`)"
         - "traefik.http.routers.backend.entrypoints=websecure"
         - "traefik.http.services.backend.loadbalancer.server.port=3001"
         - "traefik.http.routers.backend.tls=true"
