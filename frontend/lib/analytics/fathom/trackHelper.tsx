@@ -1,4 +1,4 @@
-import { trackEvent } from "fathom-client";
+import { load, trackEvent } from "fathom-client";
 
 export const sendEvent = (eventName: string, value?: number) => {
   const env = process.env.NODE_ENV;
