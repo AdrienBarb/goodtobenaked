@@ -10,7 +10,8 @@ const saleModel = require('../models/saleModel');
 const { errorMessages } = require('../lib/constants');
 const conversationModel = require('../models/conversationModel');
 const messageModel = require('../models/messageModel');
-const signUrl = require('../lib/utils/signedUrl');
+const getNudePermissions = require('../lib/utils/getNudePermissions');
+const getMediaUrl = require('../lib/utils/getMediaUrl');
 
 const createNude = asyncHandler(async (req, res, next) => {
   const user = await userModel.findById(req.user.id);
@@ -60,6 +61,7 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
     isFree,
     tag,
     enablePagination = 'true',
+    isHighRes,
   } = req.query;
 
   let filter = {
@@ -113,41 +115,27 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
 
   const nudes = await query
     .populate('user', 'pseudo profileImage')
-    .populate(
-      'medias',
-      'user mediaType convertedKey blurredKey posterKey status',
-    )
+    .populate('medias', 'user mediaType convertedKey blurredKey posterKey')
     .lean();
 
-  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
   const updatedNudes = nudes.map((nude) => {
+    const permissions = getNudePermissions(nude, req?.user?.id);
+
     const updatedMedias = nude.medias.map((media) => {
-      const isOwnerOrPaidMember =
-        req.user?.id &&
-        (nude.paidMembers.includes(req.user.id) ||
-          nude.user._id.toString() === req.user.id);
+      const imageUrl = getMediaUrl(media, permissions, isHighRes === 'true');
 
       return {
         _id: media._id,
         user: media.user,
         mediaType: media.mediaType,
-        blurredKey: media.blurredKey
-          ? `${cloudFrontUrl}${media.blurredKey}`
-          : null,
-        posterKey: media.posterKey
-          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
-          : null,
-        status: media.status,
-        convertedKey:
-          (isOwnerOrPaidMember || nude.isFree) && media.convertedKey
-            ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
-            : null,
+        imageUrl,
       };
     });
 
     return {
       ...nude,
       medias: updatedMedias,
+      permissions,
     };
   });
 
@@ -164,7 +152,7 @@ const getAllNudes = asyncHandler(async (req, res, next) => {
 
 const getUserNudes = asyncHandler(async (req, res, next) => {
   const { userId } = req.params;
-  const { tag, isFree, mediaTypes } = req.query;
+  const { tag, isFree, mediaTypes, isHighRes } = req.query;
 
   let matchStage = {
     isArchived: false,
@@ -187,16 +175,28 @@ const getUserNudes = asyncHandler(async (req, res, next) => {
         from: 'media',
         localField: 'medias',
         foreignField: '_id',
-        as: 'mediaDetails',
+        as: 'medias',
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              user: 1,
+              mediaType: 1,
+              convertedKey: 1,
+              blurredKey: 1,
+              posterKey: 1,
+            },
+          },
+        ],
       },
     },
     {
       $addFields: {
-        mediaCount: { $size: '$mediaDetails' },
+        mediaCount: { $size: '$medias' },
         videoCount: {
           $size: {
             $filter: {
-              input: '$mediaDetails',
+              input: '$medias',
               as: 'media',
               cond: { $eq: ['$$media.mediaType', 'video'] },
             },
@@ -205,7 +205,7 @@ const getUserNudes = asyncHandler(async (req, res, next) => {
         photoCount: {
           $size: {
             $filter: {
-              input: '$mediaDetails',
+              input: '$medias',
               as: 'media',
               cond: { $eq: ['$$media.mediaType', 'image'] },
             },
@@ -230,16 +230,12 @@ const getUserNudes = asyncHandler(async (req, res, next) => {
               user: 1,
               description: 1,
               priceDetails: 1,
-              isArchived: 1,
               isFree: 1,
               paidMembers: 1,
               tags: 1,
               medias: 1,
-              visibility: 1,
               createdAt: 1,
-              updatedAt: 1,
               __v: 1,
-              mediaDetails: 1,
             },
           },
         ],
@@ -261,42 +257,27 @@ const getUserNudes = asyncHandler(async (req, res, next) => {
   let [result] = await nudeModel.aggregate(aggregationPipeline).exec();
 
   result.nudes = await nudeModel.populate(result.nudes, [
-    {
-      path: 'medias',
-      select: 'user mediaType convertedKey blurredKey posterKey status',
-    },
     { path: 'user', select: 'pseudo profileImage' },
   ]);
 
-  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
   const updatedNudes = result.nudes.map((nude) => {
+    const permissions = getNudePermissions(nude, req?.user?.id);
+
     const updatedMedias = nude.medias.map((media) => {
-      const isOwnerOrPaidMember =
-        req.user?.id &&
-        (nude.paidMembers.includes(req.user.id) ||
-          nude.user._id.toString() === req.user.id);
+      const imageUrl = getMediaUrl(media, permissions, isHighRes === 'true');
 
       return {
         _id: media._id,
         user: media.user,
         mediaType: media.mediaType,
-        blurredKey: media.blurredKey
-          ? `${cloudFrontUrl}${media.blurredKey}`
-          : null,
-        posterKey: media.posterKey
-          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
-          : null,
-        status: media.status,
-        convertedKey:
-          (isOwnerOrPaidMember || nude.isFree) && media.convertedKey
-            ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
-            : null,
+        imageUrl,
       };
     });
 
     return {
       ...nude,
       medias: updatedMedias,
+      permissions,
     };
   });
 
@@ -313,38 +294,24 @@ const getCurrentNude = asyncHandler(async (req, res, next) => {
 
   const nude = await nudeModel
     .findById(nudeId)
-    .populate('user', 'pseudo image.profil')
-    .populate(
-      'medias',
-      'user mediaType convertedKey blurredKey posterKey status',
-    )
+    .select('description priceDetails isFree paidMembers tags createdAt')
+    .populate('user', 'pseudo profileImage')
+    .populate('medias', 'user mediaType convertedKey blurredKey posterKey')
     .lean();
 
-  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+  const permissions = getNudePermissions(nude, req?.user?.id);
 
   res.status(200).json({
     ...nude,
+    permissions,
     medias: nude.medias.map((media) => {
-      const isOwnerOrPaidMember =
-        req.user?.id &&
-        (nude.paidMembers.includes(req.user.id) ||
-          nude.user._id.toString() === req.user.id);
+      const imageUrl = getMediaUrl(media, permissions, true);
 
       return {
         _id: media._id,
         user: media.user,
         mediaType: media.mediaType,
-        blurredKey: media.blurredKey
-          ? `${cloudFrontUrl}${media.blurredKey}`
-          : null,
-        posterKey: media.posterKey
-          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
-          : null,
-        status: media.status,
-        convertedKey:
-          (isOwnerOrPaidMember || nude.isFree) && media.convertedKey
-            ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
-            : null,
+        imageUrl,
       };
     }),
   });
@@ -484,31 +451,24 @@ const buyNude = asyncHandler(async (req, res, next) => {
 
   const updatedNude = await nudeModel
     .findById(nude._id)
-    .populate('user', 'pseudo image.profil')
-    .populate(
-      'medias',
-      'user mediaType convertedKey blurredKey posterKey status',
-    )
+    .select('description priceDetails isFree paidMembers tags createdAt')
+    .populate('user', 'pseudo profileImage')
+    .populate('medias', 'user mediaType convertedKey blurredKey posterKey')
     .lean();
 
-  const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+  const permissions = getNudePermissions(updatedNude, req?.user?.id);
+
   res.status(200).json({
     ...updatedNude,
+    permissions,
     medias: updatedNude.medias.map((media) => {
+      const imageUrl = getMediaUrl(media, permissions, true);
+
       return {
         _id: media._id,
         user: media.user,
         mediaType: media.mediaType,
-        blurredKey: media.blurredKey
-          ? `${cloudFrontUrl}${media.blurredKey}`
-          : null,
-        posterKey: media.posterKey
-          ? signUrl(`${cloudFrontUrl}${media.posterKey}`)
-          : null,
-        status: media.status,
-        convertedKey: media.convertedKey
-          ? signUrl(`${cloudFrontUrl}${media.convertedKey}`)
-          : null,
+        imageUrl,
       };
     }),
   });
