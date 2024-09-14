@@ -7,6 +7,7 @@ export interface Media {
   convertedKey?: string;
   blurredKey?: string;
   posterKey?: string;
+  imageUrl?: string;
   status: "created" | "ready" | "error";
   isArchived: boolean;
   createdAt?: Date;

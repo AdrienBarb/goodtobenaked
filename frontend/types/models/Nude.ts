@@ -16,7 +16,7 @@ export interface Nude {
   isFree: boolean;
   paidMembers: string[];
   medias: Media[];
-  visibility: "public" | "private";
+  visibility?: "public" | "private";
   createdAt?: Date;
   updatedAt?: Date;
 }
